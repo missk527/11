@@ -100,6 +100,219 @@ body::after{
 </div>
 
 <script>
+  /* ================== Grammar engine (LT + Local rules) ================== */
+/* 若你檔案已經有 IRR / toPast / toPart，保留你原本的即可；否則這裡提供一份 */
+const IRR = {
+  "am":["was","been"], "is":["was","been"], "are":["were","been"],
+  "do":["did","done"], "does":["did","done"], "go":["went","gone"],
+  "come":["came","come"], "eat":["ate","eaten"], "see":["saw","seen"],
+  "take":["took","taken"], "make":["made","made"], "have":["had","had"], "has":["had","had"],
+  "get":["got","gotten"], "give":["gave","given"], "write":["wrote","written"],
+  "read":["read","read"], "run":["ran","run"], "sleep":["slept","slept"],
+  "feel":["felt","felt"], "leave":["left","left"], "meet":["met","met"],
+  "pay":["paid","paid"], "put":["put","put"], "say":["said","said"],
+  "buy":["bought","bought"], "bring":["brought","brought"], "think":["thought","thought"],
+  "teach":["taught","taught"], "begin":["began","begun"], "become":["became","become"],
+  "find":["found","found"], "hold":["held","held"], "keep":["kept","kept"],
+  "speak":["spoke","spoken"], "drink":["drank","drunk"], "drive":["drove","driven"],
+  "forget":["forgot","forgotten"], "forgive":["forgave","forgiven"], "grow":["grew","grown"],
+  "know":["knew","known"], "lose":["lost","lost"], "send":["sent","sent"],
+  "sit":["sat","sat"], "stand":["stood","stood"], "understand":["understood","understood"],
+  "win":["won","won"], "cut":["cut","cut"], "hit":["hit","hit"], "hurt":["hurt","hurt"], "let":["let","let"], "set":["set","set"], "cost":["cost","cost"]
+};
+function toPast(v){
+  const x=v.toLowerCase(); if(IRR[x]) return IRR[x][0];
+  if(/[^aeiou]y$/.test(x)) return x.slice(0,-1)+"ied";
+  if(x.endsWith("e")) return x+"d";
+  return x+"ed";
+}
+function toPart(v){
+  const x=v.toLowerCase(); if(IRR[x]) return IRR[x][1]||IRR[x][0];
+  if(/[^aeiou]y$/.test(x)) return x.slice(0,-1)+"ied";
+  if(x.endsWith("e")) return x+"d";
+  return x+"ed";
+}
+
+/* 小字典（常見拼字） */
+const SPELL = {
+  "becuase":"because","recieve":"receive","seperate":"separate","definately":"definitely",
+  "wierd":"weird","adress":"address","enviroment":"environment","tomatos":"tomatoes",
+  "alot":"a lot","occured":"occurred","wich":"which","thier":"their","beleive":"believe",
+  "freind":"friend","studing":"studying","untill":"until","sory":"sorry","conisder":"consider",
+  "consder":"consider","considre":"consider","improvment":"improvement"
+};
+
+/* ————— Local rules pass ————— */
+function localFixOnce(src){
+  let s=src, count=0; const changes=[];
+  const add=(title,from,to,msg="")=>{ if(from!==to){ count++; changes.push({title,from,to,msg}); } };
+  const capSentences = () => {
+    s = s.replace(/(^|\.\s+|\?\s+|!\s+)([a-z])/g,(m,pre,ch)=>{
+      const rep=pre+ch.toUpperCase(); if(rep!==m) add("Capitalization",m,rep,"Capitalize the start of a sentence."); return rep;
+    });
+  };
+
+  // 0) 拼字（快速修正）
+  s = s.replace(/\b([A-Za-z']+)\b/g,(m,w)=>{
+    const low=w.toLowerCase(); const fix=SPELL[low]; if(fix){
+      const rep = (w===w.toUpperCase())?fix.toUpperCase(): (w[0]===w[0].toUpperCase()?fix[0].toUpperCase()+fix.slice(1):fix);
+      if(rep!==w) add("Spelling",w,rep,"Common misspelling."); return rep;
+    }
+    return w;
+  });
+
+  // 1) a/an
+  s = s.replace(/\b(a)\s+([aeiouAEIOU])/g,(m,a,v)=>{const rep='an '+v; add("Article (a/an)",m,rep,"Use ‘an’ before a vowel sound."); return rep;});
+  s = s.replace(/\b(an)\s+([^aeiouAEIOU\s])/g,(m,an,v)=>{const rep='a '+v; add("Article (a/an)",m,rep,"Use ‘a’ before a consonant sound."); return rep;});
+
+  // 2) be 動詞一致
+  s = s.replace(/\bI\s+are\b/gi, ()=>{add("Be-verb", "I are", "I am", "‘I’ takes ‘am’."); return "I am";});
+  s = s.replace(/\bI\s+is\b/gi,  ()=>{add("Be-verb", "I is", "I am", "‘I’ takes ‘am’."); return "I am";});
+  s = s.replace(/\b(you|we|they)\s+is\b/gi,(m,p)=>{const rep=p+" are"; add("Be-verb",m,rep,"Plural subjects take ‘are’."); return rep;});
+  s = s.replace(/\b(he|she|it)\s+are\b/gi,(m,p)=>{const rep=p+" is"; add("Be-verb",m,rep,"he/she/it → is"); return rep;});
+
+  // 3) have/has 一致
+  s = s.replace(/\bI\s+has\b/gi, ()=>{add("Have/has","I has","I have","‘I’ takes ‘have’."); return "I have";});
+  s = s.replace(/\b(you|we|they)\s+has\b/gi,(m,p)=>{const rep=p+" have"; add("Have/has",m,rep,"Plural subjects take ‘have’."); return rep;});
+  s = s.replace(/\b(he|she|it)\s+have\b/gi,(m,p)=>{const rep=p+" has"; add("Have/has",m,rep,"he/she/it → has"); return rep;});
+
+  // 4) 單數主語 + 複數表語 → 單數名詞（I/he/she/it am|is boys → a boy）
+  const SING = {"boys":"boy","girls":"girl","students":"student","teachers":"teacher","friends":"friend",
+                "cats":"cat","dogs":"dog","books":"book","apples":"apple","men":"man","women":"woman",
+                "children":"child","people":"person"};
+  s = s.replace(/\b(I|he|she|it)\s+(am|is)\s+([A-Za-z]+)\b/g,(m,subj,be,n)=>{
+    const low=n.toLowerCase(); if(!SING[low]) return m;
+    const word=SING[low]; const art=/^[aeiou]/i.test(word)?"an":"a";
+    const rep=`${subj} ${be} ${art} ${word}`;
+    add("Predicate number",m,rep,"Singular subject needs a singular complement."); return rep;
+  });
+
+  // 5) he/she/it 動詞三單 -s
+  s = s.replace(/\b(he|she|it)\s+(go|do|have|say|play|watch|clean|study|try|fly|cry|walk|work|eat|come)\b/gi,(m,subj,verb)=>{
+    const v=verb.toLowerCase(); let v3=v;
+    if(v==='have') v3='has'; else if(v==='do') v3='does'; else if(v==='go') v3='goes';
+    else if(/[^aeiou]y$/.test(v)) v3=v.slice(0,-1)+"ies";
+    else if(/(sh|ch|x|s|o)$/.test(v)) v3=v+"es"; else v3=v+"s";
+    const rep=`${subj} ${v3}`; if(rep!==m){ add("Agreement (3rd)",m,rep,"Add -s/-es in 3rd person."); } return rep;
+  });
+
+  // 6) 不定詞 / 情態：動詞原形（to slept → to sleep；can ate → can eat）
+  (function(){
+    const IRR_BASE={}; Object.keys(IRR).forEach(b=>{ const [v2,v3]=IRR[b]; IRR_BASE[v2]=b; IRR_BASE[(v3||v2)]=b; });
+    const toBase = w=>{
+      const lw=w.toLowerCase(); if(IRR_BASE[lw]) return IRR_BASE[lw];
+      if(/[^aeiou]ied$/i.test(w)) return w.replace(/ied$/i,'y');
+      if(/([bcdfghjklmnpqrstvwxyz])ed$/i.test(w)) return w.replace(/ed$/i,'');
+      if(/([sxz]|sh|ch)es$/i.test(w)) return w.replace(/es$/i,'');
+      if(/ies$/i.test(w)) return w.replace(/ies$/i,'y');
+      if(/s$/i.test(w)) return w.replace(/s$/i,'');
+      return w;
+    };
+    s = s.replace(/\bto\s+([a-z]+)\b/gi,(m,v)=>{ const base=toBase(v); const rep=`to ${base}`; if(rep!==m){ add("Infinitive base",m,rep,"Use base form after ‘to’."); } return rep; });
+    s = s.replace(/\b(can|could|will|would|shall|should|may|might|must|let|did|does|do)\s+([a-z]+)\b/gi,(m,aux,v)=>{ const base=toBase(v); const rep=`${aux} ${base}`; if(rep!==m){ add("Modal base",m,rep,"Use base form after a modal/aux."); } return rep; });
+  })();
+
+  // 7) Present Perfect：規範 have/has + V3（美式 get→gotten），防呆 goned/goed
+  (function(){
+    // 先矯正明顯錯分詞
+    const MIST = {"goed":"gone","goned":"gone","goted":"gotten","buyed":"bought","taked":"taken","eated":"eaten","comed":"come","runned":"run",
+                  "thinked":"thought","bringed":"brought","sleeped":"slept","choosed":"chosen","writed":"written","sended":"sent","drived":"driven",
+                  "forgived":"forgiven","forgeted":"forgotten"};
+    s = s.replace(/\b(have|has)\s+([a-z]+)\b/gi,(m,aux,w)=>{
+      const low=w.toLowerCase();
+      if(MIST[low]){ const rep=`${aux} ${MIST[low]}`; add("Present perfect fix",m,rep,"Use correct past participle (V3)."); return rep; }
+      // V2 → V3（have went → have gone）
+      const baseByV2 = Object.fromEntries(Object.entries(IRR).map(([b,[v2]])=>[v2,b]));
+      if(baseByV2[low]){ const b=baseByV2[low]; const v3=toPart(b); const rep=`${aux} ${v3}`; if(rep!==m){ add("Present perfect V2→V3",m,rep,"Use V3 after ‘have/has’."); } return rep; }
+      // 若是原形（have go）→ have gone
+      const bases=new Set(Object.keys(IRR));
+      if(bases.has(low)){ const rep=`${aux} ${toPart(low)}`; if(rep!==m){ add("Present perfect base→V3",m,rep,"Use V3 after ‘have/has’."); } return rep; }
+      return m;
+    });
+  })();
+
+  // 8) Past tense：偵測過去時間標記 → 動詞用過去式
+  const pastMark=/\b(yesterday|last\s+(night|week|month|year|mon(day)?|tue(sday)?|wed(nesday)?|thu(rsday)?|fri(day)?|sat(urday)?|sun(day)?)|\d+\s+(minute|hour|day|week|month|year)s?\s+ago|ago)\b/i;
+  if(pastMark.test(s)){
+    s = s.replace(/\b(I|you|we|they|he|she|it)\s+([a-z]+)\b/gi,(m,subj,verb)=>{
+      const v=verb.toLowerCase();
+      if(/^(am|is|are|was|were|been|be|have|has|had|do|does|did|will|can|should|would|might|must)$/.test(v)) return m;
+      if(/(ed|t)$/.test(v) || Object.values(IRR).some(a=>a[0]===v)) return m;
+      const rep=`${subj} ${toPast(v)}`; add("Past tense",m,rep,"Use past tense with past-time markers."); return rep;
+    });
+  }
+
+  // 9) Future：偵測未來時間標記 → 沒有 will/going to 就補 will
+  const futureMark=/\b(tomorrow|next\s+(week|month|year|mon(day)?|tue(sday)?|wed(nesday)?|thu(rsday)?|fri(day)?|sat(urday)?|sun(day)?)|soon|in\s+\d+\s+(minutes?|hours?|days?|weeks?|months?|years?))\b/i;
+  if(futureMark.test(s) && !/\b(will|going to|be going to|plan to|intend to)\b/i.test(s)){
+    s = s.replace(/\b(I|you|we|they|he|she|it)\s+([a-z]+)\b/gi,(m,subj,verb)=>{
+      const v=verb.toLowerCase(); if(/^(am|is|are|was|were|been|be|have|has|had|do|does|did|can|should|would|might|must|will)$/.test(v)) return m;
+      const rep = `${subj} will ${v}`; add("Future",m,rep,"Add ‘will’ for clear future time."); return rep;
+    });
+  }
+
+  // 10) 常見介系詞修正
+  [
+    [/\bmarried with\b/gi,"married to","Use ‘to’ with ‘married’. "],
+    [/\bdepend of\b/gi,"depend on","Use ‘on’ after ‘depend’. "],
+    [/\binterested on\b/gi,"interested in","Use ‘in’ after ‘interested’. "],
+    [/\bdifferent than\b/gi,"different from","Prefer ‘different from’. "],
+    [/\barrive to\b/gi,"arrive at","Use ‘at’ with ‘arrive’. "],
+    [/\barrive to home\b/gi,"arrive home","Drop the preposition with ‘home’. "],
+    [/\bdiscuss about\b/gi,"discuss","‘Discuss’ doesn’t take ‘about’. "],
+    [/\blisten (?!to)\b/gi,"listen to","Use ‘to’ after ‘listen’. "],
+    [/\b(go|went|gone)\s+(school|work|class|church|library|park|store|market|hospital|office|airport|station|zoo|museum|cinema|theater|beach|farm)\b/gi,null,"Use ‘to’ with ‘go’ + place (except ‘home’)."]
+  ].forEach(([re,to,why])=>{
+    if(to){
+      s = s.replace(re,(m)=>{ const rep=to; add("Preposition",m,rep,why); return rep; });
+    }else{
+      // go + place → go to place
+      s = s.replace(re,(m,go,place)=>{ const rep=`${go} to ${place}`; add("Preposition",m,rep,why); return rep; });
+    }
+  });
+
+  // 11) 句首大寫 & 空白清理
+  capSentences();
+  const before=s; s=s.replace(/ {2,}/g,' ').replace(/\s+([,.!?;:])/g,'$1');
+  if(before!==s) add("Punctuation spacing","extra space","cleaned","Remove extra spaces.");
+  return { text:s, count, changes };
+}
+
+/* ————— LanguageTool pass + local pass ————— */
+async function grammarPipeline(inputText){
+  let text = inputText, ltChanges = [];
+  // 1) LanguageTool（公共雲）
+  try{
+    const p = new URLSearchParams();
+    p.append("text", text);
+    p.append("language","en-US");
+    p.append("enabledCategories","GRAMMAR,CONFUSED_WORDS,TYPOGRAPHY,PUNCTUATION,REDUNDANCY,STYLE");
+    const r = await fetch("https://api.languagetool.org/v2/check",{
+      method:"POST", headers:{"Content-Type":"application/x-www-form-urlencoded"}, body:p
+    });
+    if(r.ok){
+      const j = await r.json();
+      const matches=(j.matches||[]).filter(m=>m.replacements&&m.replacements[0]).sort((a,b)=>b.offset-a.offset);
+      for(const m of matches){
+        const from=text.slice(m.offset, m.offset+m.length);
+        const to=m.replacements[0].value;
+        text=text.slice(0,m.offset)+to+text.slice(m.offset+m.length);
+        ltChanges.push({title:"LanguageTool",from,to,msg:m.message||""});
+      }
+    }
+  }catch(_e){ /* 若 LT 暫時連不到，就只跑本地規則 */ }
+
+  // 2) Local rules（補 LT 抓不到的：present perfect/過去&未來/介系詞/一致性等）
+  const local = localFixOnce(text);
+
+  return {
+    text: local.text,
+    total: ltChanges.length + local.count,
+    ltCount: ltChanges.length,
+    localCount: local.count,
+    changes: [...ltChanges, ...local.changes]
+  };
+                                                                                                          }
 /* ====== 共用 UI 工具 ====== */
 const ui = {
   inputZh: document.getElementById('inputZh'),
