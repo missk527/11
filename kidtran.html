@@ -258,7 +258,24 @@ body::after{
     s = s.replace(/\bwe\s+is\b/gi, ()=>{add("Be-verb agreement","we is","we are","‘we’ takes ‘are’.");return "we are";});
     s = s.replace(/\bthey\s+is\b/gi,()=>{add("Be-verb agreement","they is","they are","‘they’ takes ‘are’.");return "they are";});
     s = s.replace(/\b(he|she|it)\s+are\b/gi,(m,subj)=>{const to=`${subj} is`;add("Be-verb agreement",m,to,"he/she/it takes ‘is’.");return to;});
+/* 5.2) have/has 與主詞一致（I/you/we/they → have；he/she/it → has） */
+s = s.replace(/\bI\s+has\b/gi,   ()=>{ add("Have/has agreement","I has","I have","‘I’ takes ‘have’."); return "I have"; });
+s = s.replace(/\b(you|we|they)\s+has\b/gi,(m,p)=>{ const to=p+" have"; add("Have/has agreement",m,to,"Plural subjects take ‘have’."); return to; });
+s = s.replace(/\b(he|she|it)\s+have\b/gi, (m,p)=>{ const to=p+" has";  add("Have/has agreement",m,to,"he/she/it takes ‘has’."); return to; });
 
+/* 5.3) 一般化的現在完成式正規化：have/has + 原形 → have/has + V3（AmE） */
+s = s.replace(/\b(have|has)\s+(?!to\b)([a-z]+)\b/gi, (m, aux, verb) => {
+  const v = verb.toLowerCase();
+  // 特例：got → gotten（美式），其他交給 toPart()
+  const base = (v === "got") ? "get" : v;
+  const v3 = toPart(base);                // 會用 IRR 對照表（get → gotten）或規則 ed/ied
+  if (v3 !== v) {
+    const rep = `${aux} ${v3}`;
+    add("Present perfect normalization", m, rep, "Use past participle (V3) after ‘have/has’."); 
+    return rep;
+  }
+  return m;
+});
     /* 6) 複數主語/表語 */
     s = s.replace(/\bfriends\s+is\b/gi,()=>{add("Plural subject","friends is","friends are","Plural subject takes ‘are’.");return "friends are";});
     s = s.replace(/\b(people|children|men|women)\s+is\b/gi,(m,p)=>{const to=`${p} are`;add("Plural subject",m,to,"Plural subject takes ‘are’.");return to;});
