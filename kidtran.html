@@ -195,7 +195,35 @@ function localFixOnce(src){
     else if(/(sh|ch|x|s|o)$/.test(v)) v3=v+"es"; else v3=v+"s";
     const rep=`${subj} ${v3}`; if(rep!==m){ add("Agreement (3rd)",m,rep,"Add -s/-es in 3rd person."); } return rep;
   });
+/* 5.24) go to shopping → go shopping（所有時態） */
+s = s.replace(/\b(go|goes|went|gone|going)\s+to\s+shopping\b/gi, (m, v) => `${v} shopping`);
 
+/* 5.24b) 英式 mum → 美式 mom；with mum → with my mom */
+s = s.replace(/\bwith\s+(?:my\s+)?mum\b/gi, 'with my mom');
+s = s.replace(/\bmum\b/gi, 'mom');
+
+/* 5.24c) 句首未來時間 + 「go (to) shopping + 主語」→ 重排語序並補 will
+   例：Tomorrow morning go to shopping I with mom → Tomorrow morning I will go shopping with my mom.
+   說明：
+   - 只在偵測到未來時間標記時啟動（未來式邏輯相容）
+   - 捕捉「go (to) shopping + 主語」並把主語換到動詞前，再補 will
+*/
+(function () {
+  const FUTURE_AHEAD = /\b(tomorrow|next\s+\w+|soon|in\s+\d+\s+(minutes?|hours?|days?|weeks?|months?|years?)|later|this\s+(afternoon|evening|weekend|week))\b/i;
+
+  if (FUTURE_AHEAD.test(s)) {
+    // go (to) shopping + I/you/he/she/we/they (+ 其後片語)
+    s = s.replace(
+      /\bgo(?:\s+to)?\s+shopping\s+(I|you|he|she|we|they)\b([^.!?]*)/gi,
+      (m, subj, tail) => `${subj} will go shopping${tail}`
+    );
+    // 如果是 goes 也一併處理（主語會被換到前面，動詞改回 base 以搭配 will）
+    s = s.replace(
+      /\bgoes\s+(?:to\s+)?shopping\s+(he|she|it)\b([^.!?]*)/gi,
+      (m, subj, tail) => `${subj} will go shopping${tail}`
+    );
+  }
+})();
   // 6) 不定詞 / 情態：動詞原形（to slept → to sleep；can ate → can eat）
   (function(){
     const IRR_BASE={}; Object.keys(IRR).forEach(b=>{ const [v2,v3]=IRR[b]; IRR_BASE[v2]=b; IRR_BASE[(v3||v2)]=b; });
