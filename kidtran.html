@@ -140,7 +140,7 @@ ui.check.addEventListener('click', async () => {
   // 建議清單
   renderSuggestions(res.changes);
 
-  setStatus(`✅ 已完成（修正 ${res.total} 處｜LanguageTool：${res.ltCount}，本地：${res.localCount}）`);
+  setStatus(`✅ 已完成智慧修正（修正 ${res.total} 處｜LanguageTool：${res.ltCount}，本地：${res.localCount}）`);
 });
 
 ui.clearZh.addEventListener('click',()=>ui.inputZh.value="");
