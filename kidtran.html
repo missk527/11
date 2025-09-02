@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Miss K English class</title>
+<style>
+:root{
+  --kids-bg:#FFF7CC; --kids-panel:#FFE680; --kids-panel-2:#FFEF99;
+  --kids-accent:#FFB703; --kids-accent-2:#FB8500; --kids-text:#3A2D00;
+  --kids-muted:#6B5600; --kids-border:#FFD259; --kids-shadow:0 6px 18px rgba(160,120,0,.18);
+  --kids-radius:12px;
+}
+body{
+  background:var(--kids-bg); color:var(--kids-text);
+  font-family:"Comic Sans MS","Noto Sans TC","Microsoft JhengHei",system-ui,Arial,sans-serif;
+  line-height:1.6; padding-bottom:110px;
+}
+header{ background:linear-gradient(180deg,var(--kids-panel),var(--kids-panel-2));
+  border-bottom:2px dashed var(--kids-border); box-shadow:var(--kids-shadow);
+  padding:14px 18px; display:flex; justify-content:space-between; align-items:center; }
+h1{ color:var(--kids-text); font-size:18px; margin:0; } h1::before{ content:"🦁"; margin-right:6px; }
+.btn{ padding:10px 14px; border:2px solid var(--kids-border); border-radius:20px;
+  background:#fff8d9; color:var(--kids-text); box-shadow:var(--kids-shadow); font-weight:700; }
+.btn.primary{ background:var(--kids-accent); border-color:var(--kids-accent-2); color:#1b1100; }
+textarea{ width:100%; height:220px; border-radius:14px; border:2px solid var(--kids-border);
+  background:#fffef5; color:#3A2D00; font-size:15px; padding:10px; }
+#status{ border:2px dashed var(--kids-border); border-radius:var(--kids-radius);
+  background:#fff7d1; color:var(--kids-text); box-shadow:var(--kids-shadow); padding:12px; margin:18px; }
+.grid{ display:grid; gap:14px; margin:18px; } @media (min-width:800px){ .grid{ grid-template-columns:1fr 1fr; } }
+.panel{ background:#fffbea; border:2px solid var(--kids-border); border-radius:var(--kids-radius);
+  padding:14px; box-shadow:var(--kids-shadow); }
+label{ display:block; margin-bottom:8px; font-weight:900; color:#6B5600; }
+
+/* 高亮差異 */
+.hl-del{ background:#ffe3e3; text-decoration:line-through; border-radius:6px; padding:0 4px; }
+.hl-ins{ background:#ddf8dd; border-bottom:2px solid #2d8a2d; border-radius:6px; padding:0 4px; }
+.small{ font-size:13px; color:#5f4b00; }
+
+/* 修正細節卡片 */
+#review{ display:none; margin:18px; }
+#review .card{ background:#fffef5; border:2px solid var(--kids-border); border-radius:var(--kids-radius); padding:14px; box-shadow:var(--kids-shadow); }
+.suggest{ margin:8px 0 0 22px; }
+.suggest li{ margin:10px 0; }
+.chip-old{ background:#ffe3e3; border-radius:6px; padding:0 6px; }
+.chip-new{ background:#ddf8dd; border-radius:6px; padding:0 6px; border-bottom:2px solid #2d8a2d; }
+
+/* 右下貼紙（不擋點擊） */
+body::after{
+  content:" 🐻🐰🦊 一起學English！ ";
+  position:fixed; right:10px; bottom:8px;
+  background:#fff; border:2px solid var(--kids-border); border-radius:14px;
+  padding:8px 10px; box-shadow:var(--kids-shadow);
+  font-weight:800; color:#3A2D00;
+  transform:scale(.9); pointer-events:none;
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>Miss K English class</h1>
+</header>
+
+<div class="grid">
+  <div class="panel">
+    <label>中文</label>
+    <textarea id="inputZh" placeholder="輸入中文"></textarea>
+    <div class="row" style="margin-top:8px; display:flex; gap:10px;">
+      <button id="btnZhEn" class="btn primary">中文 ➜ 英文</button>
+      <button id="btnClearZh" class="btn">清空</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <label>English</label>
+    <textarea id="outputEn" placeholder="翻譯結果"></textarea>
+    <div class="row" style="margin-top:8px; display:flex; gap:10px;">
+      <button id="btnEnZh" class="btn primary">英文 ➜ 中文</button>
+      <button id="btnCheck" class="btn">Grammar</button>
+      <button id="btnClearEn" class="btn">清空</button>
+    </div>
+  </div>
+</div>
+
+<div id="status">✨ 直接輸入中文或英文即可。</div>
+
+<div id="review">
+  <div class="card">
+    <strong>🛠 修正細節</strong>
+    <p class="small">上方顯示「原句（紅色刪除）」與「修正文（綠色新增）」。</p>
+    <div><strong>原句：</strong> <span id="origHL"></span></div>
+    <div><strong>修正文：</strong> <span id="corrHL"></span></div>
+
+    <hr style="border:none;border-top:1px dashed #e6c55b;margin:12px 0;">
+    <div>
+      <strong>📝 建議清單</strong>
+      <ol id="suggestList" class="suggest"></ol>
+    </div>
+  </div>
+</div>
+
+<script>
+const ui = {
+  inputZh: document.getElementById('inputZh'),
+  outputEn: document.getElementById('outputEn'),
+  zh2en: document.getElementById('btnZhEn'),
+  en2zh: document.getElementById('btnEnZh'),
+  check: document.getElementById('btnCheck'),
+  clearZh: document.getElementById('btnClearZh'),
+  clearEn: document.getElementById('btnClearEn'),
+  status: document.getElementById('status'),
+  origHL: document.getElementById('origHL'),
+  corrHL: document.getElementById('corrHL'),
+  review: document.getElementById('review'),
+  suggestList: document.getElementById('suggestList')
+};
+function setStatus(msg){ ui.status.textContent = msg; }
+const esc = t => t.replace(/[&<>"']/g, c => ({'&':"&amp;",'<':"&lt;",'>':"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function diffHL(oldText, newText){
+  if(oldText === newText) return {origHL:esc(oldText), corrHL:esc(newText)};
+  let s=0, eOld=oldText.length-1, eNew=newText.length-1;
+  while(s<=eOld && s<=eNew && oldText[s]===newText[s]) s++;
+  while(eOld>=s && eNew>=s && oldText[eOld]===newText[eNew]){ eOld--; eNew--; }
+  return {
+    origHL: esc(oldText.slice(0,s))+'<span class="hl-del">'+esc(oldText.slice(s,eOld+1))+'</span>'+esc(oldText.slice(eOld+1)),
+    corrHL: esc(newText.slice(0,s))+'<span class="hl-ins">'+esc(newText.slice(s,eNew+1))+'</span>'+esc(newText.slice(eNew+1))
+  };
+}
+function renderSuggestions(changes){
+  ui.suggestList.innerHTML="";
+  changes.forEach(ch=>{
+    const li=document.createElement('li');
+    li.innerHTML = `<strong>${esc(ch.title)}</strong>： ${esc(ch.msg||"")}<br>
+      <span class="chip-old">${esc(ch.from)}</span> → <span class="chip-new">${esc(ch.to)}</span>`;
+    ui.suggestList.appendChild(li);
+  });
+}
+
+/* Grammar pipeline：呼叫 LanguageTool 公用 API */
+async function grammarPipeline(text){
+  try{
+    const p=new URLSearchParams();
+    p.append("text", text);
+    p.append("language","en-US");
+
+    const r=await fetch("https://api.languagetool.org/v2/check",{
+      method:"POST",
+      headers:{"Content-Type":"application/x-www-form-urlencoded"},
+      body:p
+    });
+    if(!r.ok) throw new Error("HTTP "+r.status);
+    const j=await r.json();
+
+    // 按 offset 從後往前改，避免位置錯亂
+    const ms=(j.matches||[]).filter(m=>m.replacements&&m.replacements[0]).sort((a,b)=>b.offset-a.offset);
+    let out=text, changes=[];
+    for(const m of ms){
+      const from=out.slice(m.offset, m.offset+m.length);
+      const to=m.replacements[0].value;
+      out=out.slice(0,m.offset)+to+out.slice(m.offset+m.length);
+      changes.push({ title:"LanguageTool", from, to, msg:m.message||"" });
+    }
+    return { text:out, count:changes.length, changes };
+  }catch(e){
+    setStatus("❌ Grammar check failed: "+e.message);
+    return { text, count:0, changes:[] };
+  }
+}
+
+/* 按鈕事件 */
+ui.check.addEventListener('click', async()=>{
+  const before = ui.outputEn.value.trim(); if(!before) return;
+  setStatus("Grammar 檢查中…");
+  const res = await grammarPipeline(before);
+  ui.outputEn.value = res.text;
+
+  const d = diffHL(before, res.text);
+  if(res.text!==before){
+    ui.origHL.innerHTML = d.origHL;
+    ui.corrHL.innerHTML = d.corrHL;
+    ui.review.style.display = "block";
+  }else{
+    ui.review.style.display = "none";
+  }
+  renderSuggestions(res.changes);
+  setStatus(`✅ 完成 Grammar check（修正 ${res.count} 處）`);
+});
+
+ui.clearZh.addEventListener('click',()=>ui.inputZh.value="");
+ui.clearEn.addEventListener('click',()=>ui.outputEn.value="");
+</script>
+</body>
+</html>
