@@ -26,11 +26,11 @@ h1{ color:var(--kids-text); font-size:18px; margin:0; } h1::before{ content:"�
 textarea{ width:100%; height:220px; border-radius:14px; border:2px solid var(--kids-border);
   background:#fffef5; color:#3A2D00; font-size:15px; padding:10px; }
 #status{ border:2px dashed var(--kids-border); border-radius:var(--kids-radius);
-  background:#fff7d1; color:var(--kids-text); box-shadow:var(--kids-shadow); padding:12px; margin:18px; }
+  background:#fff7d1; color:#3A2D00; box-shadow:var(--kids-shadow); padding:12px; margin:18px; }
 .grid{ display:grid; gap:14px; margin:18px; } @media (min-width:800px){ .grid{ grid-template-columns:1fr 1fr; } }
 .panel{ background:#fffbea; border:2px solid var(--kids-border); border-radius:var(--kids-radius);
   padding:14px; box-shadow:var(--kids-shadow); }
-label{ display:block; margin-bottom:8px; font-weight:900; color:var(--kids-muted); }
+label{ display:block; margin-bottom:8px; font-weight:900; color:#6B5600; }
 
 /* 高亮差異 */
 .hl-del{ background:#ffe3e3; text-decoration:line-through; border-radius:6px; padding:0 4px; }
@@ -51,7 +51,7 @@ body::after{
   position:fixed; right:10px; bottom:8px;
   background:#fff; border:2px solid var(--kids-border); border-radius:14px;
   padding:8px 10px; box-shadow:var(--kids-shadow);
-  font-weight:800; color:var(--kids-text);
+  font-weight:800; color:#3A2D00;
   transform:scale(.9); pointer-events:none;
 }
 </style>
@@ -59,7 +59,6 @@ body::after{
 <body>
 <header>
   <h1>Miss K English class</h1>
-  
 </header>
 
 <div class="grid">
@@ -306,51 +305,52 @@ body::after{
       [/\bat night\b/gi,'at night',""]
     ];
     PREP.forEach(([re,to,why])=>{ s = s.replace(re,(m)=>{ add("Preposition", m, to, why); return to; }); });
+
     /* 9.5) 不定詞 / 情態動詞 後面一律用原形：fix「to slept / to went / can ate」等 */
-(function(){
-  // 建立「過去/分詞 → 原形」查表
-  const IRR_BASE = {};
-  Object.keys(IRR).forEach(base=>{
-    const [v2, v3] = IRR[base];
-    IRR_BASE[v2] = base;
-    IRR_BASE[v3] = base;
-  });
+    (function(){
+      // 建立「過去/分詞 → 原形」查表
+      const IRR_BASE = {};
+      Object.keys(IRR).forEach(base=>{
+        const [v2, v3] = IRR[base];
+        IRR_BASE[v2] = base;
+        IRR_BASE[v3] = base;
+      });
 
-  function toBase(w){
-    const lw = w.toLowerCase();
-    if (IRR_BASE[lw]) return matchCase(IRR_BASE[lw], w); // 不規則動詞
-    if (/[^aeiou]ied$/i.test(w)) return w.replace(/ied$/i, 'y'); // studied → study
-    if (/([bcdfghjklmnpqrstvwxyz])ed$/i.test(w)) return w.replace(/ed$/i, ''); // called → call / cooked → cook
-    if (/([sxz]|sh|ch)es$/i.test(w)) return w.replace(/es$/i,''); // watches → watch / goes → go
-    if (/ies$/i.test(w)) return w.replace(/ies$/i,'y'); // tries → try
-    if (/s$/i.test(w)) return w.replace(/s$/i,''); // plays → play
-    return w; // 已是原形就不動
-  }
-
-  // A) to + 動詞 必須原形
-  s = s.replace(/\bto\s+([a-z]+)\b/gi, (m, v) => {
-    const base = toBase(v);
-    if (base !== v) {
-      const rep = `to ${base}`;
-      add("Infinitive base form", m, rep, "Use the base form after ‘to’."); 
-      return rep;
-    }
-    return m;
-  });
-
-  // B) 情態/助動詞 + 動詞 必須原形
-  s = s.replace(/\b(can|could|will|would|shall|should|may|might|must|let|did|does|do)\s+([a-z]+)\b/gi,
-    (m, aux, verb) => {
-      const base = toBase(verb);
-      if (base !== verb) {
-        const rep = `${aux} ${base}`;
-        add("Modal base form", m, rep, "Use the base form after a modal/auxiliary.");
-        return rep;
+      function toBase(w){
+        const lw = w.toLowerCase();
+        if (IRR_BASE[lw]) return matchCase(IRR_BASE[lw], w); // 不規則動詞
+        if (/[^aeiou]ied$/i.test(w)) return w.replace(/ied$/i, 'y'); // studied → study
+        if (/([bcdfghjklmnpqrstvwxyz])ed$/i.test(w)) return w.replace(/ed$/i, ''); // called → call / cooked → cook
+        if (/([sxz]|sh|ch)es$/i.test(w)) return w.replace(/es$/i,''); // watches → watch / goes → go
+        if (/ies$/i.test(w)) return w.replace(/ies$/i,'y'); // tries → try
+        if (/s$/i.test(w)) return w.replace(/s$/i,''); // plays → play
+        return w; // 已是原形就不動
       }
-      return m;
-    }
-  );
-})();
+
+      // A) to + 動詞 必須原形
+      s = s.replace(/\bto\s+([a-z]+)\b/gi, (m, v) => {
+        const base = toBase(v);
+        if (base !== v) {
+          const rep = `to ${base}`;
+          add("Infinitive base form", m, rep, "Use the base form after ‘to’."); 
+          return rep;
+        }
+        return m;
+      });
+
+      // B) 情態/助動詞 + 動詞 必須原形
+      s = s.replace(/\b(can|could|will|would|shall|should|may|might|must|let|did|does|do)\s+([a-z]+)\b/gi,
+        (m, aux, verb) => {
+          const base = toBase(verb);
+          if (base !== verb) {
+            const rep = `${aux} ${base}`;
+            add("Modal base form", m, rep, "Use the base form after a modal/auxiliary.");
+            return rep;
+          }
+          return m;
+        }
+      );
+    })();
 
     /* 10) 雙重否定 */
     s = s.replace(/\b(don't|do not|doesn't|does not|didn't|did not)\s+([a-z]+)\s+no\b/gi,(m,aux,verb)=>{const to=`${aux} ${verb} any`;add("Double negative",m,to,"Use ‘any’ with a negative.");return to;});
@@ -385,76 +385,65 @@ body::after{
       });
     }
 
-   /* 11.5-EXT) Present Perfect 常見錯誤 V3 對照（美式） */
-(function(){
-  // 常見錯寫 → 正確 V3（美式用 gotten）
-  const MIST_V3 = {
-    // 極常見錯寫
-    "buyed":"bought","thinked":"thought","maked":"made","doed":"done","go-ed":"gone","writed":"written",
-    "speaked":"spoken","eated":"eaten","breaked":"broken","bringed":"brought","builded":"built",
-    "catched":"caught","costed":"cost","cutted":"cut","feeded":"fed","finded":"found","gived":"given",
-    "hitted":"hit","holded":"held","keeped":"kept","leaded":"led","leaved":"left","losed":"lost",
-    "payed":"paid","putted":"put","readed":"read","runned":"run","sayed":"said","sended":"sent",
-    "singed":"sung","ringed":"rung","springed":"sprung","sitted":"sat","sleeped":"slept","spended":"spent",
-    "standed":"stood","teached":"taught","telled":"told","thinked":"thought","understanded":"understood",
-    "weared":"worn","winned":"won","growed":"grown","knowed":"known","drived":"driven","forgived":"forgiven",
-    "forgeted":"forgotten","eated":"eaten","dranked":"drunk","drinked":"drunk","swimed":"swum","flew":"flown",
-    "throwed":"thrown","choosed":"chosen","begined":"begun","becomed":"become","comed":"come",
-    "getted":"gotten","goted":"gotten","buyed":"bought","thinked":"thought","spoke":"spoken",
-    // 規則動詞常見「多貼 ed」
-    "studieded":"studied","decideded":"decided","improveded":"improved","calleded":"called","cookeded":"cooked",
-    "returneded":"returned","useded":"used","playeded":"played",
-    // 其他容易出錯
-    "boughted":"bought","taked":"taken","sawed":"seen","seed":"seen","writen":"written","writted":"written",
-    "runned":"run","went":"gone" // 有人會寫 have went
-  };
+    /* 11.5-EXT) Present Perfect 常見錯誤 V3 對照（美式） */
+    (function(){
+      // 常見錯寫 → 正確 V3（美式用 gotten）
+      const MIST_V3 = {
+        "buyed":"bought","thinked":"thought","maked":"made","doed":"done","go-ed":"gone","writed":"written",
+        "speaked":"spoken","eated":"eaten","breaked":"broken","bringed":"brought","builded":"built",
+        "catched":"caught","costed":"cost","cutted":"cut","feeded":"fed","finded":"found","gived":"given",
+        "hitted":"hit","holded":"held","keeped":"kept","leaded":"led","leaved":"left","losed":"lost",
+        "payed":"paid","putted":"put","readed":"read","runned":"run","sayed":"said","sended":"sent",
+        "singed":"sung","ringed":"rung","springed":"sprung","sitted":"sat","sleeped":"slept","spended":"spent",
+        "standed":"stood","teached":"taught","telled":"told","understanded":"understood",
+        "weared":"worn","winned":"won","growed":"grown","knowed":"known","drived":"driven","forgived":"forgiven",
+        "forgeted":"forgotten","dranked":"drunk","drinked":"drunk","swimed":"swum","flew":"flown",
+        "throwed":"thrown","choosed":"chosen","begined":"begun","becomed":"become","comed":"come",
+        "getted":"gotten","goted":"gotten","spoke":"spoken","went":"gone",
+        "studieded":"studied","decideded":"decided","improveded":"improved","calleded":"called","cookeded":"cooked",
+        "returneded":"returned","useded":"used","playeded":"played","boughted":"bought","taked":"taken",
+        "sawed":"seen","seed":"seen","writen":"written","writted":"written"
+      };
 
-  // 把 have/has + <錯寫> → have/has + 正確V3
-  s = s.replace(/\b(have|has)\s+([a-z\-]+)\b/gi, (m, aux, w) => {
-    const low = w.toLowerCase();
-    if (MIST_V3[low]) {
-      const to = `${aux} ${MIST_V3[low]}`;
-      add("Present perfect (table fix)", m, to, "Normalize to the correct past participle (AmE).");
-      return to;
-    }
-    return m;
-  });
+      // have/has + <錯寫> → have/has + 正確V3
+      s = s.replace(/\b(have|has)\s+([a-z\-]+)\b/gi, (m, aux, w) => {
+        const low = w.toLowerCase();
+        if (MIST_V3[low]) {
+          const to = `${aux} ${MIST_V3[low]}`;
+          add("Present perfect (table fix)", m, to, "Normalize to the correct past participle (AmE).");
+          return to;
+        }
+        return m;
+      });
 
-  // 再保險：have/has + 過去式（V2）→ have/has + 正確V3（用 IRR 查）
-  // 例如：have went → have gone, has ate → has eaten, have saw → have seen
-  const V2toBase = {};
-  Object.keys(IRR).forEach(base=>{
-    const [v2] = IRR[base];
-    V2toBase[v2] = base;
-  });
-  s = s.replace(/\b(have|has)\s+([a-z]+)\b/gi, (m, aux, v) => {
-    const low = v.toLowerCase();
-    if (V2toBase[low]) {
-      const base = V2toBase[low];
-      const v3 = (IRR[base][1] || IRR[base][0]); // 美式 IRR["get"][1] = gotten
-      const to = `${aux} ${v3}`;
-      if (v3 !== low) { // 確認真的需要改
-        add("Present perfect (V2→V3)", m, to, "Use past participle (V3) after ‘have/has’."); 
-        return to;
-      }
-    }
-    return m;
-  });
-})();
+      // have/has + 過去式（V2）→ have/has + 正確V3（用 IRR 查）
+      const V2toBase = {};
+      Object.keys(IRR).forEach(base=>{
+        const [v2] = IRR[base];
+        V2toBase[v2] = base;
+      });
+      s = s.replace(/\b(have|has)\s+([a-z]+)\b/gi, (m, aux, v) => {
+        const low = v.toLowerCase();
+        if (V2toBase[low]) {
+          const base = V2toBase[low];
+          const v3 = (IRR[base][1] || IRR[base][0]); // 美式：get → gotten
+          const to = `${aux} ${v3}`;
+          if (v3 !== low) {
+            add("Present perfect (V2→V3)", m, to, "Use past participle (V3) after ‘have/has’."); 
+            return to;
+          }
+        }
+        return m;
+      });
+    })();
+
     /* 12) 現在完成式（無明確過去時間） */
     const perfMark=/\b(already|yet|ever|never|just|recently|lately|since\s+\d{4}|\bsince\b|for\s+\d+\s+(minute|hour|day|week|month|year)s?|so far|in the last|in recent (days|weeks|months|years))\b/i;
     if(perfMark.test(s) && !pastMark.test(s)){
       // 正常：改成 have/has + V3
       s = s.replace(/\b(I|we|they|you)\s+(?:did|do|does)?\s*([a-z]+)\b/gi,(m,subj,verb)=>{const to=`${subj} have ${toPart(verb.toLowerCase())}`;add("Present perfect",m,to,"Use ‘have/has + past participle’.");return to;});
       s = s.replace(/\b(he|she|it)\s+(?:did|do|does)?\s*([a-z]+)\b/gi,(m,subj,verb)=>{const to=`${subj} has ${toPart(verb.toLowerCase())}`;add("Present perfect",m,to,"Use ‘have/has + past participle’.");return to;});
-
-      // 保險：若仍殘留 goted/boughted/…eded，仍一律退回「簡單過去式」
-      s = s.replace(/\b(I|you|he|she|it|we|they)\s+(have|has)\s+goted\b/gi,(m,subj)=>{const to=`${subj} got`; add("Present perfect fix",m,to,"Use ‘I got’, not ‘I have goted’."); return to;});
-      s = s.replace(/\b(I|you|he|she|it|we|they)\s+(have|has)\s+boughted\b/gi,(m,subj)=>{const to=`${subj} bought`; add("Present perfect fix",m,to,"Use ‘bought’, not ‘boughted’."); return to;});
-      s = s.replace(/\b(I|you|he|she|it|we|they)\s+(have|has)\s+([a-z]+?)ieded\b/gi,(m,subj,aux,stem)=>{const to=`${subj} ${stem}ied`; add("Present perfect fix",m,to,"…ieded → …ied."); return to;});
-      s = s.replace(/\b(I|you|he|she|it|we|they)\s+(have|has)\s+([a-z]+?)ed(?:ed)\b/gi,(m,subj,aux,stem)=>{const to=`${subj} ${stem}ed`; add("Present perfect fix",m,to,"Remove extra ‘ed’."); return to;});
-      s = s.replace(/\b(I|you|he|she|it|we|they)\s+(have|has)\s+rather(ed)?\b/gi,(m,subj)=>{const to=`${subj} rather`; add("Word choice",m,to,"Prefer ‘… rather’."); return to;});
-      s = s.replace(/\b(I|you|he|she|it|we|they)\s+(have|has)\s+toed\b/gi,(m,subj,aux)=>{const to=`${subj} ${aux} to`; add("Word choice",m,to,"Use ‘have/has to’."); return to;});
+      /* ← 已移除：把錯誤完成式退回過去式的 6 行衝突保險 */
     }
 
     /* 13) 未來式 */
