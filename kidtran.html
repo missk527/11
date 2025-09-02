@@ -345,6 +345,78 @@ s = s.replace(
     return rep;
   }
 );
+/* 13.8) 基礎修補：i → I（獨立的小寫 i） */
+s = s.replace(/\bi\b/g, (m) => { add("Capitalization", m, "I", "Capitalize ‘I’."); return "I"; });
+
+/* 13.9) 名字和 I 的並列順序：X and i / i and X → X and I */
+s = s.replace(/\b([A-Z][a-z]+)\s+and\s+i\b/g, (m, name) => {
+  const rep = `${name} and I`;
+  add("Coordination", m, rep, "Use ‘Name and I’."); 
+  return rep;
+});
+s = s.replace(/\bi\s+and\s+([A-Z][a-z]+)\b/g, (m, name) => {
+  const rep = `${name} and I`;
+  add("Coordination", m, rep, "Prefer ‘Name and I’."); 
+  return rep;
+});
+
+/* 13.10) go to shopping → go shopping */
+s = s.replace(/\bgo\s+to\s+shopping\b/gi, (m) => {
+  const rep = "go shopping";
+  add("Collocation", m, rep, "Say ‘go shopping’ (no ‘to’).");
+  return rep;
+});
+
+/* 13.11) “Tomorrow … to <place>, i and NAME” → “I will go to <place> with NAME tomorrow.” */
+(() => {
+  const PLACES = "(school|work|class|church|library|park|store|market|hospital|office|airport|station|zoo|museum|cinema|theater|beach|farm)";
+  // Tomorrow [morning/afternoon/evening] to <place>, i and Name
+  const re1 = new RegExp(
+    String.raw`\bTomorrow(?:\s+(morning|afternoon|evening))?\s+to\s+${PLACES}\s*,?\s*i\s+and\s+([A-Z][a-z]+)\b`,
+    "i"
+  );
+  // Tomorrow … to <place>, Name and i
+  const re2 = new RegExp(
+    String.raw`\bTomorrow(?:\s+(morning|afternoon|evening))?\s+to\s+${PLACES}\s*,?\s*([A-Z][a-z]+)\s+and\s+i\b`,
+    "i"
+  );
+
+  const build = (timePart, place, name) => {
+    const when = timePart ? `tomorrow ${timePart}` : `tomorrow`;
+    const rep = `I will go to ${place} with ${name} ${when}`;
+    return rep;
+  };
+
+  s = s.replace(re1, (m, timePart, place, name) => {
+    const rep = build(timePart, place, name);
+    add("Future sentence fix", m, rep, "Normalize to ‘I will go to … with … tomorrow’.");
+    return rep;
+  });
+
+  s = s.replace(re2, (m, timePart, place, name) => {
+    const rep = build(timePart, place, name);
+    add("Future sentence fix", m, rep, "Normalize to ‘I will go to … with … tomorrow’.");
+    return rep;
+  });
+})();
+
+/* 13.12) 一般化：句首 Tomorrow… 且缺少助動詞時，自動補 will（避免誤改已含 will/going to） */
+s = s.replace(
+  /\bTomorrow(?:\s+(morning|afternoon|evening))?\b([^.!?]*)/gi,
+  (m, part, rest) => {
+    // 已有 will / going to 就不動
+    if (/\b(will|going to|be going to|am going to|is going to|are going to)\b/i.test(rest)) return m;
+    // 已有完整動詞片語 go to <place> → 補 ‘I will’ 作主語（若原文以 I/Name 開頭就不處理）
+    if (/^\s*(to\s+\w+|go\b)/i.test(rest) && !/^\s*(I|[A-Z][a-z]+)/.test(rest)) {
+      const rep = `Tomorrow${part ? " " + part : ""} I will${rest.replace(/^\s*go\b/i, " go")}`;
+      add("Future normalization", m, rep, "Add ‘I will’ for a clear future action.");
+      return rep;
+    }
+    return m;
+  }
+);
+
+  
 /* ————— LanguageTool pass + local pass ————— */
 async function grammarPipeline(inputText){
   let text = inputText, ltChanges = [];
