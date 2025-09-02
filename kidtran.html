@@ -100,51 +100,102 @@ body::after{
 </div>
 
 <script>
-/* ……前面 grammarPipeline、localFixOnce、diffHL 等程式照舊保留…… */
+(function () {
+  /* ===== 取得 UI ===== */
+  const ui = {
+    outputEn: document.getElementById('outputEn'),
+    check: document.getElementById('btnCheck'),
+    status: document.getElementById('status'),
+    review: document.getElementById('review'),
+    origHL: document.getElementById('origHL'),
+    corrHL: document.getElementById('corrHL'),
+    suggestList: document.getElementById('suggestList')
+  };
+  const setStatus = (t)=> ui.status && (ui.status.textContent = t);
 
-/* ========== 事件 ========== */
-ui.zh2en.addEventListener('click', async()=>{
-  const txt=ui.inputZh.value.trim(); if(!txt) return;
-  setStatus("翻譯中（中→英）…");
-  ui.outputEn.value=await translateSmart(txt,"zh-en");
-  setStatus("✅ 完成：中文→英文");
-});
-ui.en2zh.addEventListener('click', async()=>{
-  const txt=ui.outputEn.value.trim(); if(!txt) return;
-  setStatus("翻譯中（英→繁體中文）…");
-  ui.outputEn.value=await translateSmart(txt,"en-zh");
-  setStatus("✅ 完成：英文→中文(繁體)");
-});
-
-/* 🔹這裡是新的 Grammar 按鈕事件 */
-ui.check.addEventListener('click', async () => {
-  const before = ui.outputEn.value.trim();
-  if (!before) return;
-
-  setStatus("Grammar 檢查中…（會自動修正並標示改動處）");
-  const res = await grammarPipeline(before);
-
-  // 更新文本
-  ui.outputEn.value = res.text;
-
-  // 顯示差異
-  const d = diffHL(before, res.text);
-  if (res.text !== before) {
-    ui.origHL.innerHTML = d.origHL;
-    ui.corrHL.innerHTML = d.corrHL;
-    ui.review.style.display = "block";
-  } else {
-    ui.review.style.display = "none";
+  /* ===== 高亮差異（原句/修正文）===== */
+  const esc = t => t.replace(/[&<>"']/g, c => ({'&':"&amp;",'<':"&lt;",'>':"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  function diffHL(oldText, newText){
+    if(oldText === newText) return {origHL:esc(oldText), corrHL:esc(newText)};
+    let s=0, eOld=oldText.length-1, eNew=newText.length-1;
+    while(s<=eOld && s<=eNew && oldText[s]===newText[s]) s++;
+    while(eOld>=s && eNew>=s && oldText[eOld]===newText[eNew]){ eOld--; eNew--; }
+    return {
+      origHL: esc(oldText.slice(0,s))+'<span class="hl-del">'+esc(oldText.slice(s,eOld+1))+'</span>'+esc(oldText.slice(eOld+1)),
+      corrHL: esc(newText.slice(0,s))+'<span class="hl-ins">'+esc(newText.slice(s,eNew+1))+'</span>'+esc(newText.slice(eNew+1))
+    };
+  }
+  function renderSuggestions(changes){
+    if(!ui.suggestList) return;
+    ui.suggestList.innerHTML="";
+    changes.forEach(ch=>{
+      const li=document.createElement('li');
+      li.innerHTML = `<strong>${esc(ch.title)}</strong>： ${esc(ch.msg||"")}<br>
+        <span class="chip-old">${esc(ch.from)}</span> → <span class="chip-new">${esc(ch.to)}</span>`;
+      ui.suggestList.appendChild(li);
+    });
   }
 
-  // 建議清單
-  renderSuggestions(res.changes);
+  /* ===== 精簡 Grammar 修正器（本地規則）===== */
+  const IRR = { get:["got","gotten"], go:["went","gone"], eat:["ate","eaten"], take:["took","taken"] };
+  const V3_SET = new Set(Object.values(IRR).map(v=>v[1])); // gone, gotten, eaten, taken…
 
-  setStatus(`✅ 已完成智慧修正（修正 ${res.total} 處｜LanguageTool：${res.ltCount}，本地：${res.localCount}）`);
-});
+  function localFixOnce(text){
+    let s = text, count=0, changes=[];
+    const add=(title,from,to,msg="")=>{ if(from!==to){ count++; changes.push({title,from,to,msg}); } };
 
-ui.clearZh.addEventListener('click',()=>ui.inputZh.value="");
-ui.clearEn.addEventListener('click',()=>ui.outputEn.value="");
+    // 句首大寫
+    s = s.replace(/(^|\.\s+|\?\s+|!\s+)([a-z])/g,(m,pre,ch)=>{ add("Capitalization", ch, ch.toUpperCase()); return pre+ch.toUpperCase(); });
+
+    // have/has 與主詞一致
+    s = s.replace(/\bI\s+has\b/gi, ()=>{ add("Have/has agreement","I has","I have"); return "I have"; });
+    s = s.replace(/\b(you|we|they)\s+has\b/gi,(m,p)=>{ const to=p+" have"; add("Have/has agreement",m,to); return to; });
+    s = s.replace(/\b(he|she|it)\s+have\b/gi, (m,p)=>{ const to=p+" has";  add("Have/has agreement",m,to); return to; });
+
+    // 義務：have/has go → have/has to go
+    s = s.replace(/\b(have|has)\s+go\b/gi,(m,aux)=>{ const to=`${aux} to go`; add("Obligation (have to)",m,to); return to; });
+
+    // Present perfect 常見錯誤
+    s = s.replace(/\b(have|has)\s+goted\b/gi,(m,aux)=>{ const to=`${aux} gotten`; add("Present perfect fix",m,to,"get→gotten"); return to; });
+    s = s.replace(/\b(have|has)\s+goed\b/gi,(m,aux)=>{ const to=`${aux} gone`; add("Present perfect fix",m,to,"go→gone"); return to; });
+    s = s.replace(/\b(have|has)\s+goned\b/gi,(m,aux)=>{ const to=`${aux} gone`; add("Present perfect fix",m,to,"not ‘goned’"); return to; });
+
+    // 再保險：have/has + went/ate/took → gone/eaten/taken；have/has + got → gotten
+    s = s.replace(/\b(have|has)\s+(went|ate|took|got)\b/gi,(m,aux,v)=>{
+      const map={went:"gone",ate:"eaten",took:"taken",got:"gotten"};
+      const to=`${aux} ${map[v.toLowerCase()]}`; add("Present perfect (V2→V3)",m,to); return to;
+    });
+
+    return { text:s, count, changes };
+  }
+
+  async function grammarPipeline(text){ return localFixOnce(text); }
+
+  /* ===== 綁定 Grammar 按鈕 ===== */
+  if (ui.check) {
+    ui.check.addEventListener('click', async ()=>{
+      const before = ui.outputEn ? ui.outputEn.value.trim() : "";
+      if(!before) return;
+      setStatus("Grammar 檢查中…");
+      const res = await grammarPipeline(before);
+      if (ui.outputEn) ui.outputEn.value = res.text;
+
+      // 差異標示 + 建議
+      const d = diffHL(before, res.text);
+      if (res.text !== before && ui.review) {
+        ui.origHL.innerHTML = d.origHL;
+        ui.corrHL.innerHTML = d.corrHL;
+        ui.review.style.display = "block";
+      } else if (ui.review) {
+        ui.review.style.display = "none";
+      }
+      renderSuggestions(res.changes);
+      setStatus(`✅ 已完成智慧修正（修正 ${res.count} 處）`);
+    });
+  } else {
+    console.warn('#btnCheck not found — 請確認按鈕 id="btnCheck" 是否存在。');
+  }
+})();
 </script>
 </body>
 </html>
