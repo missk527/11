@@ -274,12 +274,23 @@ s = s.replace(/\b(have|has)\s+go\b/gi, (m, aux) => {
   add("Obligation (have to)", m, rep, "Use ‘have/has to + base verb’.");
   return rep;
 });
-/* 5.3) 一般化的現在完成式正規化：have/has + 原形 → have/has + V3（AmE） */
+    /* 5.25) Present perfect：先把常見錯誤分詞修正成合理的 V3 形 */
+s = s.replace(/\b(have|has)\s+goted\b/gi,   (m, aux)=>{ const rep = `${aux} gotten`; add("Present perfect fix", m, rep, "get → gotten (AmE)"); return rep; });
+s = s.replace(/\b(have|has)\s+boughted\b/gi,(m, aux)=>{ const rep = `${aux} bought`; add("Present perfect fix", m, rep, "buy → bought"); return rep; });
+s = s.replace(/\b(have|has)\s+([a-z]+?)ieded\b/gi,(m, aux, stem)=>{ const rep = `${aux} ${stem}ied`; add("Present perfect fix", m, rep, "…ieded → …ied"); return rep; });
+s = s.replace(/\b(have|has)\s+([a-z]+?)ed(?:ed)\b/gi,(m, aux, stem)=>{ const rep = `${aux} ${stem}ed`; add("Present perfect fix", m, rep, "Remove extra ‘ed’."); return rep; });
+
+   /* 5.3) 現在完成式正規化：have/has + 原形/過去式 → have/has + V3（避免 …eded） */
 s = s.replace(/\b(have|has)\s+(?!to\b)([a-z]+)\b/gi, (m, aux, verb) => {
   const v = verb.toLowerCase();
-  // 特例：got → gotten（美式），其他交給 toPart()
+
+  // 已是規則的 …ed（或剛在 5.25 被修正的）時，不再加 ed，避免 goted → goteded
+  if (/ed$/.test(v) && !IRR[v]) return m;
+
+  // 特例：got 視為 get → gotten（美式）
   const base = (v === "got") ? "get" : v;
-  const v3 = toPart(base);                // 會用 IRR 對照表（get → gotten）或規則 ed/ied
+
+  const v3 = toPart(base);   // 會用 IRR 對照（get→gotten / go→gone …），否則規則字尾
   if (v3 !== v) {
     const rep = `${aux} ${v3}`;
     add("Present perfect normalization", m, rep, "Use past participle (V3) after ‘have/has’."); 
