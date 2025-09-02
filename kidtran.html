@@ -315,16 +315,32 @@ s = s.replace(
   }
 );
     
-  /* 5.3) Present perfect normalization（允許 ed 例外，如 goed） */
+   /* 5.3) Present perfect normalization（修正版）
+   - have/has + 原形/過去式 → have/has + V3
+   - 若已是 V3（例如 gone/taken/eaten/been…）就不再處理，避免 gone → goned
+*/
 (function () {
+  // 建立「所有不規則動詞的 V3 集合」以判斷是否已是分詞
+  const V3_SET = new Set(
+    Object.keys(IRR).map(base => (IRR[base][1] || IRR[base][0]).toLowerCase())
+  );
+
+  // 少數錯誤 ed 例外仍要放行（如 goed/eated…已在 5.26 先處理）
   const ED_EXCEPT = new Set(["goed","eated","taked","comed","runned","sleeped","buyed","thinked"]);
+
   s = s.replace(/\b(have|has)\s+(?!to\b)([a-z]+)\b/gi, (m, aux, verb) => {
     const v = verb.toLowerCase();
-    // 一般的規則 ed 就跳過，但把少數錯誤 ed 例外放行
+
+    // 已是正確 V3（gone, taken, eaten, bought, been…）→ 不動
+    if (V3_SET.has(v)) return m;
+
+    // 一般規則 ed 字結尾，且不在例外名單 → 不動（避免 studied → studieded）
     if (/ed$/.test(v) && !ED_EXCEPT.has(v)) return m;
 
-    const base = (v === "got") ? "get" : v;      // got → gotten（美式）
-    const v3 = toPart(base);
+    // 特例：got（美式）視為 get → gotten
+    const base = (v === "got") ? "get" : v;
+
+    const v3 = toPart(base); // 用 IRR 對照（go→gone / get→gotten…），否則規則化
     if (v3 !== v) {
       const rep = `${aux} ${v3}`;
       add("Present perfect normalization", m, rep, "Use past participle (V3) after ‘have/has’."); 
@@ -333,6 +349,7 @@ s = s.replace(
     return m;
   });
 })();
+    
     /* 6) 複數主語/表語 */
     s = s.replace(/\bfriends\s+is\b/gi,()=>{add("Plural subject","friends is","friends are","Plural subject takes ‘are’.");return "friends are";});
     s = s.replace(/\b(people|children|men|women)\s+is\b/gi,(m,p)=>{const to=`${p} are`;add("Plural subject",m,to,"Plural subject takes ‘are’.");return to;});
