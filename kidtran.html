@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Miss K English class</title>
+<style>
+:root{
+  --kids-bg:#FFF7CC; --kids-panel:#FFE680; --kids-panel-2:#FFEF99;
+  --kids-accent:#FFB703; --kids-accent-2:#FB8500; --kids-text:#3A2D00;
+  --kids-muted:#6B5600; --kids-border:#FFD259; --kids-shadow:0 6px 18px rgba(160,120,0,.18);
+  --kids-radius:12px;
+}
+body{
+  background:var(--kids-bg); color:var(--kids-text);
+  font-family:"Comic Sans MS","Noto Sans TC","Microsoft JhengHei",system-ui,Arial,sans-serif;
+  line-height:1.6; padding-bottom:110px;
+}
+header{ background:linear-gradient(180deg,var(--kids-panel),var(--kids-panel-2));
+  border-bottom:2px dashed var(--kids-border); box-shadow:var(--kids-shadow);
+  padding:14px 18px; display:flex; justify-content:space-between; align-items:center; }
+h1{ color:var(--kids-text); font-size:18px; margin:0; } h1::before{ content:"🦁"; margin-right:6px; }
+.btn{ padding:10px 14px; border:2px solid var(--kids-border); border-radius:20px;
+  background:#fff8d9; color:var(--kids-text); box-shadow:var(--kids-shadow); font-weight:700; }
+.btn.primary{ background:var(--kids-accent); border-color:var(--kids-accent-2); color:#1b1100; }
+textarea{ width:100%; height:220px; border-radius:14px; border:2px solid var(--kids-border);
+  background:#fffef5; color:#3A2D00; font-size:15px; padding:10px; }
+#status{ border:2px dashed var(--kids-border); border-radius:var(--kids-radius);
+  background:#fff7d1; color:#3A2D00; box-shadow:var(--kids-shadow); padding:12px; margin:18px; }
+.grid{ display:grid; gap:14px; margin:18px; } @media (min-width:800px){ .grid{ grid-template-columns:1fr 1fr; } }
+.panel{ background:#fffbea; border:2px solid var(--kids-border); border-radius:var(--kids-radius);
+  padding:14px; box-shadow:var(--kids-shadow); }
+label{ display:block; margin-bottom:8px; font-weight:900; color:#6B5600; }
+
+/* 修正細節卡片 (預設隱藏) */
+#review{ display:none; margin:18px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Miss K English class</h1>
+</header>
+
+<div class="grid">
+  <div class="panel">
+    <label>中文</label>
+    <textarea id="inputZh" placeholder="輸入中文"></textarea>
+    <div class="row" style="margin-top:8px; display:flex; gap:10px;">
+      <button id="btnZhEn" class="btn primary">中文 ➜ 英文</button>
+      <button id="btnClearZh" class="btn">清空</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <label>English</label>
+    <textarea id="outputEn" placeholder="翻譯或輸入英文"></textarea>
+    <div class="row" style="margin-top:8px; display:flex; gap:10px;">
+      <button id="btnEnZh" class="btn primary">英文 ➜ 中文</button>
+      <button id="btnCheck" class="btn">Grammar</button>
+      <button id="btnClearEn" class="btn">清空</button>
+    </div>
+  </div>
+</div>
+
+<div id="status">✨ 直接輸入中文或英文即可。</div>
+
+<script>
+(function(){
+  /* === 偏好設定 === */
+  const SHOW_DETAILS = false;   // 不顯示修正清單，只自動更正
+  const MAX_PASSES   = 3;       // 最多迭代次數，避免無限迴圈
+
+  /* ========== UI ========== */
+  const ui = {
+    inputZh: document.getElementById('inputZh'),
+    outputEn: document.getElementById('outputEn'),
+    zh2en: document.getElementById('btnZhEn'),
+    en2zh: document.getElementById('btnEnZh'),
+    check: document.getElementById('btnCheck'),
+    clearZh: document.getElementById('btnClearZh'),
+    clearEn: document.getElementById('btnClearEn'),
+    status: document.getElementById('status')
+  };
+  function setStatus(msg){ ui.status.textContent = msg; }
+
+  /* ========== 翻譯 ========== */
+  const LT_NODES = [
+    "https://libretranslate.de",
+    "https://translate.argosopentech.com",
+    "https://translate.mentality.rip"
+  ];
+  async function fetchWithTimeout(url, options={}, timeoutMs=8000){
+    const ctrl = new AbortController(); const t=setTimeout(()=>ctrl.abort(), timeoutMs);
+    try{ const r=await fetch(url, {...options, signal:ctrl.signal}); clearTimeout(t); return r; }
+    catch(e){ clearTimeout(t); throw e; }
+  }
+  async function translateViaMyMemory(text, dir){
+    const source=(dir==="zh-en")?"zh-CN":"en";
+    const target=(dir==="zh-en")?"en":"zh-TW";
+    const r=await fetchWithTimeout(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${source}|${target}`);
+    if(!r.ok) throw new Error("HTTP "+r.status);
+    const j=await r.json(); return j?.responseData?.translatedText || "";
+  }
+  async function translateViaLibre(base, text, dir){
+    const target=(dir==="zh-en")?"en":"zh-TW";
+    const r=await fetchWithTimeout(`${base}/translate`,{
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ q:text, source:"auto", target, format:"text" })
+    });
+    if(!r.ok) throw new Error("HTTP "+r.status);
+    const j=await r.json(); return j?.translatedText || "";
+  }
+  async function translateSmart(text, dir){
+    if(!text.trim()) return "";
+    try{ const mm=await translateViaMyMemory(text, dir); if(mm) return mm; }catch{}
+    for(const n of LT_NODES){ try{ const x=await translateViaLibre(n, text, dir); if(x) return x; }catch{} }
+    return text;
+  }
+
+  /* ========== Grammar / 拼字修正 ========== */
+  const IRR = {
+    "go":["went","gone"], "get":["got","gotten"], "eat":["ate","eaten"], "see":["saw","seen"],
+    "write":["wrote","written"], "speak":["spoke","spoken"], "take":["took","taken"],
+    "buy":["bought","bought"], "come":["came","come"], "run":["ran","run"],
+    "drink":["drank","drunk"], "drive":["drove","driven"], "forget":["forgot","forgotten"],
+    "know":["knew","known"], "begin":["began","begun"], "find":["found","found"],
+    "teach":["taught","taught"], "think":["thought","thought"], "bring":["brought","brought"],
+    "hold":["held","held"], "make":["made","made"], "say":["said","said"]
+  };
+  function toPart(v){ if(IRR[v]) return IRR[v][1]||IRR[v][0]; if(v.endsWith("e")) return v+"d"; if(/[^aeiou]y$/.test(v)) return v.slice(0,-1)+"ied"; return v+"ed"; }
+
+  // LanguageTool
+  async function applyLanguageToolOnce(input){
+    try{
+      const p=new URLSearchParams(); p.append("text", input); p.append("language","en-US");
+      const r=await fetch("https://api.languagetool.org/v2/check",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:p});
+      const j=await r.json();
+      const ms=(j.matches||[]).filter(m=>m.replacements&&m.replacements[0]).sort((a,b)=>b.offset-a.offset);
+      let out=input; for(const m of ms){ out=out.slice(0,m.offset)+m.replacements[0].value+out.slice(m.offset+m.length); }
+      return out;
+    }catch{ return input; }
+  }
+
+  // 智慧拼字修正 (用 LanguageTool 拼字類別)
+  async function smartSpellFix(text){
+    return applyLanguageToolOnce(text);
+  }
+
+  // 簡化本地 grammar 修正（示範：have/has gone/good cases）
+  function localFixOnce(s){
+    // I has → I have
+    s = s.replace(/\bI has\b/g,"I have");
+    // have goned/goed → have gone
+    s = s.replace(/\b(have|has) goned\b/gi,(m,a)=>`${a} gone`);
+    s = s.replace(/\b(have|has) goed\b/gi,(m,a)=>`${a} gone`);
+    return s;
+  }
+
+  // 智慧自動修正直到穩定
+  async function autoFixUntilStable(text){
+    let current = text, passes=0;
+    while(passes<MAX_PASSES){
+      const lt1 = await applyLanguageToolOnce(current);
+      const spell = await smartSpellFix(lt1);
+      const local = localFixOnce(spell);
+      const lt2 = await applyLanguageToolOnce(local);
+      if(lt2===current) break;
+      current=lt2; passes++;
+    }
+    return current;
+  }
+
+  async function grammarPipeline(text){
+    return { text: await autoFixUntilStable(text) };
+  }
+
+  /* ========== Events ========== */
+  ui.zh2en.addEventListener('click', async()=>{
+    const txt=ui.inputZh.value.trim(); if(!txt) return;
+    setStatus("翻譯中…");
+    ui.outputEn.value=await translateSmart(txt,"zh-en");
+    setStatus("✅ 完成：中 → 英");
+  });
+  ui.en2zh.addEventListener('click', async()=>{
+    const txt=ui.outputEn.value.trim(); if(!txt) return;
+    setStatus("翻譯中…");
+    ui.outputEn.value=await translateSmart(txt,"en-zh");
+    setStatus("✅ 完成：英 → 中");
+  });
+  ui.check.addEventListener('click', async()=>{
+    const before=ui.outputEn.value.trim(); if(!before) return;
+    setStatus("Grammar 自動修正中…");
+    const res=await grammarPipeline(before);
+    ui.outputEn.value=res.text;
+    setStatus("✅ 已完成智慧修正");
+  });
+  ui.clearZh.addEventListener('click',()=>ui.inputZh.value="");
+  ui.clearEn.addEventListener('click',()=>ui.outputEn.value="");
+})();
+</script>
+</body>
+</html>
