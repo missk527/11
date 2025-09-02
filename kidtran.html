@@ -336,6 +336,15 @@ s = s.replace(/\bmum\b/gi, 'mom');
     }
   );
 })();
+  /* 11.9) 修正常見的「Tomorrow to school, I and Gigi」結構 */
+s = s.replace(
+  /\bTomorrow(?: morning| afternoon| evening)?\s+to\s+(school|work|class|church|library|park|store|market|hospital|office)\s*,?\s*i\s+and\s+([A-Z][a-z]+)\b/gi,
+  (m, place, name) => {
+    const rep = `I will go to ${place} with ${name} tomorrow`;
+    add("Future sentence fix", m, rep, "Normalize future tense: subject + will go to + place + with + companion + tomorrow.");
+    return rep;
+  }
+);
 /* ————— LanguageTool pass + local pass ————— */
 async function grammarPipeline(inputText){
   let text = inputText, ltChanges = [];
