@@ -287,6 +287,92 @@ body::after{
   ui.clearZh.addEventListener('click',()=>ui.inputZh.value="");
   ui.clearEn.addEventListener('click',()=>ui.outputEn.value="");
 })();
+  
+  /* ……前略（保留你原有的程式）…… */
+
+  function localFixOnce(src){
+    let s=src, count=0; const changes=[];
+    const add=(title,from,to,msg="")=>{ if(from!==to){ count++; changes.push({title,from,to,msg}); } };
+    const SINGULARIZE={"boys":"boy","girls":"girl","students":"student","teachers":"teacher","friends":"friend"};
+    const IRREG_SING={"children":"child","men":"man","women":"woman","people":"person"};
+    const NEED_ARTICLE = ["boy","girl","student","teacher","friend","man","woman","child","doctor","nurse","engineer","artist"];
+
+    /* 句首大寫 + 常見拼字 */
+    s = s.replace(/(^|\.\s+|\?\s+|!\s+)([a-z])/g,(m,pre,ch)=>{ add("Capitalization", ch, ch.toUpperCase()); return pre+ch.toUpperCase(); });
+    s = s.replace(/\b([A-Za-z']+)\b/g,(m,w)=>{const low=w.toLowerCase();if(SPELL[low]){const to=matchCase(SPELL[low],w);add("Spelling",w,to);return to;}return w;});
+
+    /* have/has 一致 */
+    s = s.replace(/\bI\s+has\b/gi,    ()=>{ add("Have/has","I has","I have"); return "I have"; });
+    s = s.replace(/\b(you|we|they)\s+has\b/gi,(m,p)=>{ const to=p+" have"; add("Have/has",m,to); return to; });
+    s = s.replace(/\b(he|she|it)\s+have\b/gi,(m,p)=>{ const to=p+" has";  add("Have/has",m,to); return to; });
+
+    /* 單數表語補正：I am boys → I am a boy；I am children → I am a child */
+    s = s.replace(/\b(I|he|she|it)\s+(am|is)\s+(boys|girls|students|teachers|friends|children|men|women|people)\b/gi,
+      (m,subj,be,pl)=>{
+        const base = SINGULARIZE[pl.toLowerCase()] || IRREG_SING[pl.toLowerCase()];
+        if(!base) return m;
+        const art = /^[aeiou]/i.test(base) ? "an" : "a";
+        const to = `${subj} ${be} ${art} ${base}`;
+        add("Predicate number", m, to, "Singular subject → singular complement with article.");
+        return to;
+      }
+    );
+
+    /* 缺少冠詞：I am boy → I am a boy（僅單數常見名詞） */
+    s = s.replace(new RegExp("\\b(I|he|she|it)\\s+(am|is)\\s+(" + NEED_ARTICLE.join("|") + ")\\b","gi"),
+      (m,subj,be,n)=>{
+        const art = /^[aeiou]/i.test(n) ? "an" : "a";
+        const to = `${subj} ${be} ${art} ${n}`;
+        add("Article (a/an)", m, to, "Add an article before a singular countable noun.");
+        return to;
+      }
+    );
+
+    /* 義務：have/has go → have/has to go */
+    s = s.replace(/\b(have|has)\s+go\b/gi,(m,aux)=>{ const to=`${aux} to go`; add("Obligation",m,to,"Use ‘have/has to + base’."); return to; });
+
+    /* go shopping / go to school / go home */
+    s = s.replace(/\bgo\s+to\s+shopping\b/gi,(m)=>{ const to="go shopping"; add("Collocation",m,to); return to; });
+    s = s.replace(/\b(go|went|gone)\s+(school|work|class|church|library|park|store|market|hospital|office|airport|station|zoo|museum|cinema|theater|beach|farm)\b/gi,
+      (m,v,place)=>{ const to=`${v} to ${place}`; add("Preposition",m,to,"Use ‘to’ with place."); return to; });
+    s = s.replace(/\b(go|went|gone)\s+to\s+home\b/gi,(m,v)=>{ const to=`${v} home`; add("Preposition",m,to,"Drop ‘to’ before ‘home’."); return to; });
+
+    /* Present perfect：have/has + 錯誤 → 正確 V3 */
+    const BAD = {"goed":"gone","goned":"gone","went":"gone","ate":"eaten","saw":"seen","did":"done",
+                 "writed":"written","speaked":"spoken","buyed":"bought","taked":"taken","getted":"gotten","goted":"gotten"};
+    s = s.replace(/\b(have|has)\s+([a-z]+)\b/gi,(m,aux,v)=>{
+      const low=v.toLowerCase();
+      if(BAD[low]){ const to=`${aux} ${BAD[low]}`; add("Present perfect",m,to); return to; }
+      for(const base in IRR){
+        const [v2,v3]=IRR[base]; if(low===v2){ const to=`${aux} ${v3||v2}`; add("Present perfect",m,to); return to; }
+      }
+      return m;
+    });
+
+    /* Future：有明確未來時間但沒 will → 補 will */
+    const futureMark=/\b(tomorrow|next\s+(week|month|year|mon(day)?|tue(sday)?|wed(nesday)?|thu(rsday)?|fri(day)?|sat(urday)?|sun(day)?)|soon|in\s+\d+\s+(minutes?|hours?|days?|weeks?|months?|years?))\b/i;
+    if(futureMark.test(s) && !/\b(will|going to)\b/i.test(s)){
+      s = s.replace(/^(Tomorrow|Next\b[^,]*|In\s+\d+\s+\w+|Soon)\s+([a-z]+)/i,(m,lead,verb)=>{
+        const to=`${lead} I will ${verb}`; add("Future",m,to,"Add ‘will’ with future time."); return to;
+      });
+      s = s.replace(/\b(I|he|she|it|we|they|you)\s+([a-z]+)\b/gi,(m,subj,verb)=>{
+        if(/^(am|is|are|was|were|been|be|will|have|has|had|do|does|did|can|may|might|should|would|must|go|going)$/i.test(verb)) return m;
+        const to=`${subj} will ${verb}`; add("Future",m,to); return to;
+      });
+    }
+
+    /* 人名 & 我：I and Gigi → Gigi and I */
+    s = s.replace(/\b(i)\s+and\s+([A-Z][a-z]+)\b/g,(m,i,name)=>{ const to=`${name} and I`; add("Style",m,to); return to; });
+
+    /* 空白/標點清理（不做縮寫，保留 I am 形式） */
+    const before=s; s=s.replace(/ {2,}/g,' ').replace(/\s+([,.!?;:])/g,'$1');
+    if(s!==before){ add("Punctuation","extra spaces","cleaned"); }
+
+    return { text:s, count, changes };
+  }
+
+  /* ……後略（保留你原有的程式）…… */
+</script>
 </script>
 </body>
 </html>
