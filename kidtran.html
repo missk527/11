@@ -280,24 +280,59 @@ s = s.replace(/\b(have|has)\s+boughted\b/gi,(m, aux)=>{ const rep = `${aux} boug
 s = s.replace(/\b(have|has)\s+([a-z]+?)ieded\b/gi,(m, aux, stem)=>{ const rep = `${aux} ${stem}ied`; add("Present perfect fix", m, rep, "…ieded → …ied"); return rep; });
 s = s.replace(/\b(have|has)\s+([a-z]+?)ed(?:ed)\b/gi,(m, aux, stem)=>{ const rep = `${aux} ${stem}ed`; add("Present perfect fix", m, rep, "Remove extra ‘ed’."); return rep; });
 
-   /* 5.3) 現在完成式正規化：have/has + 原形/過去式 → have/has + V3（避免 …eded） */
-s = s.replace(/\b(have|has)\s+(?!to\b)([a-z]+)\b/gi, (m, aux, verb) => {
-  const v = verb.toLowerCase();
+    /* 5.26) Present perfect：have/has + 錯誤 ed → 正確 V3（美式） */
+(function () {
+  // 錯誤寫法 → 對應 base（交給 toPart 產生正確 V3）
+  const BAD_ED_BASE = {
+    "goed":"go", "eated":"eat", "taked":"take", "comed":"come", "runned":"run",
+    "sleeped":"sleep", "buyed":"buy", "thinked":"think", "bringed":"bring",
+    "catched":"catch", "holded":"hold", "leaved":"leave", "writed":"write",
+    "readed":"read", "speaked":"speak", "breaked":"break", "choosed":"choose",
+    "sayed":"say", "drived":"drive", "knowed":"know", "gived":"give",
+    "finded":"find", "sended":"send", "forgived":"forgive", "forgeted":"forget",
+    "growed":"grow"
+  };
 
-  // 已是規則的 …ed（或剛在 5.25 被修正的）時，不再加 ed，避免 goted → goteded
-  if (/ed$/.test(v) && !IRR[v]) return m;
+  s = s.replace(/\b(have|has)\s+([a-z]+)\b/gi, (m, aux, w) => {
+    const key = w.toLowerCase();
+    if (BAD_ED_BASE[key]) {
+      const v3 = toPart(BAD_ED_BASE[key]);       // 例如 go → gone（美式用 gotten for get）
+      const rep = `${aux} ${v3}`;
+      add("Present perfect fix", m, rep, "Use the correct past participle (V3).");
+      return rep;
+    }
+    return m;
+  });
+})();
 
-  // 特例：got 視為 get → gotten（美式）
-  const base = (v === "got") ? "get" : v;
-
-  const v3 = toPart(base);   // 會用 IRR 對照（get→gotten / go→gone …），否則規則字尾
-  if (v3 !== v) {
-    const rep = `${aux} ${v3}`;
-    add("Present perfect normalization", m, rep, "Use past participle (V3) after ‘have/has’."); 
+    /* 5.27) go/gone/went + place → 加 to（home 例外） */
+s = s.replace(
+  /\b(go|went|gone)\s+(school|work|class|church|library|park|store|market|hospital|office|airport|station|zoo|museum|cinema|theater|beach|farm)\b/gi,
+  (m, v, place) => {
+    const rep = `${v} to ${place}`;
+    add("Preposition", m, rep, "Use ‘to’ with ‘go’ + place (except ‘home’).");
     return rep;
   }
-  return m;
-});
+);
+    
+  /* 5.3) Present perfect normalization（允許 ed 例外，如 goed） */
+(function () {
+  const ED_EXCEPT = new Set(["goed","eated","taked","comed","runned","sleeped","buyed","thinked"]);
+  s = s.replace(/\b(have|has)\s+(?!to\b)([a-z]+)\b/gi, (m, aux, verb) => {
+    const v = verb.toLowerCase();
+    // 一般的規則 ed 就跳過，但把少數錯誤 ed 例外放行
+    if (/ed$/.test(v) && !ED_EXCEPT.has(v)) return m;
+
+    const base = (v === "got") ? "get" : v;      // got → gotten（美式）
+    const v3 = toPart(base);
+    if (v3 !== v) {
+      const rep = `${aux} ${v3}`;
+      add("Present perfect normalization", m, rep, "Use past participle (V3) after ‘have/has’."); 
+      return rep;
+    }
+    return m;
+  });
+})();
     /* 6) 複數主語/表語 */
     s = s.replace(/\bfriends\s+is\b/gi,()=>{add("Plural subject","friends is","friends are","Plural subject takes ‘are’.");return "friends are";});
     s = s.replace(/\b(people|children|men|women)\s+is\b/gi,(m,p)=>{const to=`${p} are`;add("Plural subject",m,to,"Plural subject takes ‘are’.");return to;});
