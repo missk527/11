@@ -306,6 +306,51 @@ body::after{
       [/\bat night\b/gi,'at night',""]
     ];
     PREP.forEach(([re,to,why])=>{ s = s.replace(re,(m)=>{ add("Preposition", m, to, why); return to; }); });
+    /* 9.5) 不定詞 / 情態動詞 後面一律用原形：fix「to slept / to went / can ate」等 */
+(function(){
+  // 建立「過去/分詞 → 原形」查表
+  const IRR_BASE = {};
+  Object.keys(IRR).forEach(base=>{
+    const [v2, v3] = IRR[base];
+    IRR_BASE[v2] = base;
+    IRR_BASE[v3] = base;
+  });
+
+  function toBase(w){
+    const lw = w.toLowerCase();
+    if (IRR_BASE[lw]) return matchCase(IRR_BASE[lw], w); // 不規則動詞
+    if (/[^aeiou]ied$/i.test(w)) return w.replace(/ied$/i, 'y'); // studied → study
+    if (/([bcdfghjklmnpqrstvwxyz])ed$/i.test(w)) return w.replace(/ed$/i, ''); // called → call / cooked → cook
+    if (/([sxz]|sh|ch)es$/i.test(w)) return w.replace(/es$/i,''); // watches → watch / goes → go
+    if (/ies$/i.test(w)) return w.replace(/ies$/i,'y'); // tries → try
+    if (/s$/i.test(w)) return w.replace(/s$/i,''); // plays → play
+    return w; // 已是原形就不動
+  }
+
+  // A) to + 動詞 必須原形
+  s = s.replace(/\bto\s+([a-z]+)\b/gi, (m, v) => {
+    const base = toBase(v);
+    if (base !== v) {
+      const rep = `to ${base}`;
+      add("Infinitive base form", m, rep, "Use the base form after ‘to’."); 
+      return rep;
+    }
+    return m;
+  });
+
+  // B) 情態/助動詞 + 動詞 必須原形
+  s = s.replace(/\b(can|could|will|would|shall|should|may|might|must|let|did|does|do)\s+([a-z]+)\b/gi,
+    (m, aux, verb) => {
+      const base = toBase(verb);
+      if (base !== verb) {
+        const rep = `${aux} ${base}`;
+        add("Modal base form", m, rep, "Use the base form after a modal/auxiliary.");
+        return rep;
+      }
+      return m;
+    }
+  );
+})();
 
     /* 10) 雙重否定 */
     s = s.replace(/\b(don't|do not|doesn't|does not|didn't|did not)\s+([a-z]+)\s+no\b/gi,(m,aux,verb)=>{const to=`${aux} ${verb} any`;add("Double negative",m,to,"Use ‘any’ with a negative.");return to;});
