@@ -305,7 +305,37 @@ s = s.replace(/\bmum\b/gi, 'mom');
   if(before!==s) add("Punctuation spacing","extra space","cleaned","Remove extra spaces.");
   return { text:s, count, changes };
 }
+/* 12) 單數主語 + 複數表語 → 單數名詞（更健壯版） */
+(function () {
+  // 單數化：先處理少量不規則，其次再處理規則變化
+  const IRR_PL2SG = {
+    men: "man", women: "woman", children: "child", people: "person",
+    teeth: "tooth", feet: "foot", mice: "mouse", geese: "goose"
+  };
 
+  function singularize(word) {
+    const low = word.toLowerCase();
+    if (IRR_PL2SG[low]) return matchCase(IRR_PL2SG[low], word);
+    if (/ies$/i.test(word)) return word.replace(/ies$/i, "y");            // babies → baby
+    if (/(ses|xes|zes|ches|shes)$/i.test(word)) return word.replace(/es$/i, ""); // classes → class / boxes → box
+    if (/s$/i.test(word) && !/ss$/i.test(word)) return word.replace(/s$/i, ""); // boys → boy；但保留 glass / boss
+    return word; // 本來就單數就不動
+  }
+  function articleFor(w){ return /^[aeiou]/i.test(w) ? "an" : "a"; }
+
+  // I/he/she/it + am/is + (可選多詞修飾) + 複數名詞
+  s = s.replace(
+    /\b(I|he|she|it)\s+(am|is)\s+((?:[a-z]+(?:\s+|$))*)?([a-z]+s)\b/gi,
+    (m, subj, be, mods = "", plural) => {
+      const modsTrim = (mods || "").trim();          // 例如 "very tall "
+      const sing = singularize(plural);              // boys → boy / babies → baby…
+      const needArticle = modsTrim ? "" : (articleFor(sing) + " "); // 有形容詞時常已含冠詞，不強塞
+      const rep = `${subj} ${be} ${needArticle}${modsTrim ? modsTrim + " " : ""}${sing}`;
+      add("Predicate number", m, rep, "Singular subject → singular complement.");
+      return rep;
+    }
+  );
+})();
 /* ————— LanguageTool pass + local pass ————— */
 async function grammarPipeline(inputText){
   let text = inputText, ltChanges = [];
