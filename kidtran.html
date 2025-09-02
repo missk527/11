@@ -385,29 +385,62 @@ body::after{
       });
     }
 
-    /* 11.5) 修正錯誤的現在完成式（have/has + …eded 等 → 直接改為「簡單過去式」） */
-    function toPastSafe(base){
-      const v=base.toLowerCase();
-      if(IRR[v]) return IRR[v][0];
-      if(/[^aeiou]y$/.test(v)) return v.slice(0,-1)+"ied";
-      if(v.endsWith("e")) return v+"d";
-      return v+"ed";
-    }
-    // have/has goted → got
-    s = s.replace(/\b(I|you|he|she|it|we|they)\s+(have|has)\s+goted\b/gi,(m,subj)=>{const to=`${subj} got`; add("Malformed perfect → past",m,to,"Use simple past ‘got’, not ‘have goted’."); return to;});
-    // have/has boughted → bought
-    s = s.replace(/\b(I|you|he|she|it|we|they)\s+(have|has)\s+boughted\b/gi,(m,subj)=>{const to=`${subj} bought`; add("Malformed perfect → past",m,to,"Use ‘bought’, not ‘boughted’."); return to;});
-    // have/has …ieded → …ied
-    s = s.replace(/\b(I|you|he|she|it|we|they)\s+(have|has)\s+([a-z]+?)ieded\b/gi,(m,subj,aux,stem)=>{const to=`${subj} ${stem}ied`; add("Malformed perfect → past",m,to,"…ieded → …ied"); return to;});
-    // have/has …ed + ed → …ed（returneded/improveded/calleded/cookeded…）
-    s = s.replace(/\b(I|you|he|she|it|we|they)\s+(have|has)\s+([a-z]+?)ed(?:ed)\b/gi,(m,subj,aux,stem)=>{const to=`${subj} ${stem}ed`; add("Malformed perfect → past",m,to,"Remove extra ‘ed’."); return to;});
-    // have/has …(teded|deded) → 推回簡單過去式
-    s = s.replace(/\b(I|you|he|she|it|we|they)\s+(have|has)\s+([a-z]+?)(teded|deded)\b/gi,(m,subj,aux,stem,tail)=>{const base=stem+(tail.toLowerCase()==="teded"?"t":"d"); const to=`${subj} ${toPastSafe(base)}`; add("Malformed perfect → past",m,to,"Fix malformed participle to simple past."); return to;});
-    // have/has rather(ed) → subject rather（依你要求）
-    s = s.replace(/\b(I|you|he|she|it|we|they)\s+(have|has)\s+rather(ed)?\b/gi,(m,subj)=>{const to=`${subj} rather`; add("Word choice",m,to,"Prefer ‘… rather’, not ‘have/has rathered’."); return to;});
-    // have/has toed → has/have to
-    s = s.replace(/\b(I|you|he|she|it|we|they)\s+(have|has)\s+toed\b/gi,(m,subj,aux)=>{const to=`${subj} ${aux} to`; add("Word choice",m,to,"Use ‘have/has to’, not ‘toed’."); return to;});
+   /* 11.5-EXT) Present Perfect 常見錯誤 V3 對照（美式） */
+(function(){
+  // 常見錯寫 → 正確 V3（美式用 gotten）
+  const MIST_V3 = {
+    // 極常見錯寫
+    "buyed":"bought","thinked":"thought","maked":"made","doed":"done","go-ed":"gone","writed":"written",
+    "speaked":"spoken","eated":"eaten","breaked":"broken","bringed":"brought","builded":"built",
+    "catched":"caught","costed":"cost","cutted":"cut","feeded":"fed","finded":"found","gived":"given",
+    "hitted":"hit","holded":"held","keeped":"kept","leaded":"led","leaved":"left","losed":"lost",
+    "payed":"paid","putted":"put","readed":"read","runned":"run","sayed":"said","sended":"sent",
+    "singed":"sung","ringed":"rung","springed":"sprung","sitted":"sat","sleeped":"slept","spended":"spent",
+    "standed":"stood","teached":"taught","telled":"told","thinked":"thought","understanded":"understood",
+    "weared":"worn","winned":"won","growed":"grown","knowed":"known","drived":"driven","forgived":"forgiven",
+    "forgeted":"forgotten","eated":"eaten","dranked":"drunk","drinked":"drunk","swimed":"swum","flew":"flown",
+    "throwed":"thrown","choosed":"chosen","begined":"begun","becomed":"become","comed":"come",
+    "getted":"gotten","goted":"gotten","buyed":"bought","thinked":"thought","spoke":"spoken",
+    // 規則動詞常見「多貼 ed」
+    "studieded":"studied","decideded":"decided","improveded":"improved","calleded":"called","cookeded":"cooked",
+    "returneded":"returned","useded":"used","playeded":"played",
+    // 其他容易出錯
+    "boughted":"bought","taked":"taken","sawed":"seen","seed":"seen","writen":"written","writted":"written",
+    "runned":"run","went":"gone" // 有人會寫 have went
+  };
 
+  // 把 have/has + <錯寫> → have/has + 正確V3
+  s = s.replace(/\b(have|has)\s+([a-z\-]+)\b/gi, (m, aux, w) => {
+    const low = w.toLowerCase();
+    if (MIST_V3[low]) {
+      const to = `${aux} ${MIST_V3[low]}`;
+      add("Present perfect (table fix)", m, to, "Normalize to the correct past participle (AmE).");
+      return to;
+    }
+    return m;
+  });
+
+  // 再保險：have/has + 過去式（V2）→ have/has + 正確V3（用 IRR 查）
+  // 例如：have went → have gone, has ate → has eaten, have saw → have seen
+  const V2toBase = {};
+  Object.keys(IRR).forEach(base=>{
+    const [v2] = IRR[base];
+    V2toBase[v2] = base;
+  });
+  s = s.replace(/\b(have|has)\s+([a-z]+)\b/gi, (m, aux, v) => {
+    const low = v.toLowerCase();
+    if (V2toBase[low]) {
+      const base = V2toBase[low];
+      const v3 = (IRR[base][1] || IRR[base][0]); // 美式 IRR["get"][1] = gotten
+      const to = `${aux} ${v3}`;
+      if (v3 !== low) { // 確認真的需要改
+        add("Present perfect (V2→V3)", m, to, "Use past participle (V3) after ‘have/has’."); 
+        return to;
+      }
+    }
+    return m;
+  });
+})();
     /* 12) 現在完成式（無明確過去時間） */
     const perfMark=/\b(already|yet|ever|never|just|recently|lately|since\s+\d{4}|\bsince\b|for\s+\d+\s+(minute|hour|day|week|month|year)s?|so far|in the last|in recent (days|weeks|months|years))\b/i;
     if(perfMark.test(s) && !pastMark.test(s)){
