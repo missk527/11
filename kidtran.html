@@ -305,6 +305,10 @@ s = s.replace(/\b(have|has)\s+([a-z]+?)ed(?:ed)\b/gi,(m, aux, stem)=>{ const rep
   });
 })();
 
+    /* 5.26b) 終極護欄：have/has + goed / goned → have/has + gone */
+s = s.replace(/\b(have|has)\s+goed\b/gi,  (m, aux)=>{ const rep = `${aux} gone`; add("Present perfect fix", m, rep, "‘go’ 的分詞是 ‘gone’，不是 ‘goed’.");  return rep; });
+s = s.replace(/\b(have|has)\s+goned\b/gi, (m, aux)=>{ const rep = `${aux} gone`; add("Present perfect fix", m, rep, "‘gone’ 不能再加 ed（不是 ‘goned’）."); return rep; });
+    
     /* 5.27) go/gone/went + place → 加 to（home 例外） */
 s = s.replace(
   /\b(go|went|gone)\s+(school|work|class|church|library|park|store|market|hospital|office|airport|station|zoo|museum|cinema|theater|beach|farm)\b/gi,
