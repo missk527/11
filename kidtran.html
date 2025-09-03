@@ -203,9 +203,29 @@ body::after{
     s = s.replace(/\b(you|we|they)\s+has\b/gi,(m,p)=>{ const to=p+" have"; add("Have/has",m,to); return to; });
     s = s.replace(/\b(he|she|it)\s+have\b/gi,(m,p)=>{ const to=p+" has";  add("Have/has",m,to); return to; });
 
-    /* (C) I am boys → I’m a boy（單數主語＋複數表語） */
-    s = s.replace(/\bI\s+am\s+(boys|girls|students|teachers|friends)\b/gi,(m,pl)=>{ const to=`I'm a ${SINGULARIZE[pl.toLowerCase()]||"person"}`; add("Predicate number",m,to); return to; });
+    /* (C) 單數主語 + 複數表語 → 單數名詞（含不規則複數） */
+const PRED_SING = {
+  children: "child",
+  people: "person",
+  men: "man",
+  women: "woman",
+  boys: "boy",
+  girls: "girl",
+  students: "student",
+  teachers: "teacher",
+  friends: "friend"
+};
 
+s = s.replace(
+  /\b(I|he|she|it)\s+(am|is)\s+(?:a\s+|an\s+)?(children|people|men|women|boys|girls|students|teachers|friends)\b/gi,
+  (m, subj, be, pl) => {
+    const sing = PRED_SING[pl.toLowerCase()];
+    const art  = /^[aeiou]/i.test(sing) ? "an" : "a";        // a/an 自動判斷
+    const rep  = `${subj} ${be} ${art} ${sing}`;
+    add("Predicate number", m, rep, "Singular subject → singular complement.");
+    return rep;
+  }
+);
     /* (D) 義務：have/has go → have/has to go */
     s = s.replace(/\b(have|has)\s+go\b/gi,(m,aux)=>{ const to=`${aux} to go`; add("Obligation",m,to,"Use ‘have/has to + base’."); return to; });
 
