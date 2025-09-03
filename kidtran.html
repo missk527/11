@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Miss K English class</title>
+<style>
+:root{
+  --kids-bg:#FFF7CC; --kids-panel:#FFE680; --kids-panel-2:#FFEF99;
+  --kids-accent:#FFB703; --kids-accent-2:#FB8500; --kids-text:#3A2D00;
+  --kids-muted:#6B5600; --kids-border:#FFD259; --kids-shadow:0 6px 18px rgba(160,120,0,.18);
+  --kids-radius:12px;
+}
+body{
+  background:var(--kids-bg); color:var(--kids-text);
+  font-family:"Comic Sans MS","Noto Sans TC","Microsoft JhengHei",system-ui,Arial,sans-serif;
+  line-height:1.6; padding-bottom:110px;
+}
+header{ background:linear-gradient(180deg,var(--kids-panel),var(--kids-panel-2));
+  border-bottom:2px dashed var(--kids-border); box-shadow:var(--kids-shadow);
+  padding:14px 18px; display:flex; justify-content:space-between; align-items:center; }
+h1{ color:var(--kids-text); font-size:18px; margin:0; } h1::before{ content:"🦁"; margin-right:6px; }
+.btn{ padding:10px 14px; border:2px solid var(--kids-border); border-radius:20px;
+  background:#fff8d9; color:#3A2D00; box-shadow:var(--kids-shadow); font-weight:700; cursor:pointer; }
+.btn.primary{ background:var(--kids-accent); border-color:var(--kids-accent-2); color:#1b1100; }
+textarea{ width:100%; height:220px; border-radius:14px; border:2px solid var(--kids-border);
+  background:#fffef5; color:#3A2D00; font-size:15px; padding:10px; }
+#status{ border:2px dashed var(--kids-border); border-radius:var(--kids-radius);
+  background:#fff7d1; color:#3A2D00; box-shadow:var(--kids-shadow); padding:12px; margin:18px; }
+.grid{ display:grid; gap:14px; margin:18px; } @media (min-width:800px){ .grid{ grid-template-columns:1fr 1fr; } }
+.panel{ background:#fffbea; border:2px solid var(--kids-border); border-radius:var(--kids-radius);
+  padding:14px; box-shadow:var(--kids-shadow); }
+label{ display:block; margin-bottom:8px; font-weight:900; color:#6B5600; }
+
+.hl-del{ background:#ffe3e3; text-decoration:line-through; border-radius:6px; padding:0 4px; }
+.hl-ins{ background:#ddf8dd; border-bottom:2px solid #2d8a2d; border-radius:6px; padding:0 4px; }
+.small{ font-size:13px; color:#5f4b00; }
+
+#review{ display:none; margin:18px; }
+#review .card{ background:#fffef5; border:2px solid var(--kids-border); border-radius:var(--kids-radius); padding:14px; box-shadow:var(--kids-shadow); }
+.suggest{ margin:8px 0 0 22px; }
+.suggest li{ margin:10px 0; }
+.chip-old{ background:#ffe3e3; border-radius:6px; padding:0 6px; }
+.chip-new{ background:#ddf8dd; border-radius:6px; padding:0 6px; border-bottom:2px solid #2d8a2d; }
+
+body::after{
+  content:" 🐻🐰🦊 一起學English！ ";
+  position:fixed; right:10px; bottom:8px;
+  background:#fff; border:2px solid var(--kids-border); border-radius:14px;
+  padding:8px 10px; box-shadow:var(--kids-shadow);
+  font-weight:800; color:#3A2D00;
+  transform:scale(.9); pointer-events:none;
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>Miss K English class</h1>
+</header>
+
+<div class="grid">
+  <div class="panel">
+    <label>中文（可忽略本區，直接在右邊輸入英文也可）</label>
+    <textarea id="inputZh" placeholder="（可先把中文翻英文，再按 Grammar 修正）"></textarea>
+    <div class="row" style="margin-top:8px; display:flex; gap:10px;">
+      <button id="btnZhEn" class="btn primary">中文 ➜ 英文</button>
+      <button id="btnClearZh" class="btn">清空</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <label>English</label>
+    <textarea id="outputEn" placeholder="輸入要檢查/修正的英語句子"></textarea>
+    <div class="row" style="margin-top:8px; display:flex; gap:10px;">
+      <button id="btnEnZh" class="btn primary">英文 ➜ 中文</button>
+      <button id="btnCheck" class="btn">Grammar</button>
+      <button id="btnClearEn" class="btn">清空</button>
+    </div>
+  </div>
+</div>
+
+<div id="status">✨ 可先翻譯再按 Grammar。自動修正 present perfect / past / future / preposition / spelling。</div>
+
+<div id="review">
+  <div class="card">
+    <strong>🛠 修正細節</strong>
+    <p class="small">下方顯示「原句（紅色刪除）」與「修正文（綠色新增）」。</p>
+    <div><strong>原句：</strong> <span id="origHL"></span></div>
+    <div><strong>修正文：</strong> <span id="corrHL"></span></div>
+
+    <hr style="border:none;border-top:1px dashed #e6c55b;margin:12px 0;">
+    <div>
+      <strong>📝 建議清單</strong>
+      <ol id="suggestList" class="suggest"></ol>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  /* ========== 基本 UI ========== */
+  const ui = {
+    inputZh: document.getElementById('inputZh'),
+    outputEn: document.getElementById('outputEn'),
+    zh2en: document.getElementById('btnZhEn'),
+    en2zh: document.getElementById('btnEnZh'),
+    check: document.getElementById('btnCheck'),
+    clearZh: document.getElementById('btnClearZh'),
+    clearEn: document.getElementById('btnClearEn'),
+    status: document.getElementById('status'),
+    origHL: document.getElementById('origHL'),
+    corrHL: document.getElementById('corrHL'),
+    review: document.getElementById('review'),
+    suggestList: document.getElementById('suggestList')
+  };
+  function setStatus(msg){ ui.status.textContent = msg; }
+  const esc = t => t.replace(/[&<>"']/g, c => ({'&':"&amp;",'<':"&lt;",'>':"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  function diffHL(oldText, newText){
+    if(oldText === newText) return {origHL:esc(oldText), corrHL:esc(newText)};
+    let s=0, eOld=oldText.length-1, eNew=newText.length-1;
+    while(s<=eOld && s<=eNew && oldText[s]===newText[s]) s++;
+    while(eOld>=s && eNew>=s && oldText[eOld]===newText[eNew]){ eOld--; eNew--; }
+    return {
+      origHL: esc(oldText.slice(0,s))+'<span class="hl-del">'+esc(oldText.slice(s,eOld+1))+'</span>'+esc(oldText.slice(eOld+1)),
+      corrHL: esc(newText.slice(0,s))+'<span class="hl-ins">'+esc(newText.slice(s,eNew+1))+'</span>'+esc(newText.slice(eNew+1))
+    };
+  }
+  function renderSuggestions(changes){
+    ui.suggestList.innerHTML="";
+    changes.forEach(ch=>{
+      const li=document.createElement('li');
+      li.innerHTML = `<strong>${esc(ch.title)}</strong>： ${esc(ch.msg||"")}<br>
+        <span class="chip-old">${esc(ch.from)}</span> → <span class="chip-new">${esc(ch.to)}</span>`;
+      ui.suggestList.appendChild(li);
+    });
+  }
+
+  /* ========== 翻譯：MyMemory → LibreTranslate 備援 ========== */
+  const LT_NODES = [
+    "https://libretranslate.de",
+    "https://translate.argosopentech.com"
+  ];
+  async function fetchWithTimeout(url, options={}, timeoutMs=8000){
+    const ctrl = new AbortController(); const t=setTimeout(()=>ctrl.abort(), timeoutMs);
+    try{ const r=await fetch(url, {...options, signal:ctrl.signal}); clearTimeout(t); return r; }
+    catch(e){ clearTimeout(t); throw e; }
+  }
+  async function translateViaMyMemory(text, dir){
+    const source=(dir==="zh-en")?"zh-CN":"en";
+    const target=(dir==="zh-en")?"en":"zh-TW";
+    const r=await fetchWithTimeout(
+      `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${source}|${target}`
+    );
+    if(!r.ok) throw new Error("MM HTTP "+r.status);
+    const j=await r.json(); return j?.responseData?.translatedText || "";
+  }
+  async function translateViaLibre(base, text, dir){
+    const target=(dir==="zh-en")?"en":"zh-TW";
+    const r=await fetchWithTimeout(`${base}/translate`,{
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ q:text, source:"auto", target, format:"text" })
+    },8000);
+    if(!r.ok) throw new Error("LT HTTP "+r.status);
+    const j=await r.json(); return j?.translatedText || "";
+  }
+  async function translateSmart(text, dir){
+    if(!text || !text.trim()) return "";
+    try{ const mm=await translateViaMyMemory(text, dir); if(mm && mm.trim()) return mm; }catch(_e){}
+    for(const n of LT_NODES){ try{ const x=await translateViaLibre(n, text, dir); if(x&&x.trim()) return x; }catch(_e){} }
+    return text; // 退回原文
+  }
+
+  /* ========== 不規則動詞（AmE: get→gotten）與工具函式 ========== */
+  const IRR = {
+    "am":["was","been"], "is":["was","been"], "are":["were","been"],
+    "do":["did","done"], "does":["did","done"], "go":["went","gone"],
+    "come":["came","come"], "eat":["ate","eaten"], "see":["saw","seen"],
+    "take":["took","taken"], "make":["made","made"], "have":["had","had"], "has":["had","had"],
+    "get":["got","gotten"], "give":["gave","given"], "write":["wrote","written"],
+    "read":["read","read"], "run":["ran","run"], "sleep":["slept","slept"],
+    "feel":["felt","felt"], "leave":["left","left"], "meet":["met","met"],
+    "pay":["paid","paid"], "put":["put","put"], "say":["said","said"],
+    "buy":["bought","bought"], "bring":["brought","brought"], "think":["thought","thought"],
+    "teach":["taught","taught"], "begin":["began","begun"], "become":["became","become"],
+    "find":["found","found"], "hold":["held","held"], "keep":["kept","kept"],
+    "speak":["spoke","spoken"], "drink":["drank","drunk"], "drive":["drove","driven"],
+    "forget":["forgot","forgotten"], "forgive":["forgave","forgiven"], "grow":["grew","grown"],
+    "know":["knew","known"], "lose":["lost","lost"], "send":["sent","sent"],
+    "sit":["sat","sat"], "stand":["stood","stood"], "understand":["understood","understood"],
+    "win":["won","won"], "cut":["cut","cut"], "hit":["hit","hit"], "hurt":["hurt","hurt"], "let":["let","let"], "set":["set","set"], "cost":["cost","cost"]
+  };
+  const SPELL = {
+    "becuase":"because","recieve":"receive","seperate":"separate","definately":"definitely",
+    "wierd":"weird","adress":"address","enviroment":"environment","tomatos":"tomatoes",
+    "alot":"a lot","occured":"occurred","wich":"which","thier":"their","beleive":"believe",
+    "freind":"friend","studing":"studying","untill":"until","sory":"sorry","consder":"consider",
+    "mum":"mom"
+  };
+  const SINGULARIZE={"boys":"boy","girls":"girl","students":"student","teachers":"teacher","friends":"friend","children":"child"};
+  function toPart(v){ if(IRR[v]) return IRR[v][1]||IRR[v][0]; if(/[^aeiou]y$/.test(v)) return v.slice(0,-1)+"ied"; if(v.endsWith("e")) return v+"d"; return v+"ed"; }
+  function matchCase(t,s){ if(!s) return t; if(s===s.toUpperCase())return t.toUpperCase(); if(s[0]===s[0].toUpperCase())return t[0].toUpperCase()+t.slice(1); return t; }
+
+  /* ========== LanguageTool：自動套用第一建議 ========== */
+  async function applyLanguageToolOnceDetailed(input){
+    try{
+      const p=new URLSearchParams();
+      p.append("text", input);
+      p.append("language","en-US");
+      p.append("enabledCategories","GRAMMAR,CONFUSED_WORDS,TYPOGRAPHY,PUNCTUATION,STYLE");
+      const r=await fetch("https://api.languagetool.org/v2/check",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:p});
+      if(!r.ok) throw new Error("HTTP "+r.status);
+      const j=await r.json();
+      const ms=(j.matches||[]).filter(m=>m.replacements&&m.replacements[0]).sort((a,b)=>b.offset-a.offset);
+      let out=input, changes=[];
+      for(const m of ms){
+        const from=out.slice(m.offset, m.offset+m.length);
+        const to=m.replacements[0].value;
+        out=out.slice(0,m.offset)+to+out.slice(m.offset+m.length);
+        changes.push({ title:"LanguageTool", from, to, msg:m.message||"" });
+      }
+      return { text:out, count:changes.length, changes };
+    }catch(e){
+      return { text:input, count:0, changes:[] };
+    }
+  }
+
+  /* ========== 本地後備規則 ========== */
+  function localFixOnce(src){
+    let s=src, count=0; const changes=[];
+    const add=(title,from,to,msg="")=>{ if(from!==to){ count++; changes.push({title,from,to,msg}); } };
+
+    /* 句首大寫 + 拼字 */
+    s = s.replace(/(^|\.\s+|\?\s+|!\s+)([a-z])/g,(m,pre,ch)=>{ add("Capitalization", ch, ch.toUpperCase()); return pre+ch.toUpperCase(); });
+    s = s.replace(/\b([A-Za-z']+)\b/g,(m,w)=>{const low=w.toLowerCase();if(SPELL[low]){const to=matchCase(SPELL[low],w);add("Spelling",w,to);return to;}return w;});
+
+    /* have/has 一致 */
+    s = s.replace(/\bI\s+has\b/gi,    ()=>{ add("Have/has","I has","I have"); return "I have"; });
+    s = s.replace(/\b(you|we|they)\s+has\b/gi,(m,p)=>{ const to=p+" have"; add("Have/has",m,to); return to; });
+    s = s.replace(/\b(he|she|it)\s+have\b/gi,(m,p)=>{ const to=p+" has";  add("Have/has",m,to); return to; });
+
+    /* I am boys/children → I'm a boy/child */
+    s = s.replace(/\bI\s+am\s+(boys|girls|students|teachers|friends|children)\b/gi,(m,pl)=>{
+      const to=`I'm a ${SINGULARIZE[pl.toLowerCase()]||"person"}`; add("Predicate number",m,to); return to;
+    });
+
+    /* have/has go → have/has to go */
+    s = s.replace(/\b(have|has)\s+go\b/gi,(m,aux)=>{ const to=`${aux} to go`; add("Obligation",m,to); return to; });
+
+    /* go shopping / go to school / go home */
+    s = s.replace(/\bgo\s+to\s+shopping\b/gi,(m)=>{ const to="go shopping"; add("Collocation",m,to); return to; });
+    s = s.replace(/\b(go|went|gone)\s+(school|work|class|church|library|park|store|market|hospital|office|airport|station|zoo|museum|cinema|theater|beach|farm)\b/gi,
+      (m,v,place)=>{ const to=`${v} to ${place}`; add("Preposition",m,to); return to; });
+    s = s.replace(/\b(go|went|gone)\s+to\s+home\b/gi,(m,v)=>{ const to=`${v} home`; add("Preposition",m,to); return to; });
+
+    /* 現在完成式：常見錯誤分詞 */
+    const BAD = {"goed":"gone","goned":"gone","went":"gone","ate":"eaten","saw":"seen","did":"done","writed":"written","speaked":"spoken","buyed":"bought","taked":"taken","getted":"gotten","goted":"gotten"};
+    s = s.replace(/\b(have|has)\s+([a-z]+)\b/gi,(m,aux,v)=>{
+      const low=v.toLowerCase();
+      if(BAD[low]){ const to=`${aux} ${BAD[low]}`; add("Present perfect",m,to); return to; }
+      for(const base in IRR){ const [v2,v3]=IRR[base]; if(low===v2){ const to=`${aux} ${v3||v2}`; add("Present perfect",m,to); return to; } }
+      return m;
+    });
+
+    /* 未來式：明確未來時間但未用 will */
+    const futureMark=/\b(tomorrow|next\s+(week|month|year|mon(day)?|tue(sday)?|wed(nesday)?|thu(rsday)?|fri(day)?|sat(urday)?|sun(day)?)|soon|in\s+\d+\s+(minutes?|hours?|days?|weeks?|months?|years?))\b/i;
+    if(futureMark.test(s) && !/\b(will|going to)\b/i.test(s)){
+      s = s.replace(/^(Tomorrow|Next\b[^,]*|In\s+\d+\s+\w+|Soon)\s+([a-z]+)/i,(m,lead,verb)=>{
+        const to=`${lead} I will ${verb}`; add("Future",m,to); return to;
+      });
+      s = s.replace(/\b(I|he|she|it|we|they|you)\s+([a-z]+)\b/gi,(m,subj,verb)=>{
+        if(/^(am|is|are|was|were|been|be|will|have|has|had|do|does|did|can|may|might|should|would|must|go|going)$/i.test(verb)) return m;
+        const to=`${subj} will ${verb}`; add("Future",m,to); return to;
+      });
+    }
+
+    /* A and I / I and A → A and I */
+    s = s.replace(/\b(i)\s+and\s+([A-Z][a-z]+)\b/g,(m,i,name)=>{ const to=`${name} and I`; add("Style",m,to); return to; });
+
+    /* 縮寫 + 標點空白 */
+    s = s.replace(/\bI am\b/g,()=>{ add("Contraction","I am","I'm"); return "I'm"; });
+    const before=s; s=s.replace(/ {2,}/g,' ').replace(/\s+([,.!?;:])/g,'$1');
+    if(s!==before){ add("Punctuation","extra spaces","cleaned"); }
+
+    return { text:s, count, changes };
+  }
+
+  /* ========== 總流程：LT → 本地 → LT ========== */
+  async function grammarPipeline(text){
+    const lt1 = await applyLanguageToolOnceDetailed(text);
+    const local = await localFixOnce(lt1.text);
+    const lt2 = await applyLanguageToolOnceDetailed(local.text);
+    const finalText = lt2.text;
+    const total = (lt1.count||0)+(local.count||0)+(lt2.count||0);
+    const changes=[...(lt1.changes||[]), ...(local.changes||[]), ...(lt2.changes||[])];
+    return { text:finalText, total, ltCount:(lt1.count||0)+(lt2.count||0), localCount:(local.count||0), changes };
+  }
+
+  /* ========== 事件 ========== */
+  ui.zh2en.addEventListener('click', async()=>{
+    const txt=ui.inputZh.value.trim(); if(!txt) return;
+    setStatus("翻譯中（中→英）…");
+    ui.outputEn.value = await translateSmart(txt,"zh-en");
+    setStatus("✅ 完成：中文→英文");
+  });
+  ui.en2zh.addEventListener('click', async()=>{
+    const txt=ui.outputEn.value.trim(); if(!txt) return;
+    setStatus("翻譯中（英→中文）…");
+    ui.outputEn.value = await translateSmart(txt,"en-zh");
+    setStatus("✅ 完成：英文→中文");
+  });
+
+  ui.check.addEventListener('click', async()=>{
+    const before = ui.outputEn.value.trim(); if(!before) return;
+    setStatus("Grammar 檢查中（LanguageTool → 本地後備）…");
+    const res = await grammarPipeline(before);
+    ui.outputEn.value = res.text;
+
+    const d = diffHL(before, res.text);
+    if(res.text!==before){
+      ui.origHL.innerHTML = d.origHL;
+      ui.corrHL.innerHTML = d.corrHL;
+      ui.review.style.display = "block";
+    }else{
+      ui.review.style.display = "none";
+    }
+    renderSuggestions(res.changes);
+    setStatus(`✅ 已完成智慧修正（修正 ${res.total} 處｜LT：${res.ltCount}，本地：${res.localCount}）`);
+  });
+
+  ui.clearZh.addEventListener('click',()=>ui.inputZh.value="");
+  ui.clearEn.addEventListener('click',()=>ui.outputEn.value="");
+})();
+</script>
+</body>
+  </html>
