@@ -262,6 +262,163 @@ body::after{
       });
     }
 
+    /* === Extra fixes (common misses) =================================== */
+
+/* 1) She is girls / He is students → She is a girl / He is a student */
+(function() {
+  const PL2SG = {
+    boys: "boy", girls: "girl", students: "student", teachers: "teacher",
+    friends: "friend", children: "child", people: "person", men: "man", women: "woman",
+    cats: "cat", dogs: "dog", apples: "apple", books: "book"
+  };
+  s = s.replace(/\b(He|She|It)\s+is\s+([a-z]+)\b/gi, (m, subj, np) => {
+    const low = np.toLowerCase();
+    const head = PL2SG[low] || (/(ses|xes|zes|ches|shes)$/.test(low) ? np : low.endsWith("s") ? low.slice(0,-1) : null);
+    if (!head) return m;
+    const art = /^[aeiou]/i.test(head) ? "an" : "a";
+    const rep = `${subj} is ${art} ${head}`;
+    add("Predicate number", m, rep, "Singular subject needs singular complement.");
+    return rep;
+  });
+})();
+
+/* 2) be 後缺冠詞：I am boy → I'm a boy ; He is engineer → an engineer */
+(function(){
+  s = s.replace(/\b(I|He|She|It)\s+(?:am|is)\s+([a-z]+)\b/gi, (m, subj, noun) => {
+    // 已有 a/an 或專有名詞/不可數就略過（簡化：有冠詞/限定詞就不補）
+    if (/^(a|an|the|this|that|my|your|his|her|its|our|their)$/i.test(noun)) return m;
+    if (/^[A-Z]/.test(noun)) return m;
+    const art = /^[aeiou]/i.test(noun) ? "an" : "a";
+    const rep = `${subj} ${subj.toLowerCase()==="i"?"am":"is"} ${art} ${noun}`;
+    add("Article after be", m, rep, "Add a/an before a singular countable noun.");
+    return rep;
+  });
+})();
+
+/* 3) 數量詞 + 名詞複數：two apple → two apples；one apples → one apple */
+(function(){
+  // N>1 + 單數 → 複數（簡化規則：加 s；常見不規則可擴充表）
+  const IRR_PL = { child:"children", person:"people", man:"men", woman:"women", tooth:"teeth", foot:"feet", mouse:"mice" };
+  s = s.replace(/\b(\d+|two|three|four|five|six|seven|eight|nine|ten|many|several|a lot of)\s+([a-z]+)\b/gi,
+    (m, qty, noun) => {
+      if (/s$|children|people|men|women|teeth|feet|mice/i.test(noun)) return m;
+      const low = noun.toLowerCase();
+      const pl = IRR_PL[low] || (/(s|x|z|ch|sh)$/i.test(low) ? low + "es" :
+                  /[^aeiou]y$/i.test(low) ? low.slice(0,-1) + "ies" : low + "s");
+      const rep = `${qty} ${pl}`;
+      add("Plural after quantifier", m, rep);
+      return rep;
+    }
+  );
+  // one + 複數 → 單數
+  s = s.replace(/\b(one|a)\s+([a-z]+)s\b/gi, (m, one, noun) => {
+    const rep = `${one} ${noun}`;
+    add("Singular after one/a", m, rep);
+    return rep;
+  });
+})();
+
+/* 4) 代名詞 I 大寫 & 受格：with I → with me；to I → to me；Me and Gigi → Gigi and I */
+(function(){
+  // 單獨小寫 i → I
+  s = s.replace(/\bi\b/g, (m) => { add("Capitalization","i","I"); return "I"; });
+  // 介系詞後用受格
+  s = s.replace(/\b(with|to|for|from|at|of|about)\s+I\b/gi, (m, prep) => {
+    const rep = `${prep} me`;
+    add("Pronoun case", m, rep, "Use object case after a preposition.");
+    return rep;
+  });
+  // 主語位置 me and Name → Name and I
+  s = s.replace(/\b(me)\s+and\s+([A-Z][a-z]+)\b/g, (m, me, name) => {
+    const rep = `${name} and I`;
+    add("Pronoun case", m, rep, "Use subject case in subject position and put the name first.");
+    return rep;
+  });
+})();
+
+/* 5) There is/are 一致 */
+(function(){
+  s = s.replace(/\bThere\s+is\s+(many|several|a lot of|[0-9]+)\b/gi, (m, qty) => {
+    const rep = `There are ${qty}`;
+    add("There is/are agreement", m, rep);
+    return rep;
+  });
+  s = s.replace(/\bThere\s+are\s+(a|an|one)\b/gi, (m, a1) => {
+    const rep = `There is ${a1}`;
+    add("There is/are agreement", m, rep);
+    return rep;
+  });
+})();
+
+/* 6) 句首未來時間 + 缺 will（更穩定）：Tomorrow go… → Tomorrow I will go… */
+(function(){
+  s = s.replace(
+    /^(Tomorrow|Next\s+\w+|In\s+\d+\s+\w+|Soon)\s+(?:(?:me\s+and\s+)?I\s+)?([a-z]+)\b/mi,
+    (m, lead, verb) => {
+      if (/^(will|am|is|are|go|going|can|may|might|should|would|must|have|has)$/i.test(verb)) return m;
+      const rep = `${lead} I will ${verb}`;
+      add("Future time + will", m, rep);
+      return rep;
+    }
+  );
+})();
+
+/* 7) 現在完成式標記（since/for/already/just/yet）卻用過去式 → 改 have/has + V3 */
+(function(){
+  const mark = /\b(already|just|yet|ever|never|since\b(?:\s+\d{4})?|for\s+\d+\s+(?:minute|hour|day|week|month|year)s?)\b/i;
+  if (mark.test(s)) {
+    s = s.replace(/\b(We|They|You|I)\s+([a-z]+)\b/gi, (m, subj, verb) => {
+      const v = verb.toLowerCase();
+      if (/^(have|has|am|is|are|was|were|did|do|does|will)$/i.test(v)) return m;
+      const v3 = IRR[v] ? (IRR[v][1] || IRR[v][0]) : toPart(v);
+      const rep = `${subj} have ${v3}`;
+      add("Present perfect marker", m, rep);
+      return rep;
+    });
+    s = s.replace(/\b(He|She|It)\s+([a-z]+)\b/gi, (m, subj, verb) => {
+      const v = verb.toLowerCase();
+      if (/^(have|has|am|is|are|was|were|did|do|does|will)$/i.test(v)) return m;
+      const v3 = IRR[v] ? (IRR[v][1] || IRR[v][0]) : toPart(v);
+      const rep = `${subj} has ${v3}`;
+      add("Present perfect marker", m, rep);
+      return rep;
+    });
+  }
+})();
+
+/* 8) a/an 再保險：a + vowel / an + consonant 修正 */
+(function(){
+  s = s.replace(/\ba\s+([aeiouAEIOU]\w+)/g, (m, w) => {
+    const rep = `an ${w}`;
+    add("a/an", m, rep);
+    return rep;
+  });
+  s = s.replace(/\ban\s+([^aeiouAEIOU\s]\w*)/g, (m, w) => {
+    const rep = `a ${w}`;
+    add("a/an", m, rep);
+    return rep;
+  });
+})();
+
+/* 9) 小補：時間/日期介系詞（on Monday / at night / in the morning） */
+(function(){
+  const PREP_FIXES = [
+    [/\bin (Mon|Monday)\b/gi, "on Monday"],
+    [/\bin (Tue|Tuesday)\b/gi, "on Tuesday"],
+    [/\bin (Wed|Wednesday)\b/gi, "on Wednesday"],
+    [/\bin (Thu|Thursday)\b/gi, "on Thursday"],
+    [/\bin (Fri|Friday)\b/gi, "on Friday"],
+    [/\bin (Sat|Saturday)\b/gi, "on Saturday"],
+    [/\bin (Sun|Sunday)\b/gi, "on Sunday"],
+    [/\bat morning\b/gi, "in the morning"],
+    [/\bat afternoon\b/gi, "in the afternoon"],
+    [/\bin night\b/gi, "at night"]
+  ];
+  PREP_FIXES.forEach(([re, to]) => {
+    s = s.replace(re, (m) => { add("Preposition (time)", m, to); return to; });
+  });
+})();
+    
     /* === Past tense (強化版) ======================================= */
 /* 看見同一分句內的 past signal，就把主詞後第一個動詞變過去式 */
 (function () {
