@@ -262,24 +262,56 @@ body::after{
       });
     }
 
-    /* 過去式：yesterday/last…/ago/in 20xx */
-    const pastMark=/\b(yesterday|last\s+(night|week|month|year|mon(day)?|tue(sday)?|wed(nesday)?|thu(rsday)?|fri(day)?|sat(urday)?|sun(day)?)|\d+\s+(minute|hour|day|week|month|year)s?\s+ago|ago|in\s+\d{4})\b/i;
-    if(pastMark.test(s)){
-      const AUX=/^(am|is|are|was|were|been|be|have|has|had|do|does|did|will|can|could|may|might|must|should|would|going|go)$/i;
-      s = s.replace(/\b(I|you|we|they|he|she|it)\s+([a-z]+)\b/gi,(m,subj,verb)=>{
-        const v=verb.toLowerCase(); if(AUX.test(v)||( /(ed|t)$/.test(v))||(IRR[v]&&IRR[v][0]===v)) return m;
-        const to=IRR[v]?IRR[v][0]:toPast(v); add("Past tense",`${subj} ${verb}`,`${subj} ${to}`); return `${subj} ${to}`;
-      });
-      s = s.replace(/\b([A-Z][a-z]+)\s+([a-z]+)\b/g,(m,name,verb)=>{
-        const v=verb.toLowerCase(); if(AUX.test(v)||( /(ed|t)$/.test(v))||(IRR[v]&&IRR[v][0]===v)) return m;
-        const to=IRR[v]?IRR[v][0]:toPast(v); add("Past tense",`${name} ${verb}`,`${name} ${to}`); return `${name} ${to}`;
-      });
-      s = s.replace(/\b(?:and|then|,)\s+([a-z]+)\b/gi,(m,verb)=>{
-        const v=verb.toLowerCase(); if(/^(am|is|are|was|were|been|be|have|has|had|do|does|did|will|can|may|might|should|would|must)$/i.test(v)) return m;
-        if (/(ed|t)$/.test(v)||(IRR[v]&&IRR[v][0]===v)) return m;
-        const to=IRR[v]?IRR[v][0]:toPast(v); add("Past tense (sequence)",verb,to); return m.replace(new RegExp(verb+'$','i'),to);
-      });
+    /* === Past tense (強化版) ======================================= */
+/* 看見同一分句內的 past signal，就把主詞後第一個動詞變過去式 */
+(function () {
+  // past 時間訊號
+  const PAST_SIGNAL =
+    /\b(yesterday|last\s+(?:night|week|month|year|mon(?:day)?|tue(?:sday)?|wed(?:nesday)?|thu(?:rsday)?|fri(?:day)?|sat(?:urday)?|sun(?:day)?)|\d+\s+(?:minute|hour|day|week|month|year)s?\s+ago|ago|in\s+\d{4})\b/i;
+
+  const AUX = /^(am|is|are|was|were|been|be|have|has|had|do|does|did|will|can|could|may|might|must|should|would|go|going)$/i;
+
+  // 1) 代名詞主詞：I/you/we/they/he/she/it + 動詞 …… <signal>
+  s = s.replace(
+    /\b(I|you|we|they|he|she|it)\s+([a-z]+)\b(?=[^.!?]*\b(yesterday|last\s+(?:night|week|month|year|mon(?:day)?|tue(?:sday)?|wed(?:nesday)?|thu(?:rsday)?|fri(?:day)?|sat(?:urday)?|sun(?:day)?)|\d+\s+(?:minute|hour|day|week|month|year)s?\s+ago|ago|in\s+\d{4})\b)/gi,
+    (m, subj, verb) => {
+      const v = verb.toLowerCase();
+      if (AUX.test(v)) return m;
+      const to = IRR[v] ? IRR[v][0] : toPast(v);
+      if (to !== verb) {
+        add("Past tense", `${subj} ${verb}`, `${subj} ${to}`, "Past-time marker in the same clause.");
+        return `${subj} ${to}`;
+      }
+      return m;
     }
+  );
+
+  // 2) 句首時間置前：Yesterday/Last …/In 2010/… ago, I/he/she … <verb>
+  s = s.replace(
+    /\b(Yesterday|Last\s+[A-Za-z]+|In\s+\d{4}|\d+\s+(?:minutes?|hours?|days?|weeks?|months?|years?)\s+ago)\b[,\s]+\b(I|you|we|they|he|she|it)\s+([a-z]+)\b/gi,
+    (m, lead, subj, verb) => {
+      const v = verb.toLowerCase();
+      if (AUX.test(v)) return m;
+      const to = IRR[v] ? IRR[v][0] : toPast(v);
+      const rep = `${lead} ${subj} ${to}`;
+      add("Past tense", m, rep, "Time expression fronted.");
+      return rep;
+    }
+  );
+
+  // 3) 專有名詞主詞：Tom/Anna … <verb> …… <signal>
+  s = s.replace(
+    /\b([A-Z][a-z]+)\s+([a-z]+)\b(?=[^.!?]*\b(yesterday|last\s+(?:night|week|month|year|mon(?:day)?|tue(?:sday)?|wed(?:nesday)?|thu(?:rsday)?|fri(?:day)?|sat(?:urday)?|sun(?:day)?)|\d+\s+(?:minute|hour|day|week|month|year)s?\s+ago|ago|in\s+\d{4})\b)/g,
+    (m, name, verb) => {
+      const v = verb.toLowerCase();
+      if (AUX.test(v)) return m;
+      const to = IRR[v] ? IRR[v][0] : toPast(v);
+      const rep = `${name} ${to}`;
+      add("Past tense (proper noun)", m, rep, "Past-time marker in the same clause.");
+      return rep;
+    }
+  );
+})();
 
     /* 人名 and I */
     s = s.replace(/\b(i)\s+and\s+([A-Z][a-z]+)\b/g,(m,i,name)=>{ const to=`${name} and I`; add("Style",m,to); return to; });
