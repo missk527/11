@@ -1,0 +1,274 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MC11 — Full 90 Questions (One-at-a-time)</title>
+<style>
+  :root{
+    --bg:#fff8dc;      /* light yellow */
+    --card:#ffffff;    /* white for cards */
+    --ink:#111111;     /* dark text */
+    --muted:#555;
+    --accent:#f59e0b;  /* amber */
+    --stroke:#e5e7eb;
+    --hover:#fff7ed;
+  }
+  html,body{background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;line-height:1.65;margin:0;padding:0}
+  header{padding:2rem 1rem;text-align:center;border-bottom:2px solid #fcd34d;background:#fef3c7}
+  h1{margin:0;font-weight:800;letter-spacing:.5px}
+  h2{margin-top:1rem;color:#b45309}
+  .container{max-width:900px;margin:0 auto;padding:1.25rem}
+  .card{background:var(--card);border:1px solid var(--stroke);border-radius:18px;padding:1.25rem 1.25rem 1.5rem;margin:1.25rem 0;box-shadow:0 8px 24px rgba(0,0,0,.08)}
+  .question{margin:1.4rem 0 0;border-top:1px dashed var(--stroke);padding-top:1rem}
+  .question p{margin:.4rem 0 1rem;font-size:1.05rem}
+  .choices{display:flex;flex-direction:column;gap:.6rem}
+  .choice{display:flex;align-items:flex-start;gap:.6rem;border:1px solid var(--stroke);border-radius:12px;padding:.65rem .75rem;cursor:pointer;background:#fff;transition:background .15s, border-color .15s}
+  .choice:hover{background:var(--hover);border-color:#f1f5f9}
+  .choice input{margin-top:.2rem;flex:0 0 auto}
+  .choice span{display:block;line-height:1.45}
+  .controls{display:flex;align-items:center;gap:.75rem;flex-wrap:wrap}
+  .progress{font-weight:700;color:#92400e;background:#fffbeb;border:1px solid #fde68a;border-radius:999px;padding:.25rem .6rem}
+  button{padding:.7rem 1.25rem;border:none;border-radius:10px;background:var(--accent);color:#fff;font-weight:700;cursor:pointer}
+  button.secondary{background:#e5e7eb;color:#111}
+  button:disabled{background:#fcd34d;cursor:not-allowed}
+  .hidden{display:none}
+  .meta{color:var(--muted)}
+</style>
+</head>
+<body>
+<header>
+  <h1>MC11 — Academic Rewrites & 90 Questions</h1>
+  <p class="meta">Read each passage. Answer <strong>one question at a time</strong>. The next passage unlocks after you finish the current 30.</p>
+</header>
+
+<div class="container">
+
+  <!-- Article 1 -->
+  <section id="article1" class="card">
+    <h2>1) Tamarind and the Star of Ishta — Academic Rewrite</h2>
+    <p>
+      Upon disembarking, the narrator experiences acute physiological arousal—a tangle of “jitters” that resists self-regulation. The airport concourse, heavy with humid air and the echo of voices, stages her first encounter with India, a country that is at once ancestral homeland and lived unknown. Propelled by her father, who navigates purposefully toward the arrivals hall, she must literally and figuratively keep pace: the slick floor renders her wheelchair unstable, and the thick air clings to her clothing. The scene foregrounds corporeality—breath, sweat, movement—as indices of dislocation.
+    </p>
+    <p>
+      At the threshold of the waiting area, a cluster of relatives comes into view. Their sartorial details, from embroidered shawl to graphic T-shirt, mark a multigenerational family whose cultural codes do not map neatly onto the narrator’s expectations. A homemade placard—“Welcome to India, Tamarind”—produces in her an immediate wave of embarrassment. The public display of kinship, intended as hospitality, intensifies her anxiety about belonging.
+    </p>
+    <p>
+      Internally she rehearses a narrative of imposed exile: deposited among strangers by a parent, she anticipates communicative failure because she does not speak Punjabi. In a bid for cultural competence she retrieves a rehearsed greeting, “Sat sri akaal,” even as she doubts whether her accent will be legible. The moment is defused by Arjun, a boy cousin who addresses her in fluent English, offers a high-five, and names the event—“welcome to India”—with unaffected cheer. Yet the narrator’s cheeks burn; she rejects paternal comfort, signaling an adolescent assertion of autonomy and a persisting ache that exceeds the immediate social awkwardness. The episode dramatizes the ambivalence of diasporic return: welcome and alienation, ritual and improvisation, family intimacy and self-conscious individuation co-exist in the same breath.
+    </p>
+    <div id="q1" class="question"></div>
+  </section>
+
+  <!-- Article 2 -->
+  <section id="article2" class="card hidden">
+    <h2>2) Cider With Rosie — Academic Rewrite</h2>
+    <p>
+      The narrator, recently arrived in a rural English village during early childhood, recalls an inaugural moment of estrangement. Deposited from a carrier’s cart into grass higher than his head, he confronts a landscape that overwhelms both scale and sense. Vegetation, insects, odors, and light compose an ecology that is at once luxuriant and threatening: nettles and roots snag; elder blossom sheds “snow” that stifles; larks cry overhead like tearing sky. The natural world, unmediated by adult guidance, destabilizes his coordinates of safety.
+    </p>
+    <p>
+      Temporarily abandoned as his family unloads, the child experiences the countryside as an autonomous agent with its own behaviors—plants that “behave,” birds that “scream,” weather that “bullies.” This animistic perception, typical of childhood cognition, intensifies into panic, and he howls in despair. The episode functions as a rite of entrance into village life, dramatizing the gap between urban expectation and rural immediacy.
+    </p>
+    <p>
+      Rescue arrives in the form of sisters who crest the bank like apparitions, their faces bright and familiar, their scoldings mixed with laughter. They gather him, stained with currant juice, and carry him across the steep, rose-filled garden to the cottage that is to become home. The narrative closes on a paradox: emplacement is achieved through kinship rather than mastery of nature; belonging is felt even before the house is intellectually recognized as “home.” The passage thus frames the rural setting as sublime—capable of terror and delight—while affirming familial care as the stabilizing social force.
+    </p>
+    <div id="q2" class="question"></div>
+  </section>
+
+  <!-- Article 3 -->
+  <section id="article3" class="card hidden">
+    <h2>3) Journey to the City of Six Gates — Academic Rewrite</h2>
+    <p>
+      Set against the backdrop of an ancient kingdom under siege, the passage traces Princess Mati’s forced evacuation from the women’s palace. As alarms rise from the lower floors, the narrative tracks her movement through a choreography of servants, guards, and architectural thresholds. The palace, with its jewel trees and lamp-lit halls, becomes a space where ceremony collides with crisis. Mati’s identity is dual: she is both royal subject and mathematician, a self-understanding she deliberately asserts by fastening her measuring string around her wrist as a talisman of order.
+    </p>
+    <p>
+      The evacuation unfolds with the compressed temporality of flight. Devi, the nurse, can scarcely speak for tears, while the maid’s courage falters at the door. Protocol persists—bows, formal address—even as a royal bodyguard physically propels Mati into a chariot. Parallel movement structures the scene: a second chariot carries her younger brother, Satya. Both children enact composure that barely conceals fear; the horses, expertly handled, become instruments of orchestrated escape through the northern gate.
+    </p>
+    <p>
+      The final exchange returns the princess’s focus to duty. Remembering her parents, she asks after the king and queen; the driver replies that they are “doing their duty.” Mati responds with a declarative acceptance—“And I must do mine”—signaling a transition from sheltered adolescence to responsible agency. The excerpt thus stages a threshold narrative in which personal identity is re-aligned with civic obligation amid the dislocations of war.
+    </p>
+    <div id="q3" class="question"></div>
+  </section>
+
+</div>
+
+<script>
+// --- FULL 30 questions per article ---
+const data = {
+  1:[
+    {q:"Which best captures the narrator’s initial state after landing?",c:["Calm anticipation","Physiological agitation","Intellectual curiosity only","Indifference"],a:1},
+    {q:"The airport’s “thick air” functions primarily as a symbol of:",c:["Legal barriers to entry","Material and sensory overwhelm","Celebration and festivity","Mechanical failure"],a:1},
+    {q:"The wheelchair detail most directly emphasizes:",c:["Comic relief","Physical vulnerability within a new environment","A historical reference","Economic privilege"],a:1},
+    {q:"The relatives’ clothing suggests:",c:["Strict uniformity","Cultural hybridity across generations","Rejection of tradition","Hostility to outsiders"],a:1},
+    {q:"The handmade sign triggers embarrassment chiefly because it:",c:["Misspells her name","Publicly marks her as different","Violates airport policy","Is written in Punjabi"],a:1},
+    {q:"“Deposited among strangers” illustrates which narrative perspective?",c:["Omniscient narrator","First-person introspection","Second-person imperative","Dramatic monologue by Arjun"],a:1},
+    {q:"The phrase “does not map neatly” implies that the narrator:",c:["Lacks a literal map","Cannot recognize family members","Finds her categories of identity inadequate","Rejects hospitality"],a:2},
+    {q:"Her use of “Sat sri akaal” is best read as:",c:["Sarcasm","A performative attempt at belonging","A secret code","Legal requirement"],a:1},
+    {q:"Arjun’s fluent English primarily serves to:",c:["Reinforce the communication barrier","Collapse the imagined barrier","Mock the narrator","Introduce conflict with the father"],a:1},
+    {q:"The narrator’s refusal of her father’s embrace signifies:",c:["Simple rudeness","Adolescent autonomy complicated by hurt","Joyful independence","Physical pain only"],a:1},
+    {q:"Which theme is most central to the passage?",c:["Economic inequality","Diasporic ambivalence","Political revolution","Environmental conservation"],a:1},
+    {q:"The narrative’s focus on breath and sweat underscores:",c:["Romantic desire","Embodied experience of place","Athletic triumph","Medical diagnosis"],a:1},
+    {q:"Which literary device is most evident in “welcome and alienation…co-exist in the same breath”?",c:["Hyperbole","Paradox","Metonymy","Litotes"],a:1},
+    {q:"The placard is an example of:",c:["Bureaucratic document","Familial performance of welcome","Commercial advertisement","Propaganda"],a:1},
+    {q:"Which best describes the tone of Arjun’s greeting?",c:["Formal and distant","Playful and reassuring","Accusatory","Melancholic"],a:1},
+    {q:"The narrator’s fear of not speaking Punjabi is undercut by:",c:["Security announcements","Her father’s translation","Arjun’s English","A phone app"],a:2},
+    {q:"“Self-conscious individuation” refers to the narrator’s desire to:",c:["Merge with the crowd","Erase her past","Define herself apart from adults","Abandon language"],a:2},
+    {q:"The arrivals hall functions in the plot as a:",c:["Climactic battlefield","Liminal space of transition","Epilogue","Private sanctuary"],a:1},
+    {q:"The narrator’s “burning cheeks” most nearly indicate:",c:["Fever","Anger or embarrassment","Cold exposure","Joy"],a:1},
+    {q:"The contrast between ritual greeting and casual high-five exemplifies:",c:["Historical anachronism","Cultural code-switching","Colonial mimicry","Foreshadowing of danger"],a:1},
+    {q:"Which best states the passage’s view of family?",c:["A purely oppressive institution","A site of comfort and pressure","Legally defined only","Irrelevant to identity"],a:1},
+    {q:"The narrative tempo mirrors:",c:["The slow passage of time","The narrator’s racing thoughts","Bureaucratic delay","Weather patterns"],a:1},
+    {q:"What is most threatened in the narrator’s imagination?",c:["Physical safety","Linguistic intelligibility","Monetary resources","Luggage"],a:1},
+    {q:"Arjun’s age relative to the narrator primarily suggests:",c:["A power imbalance favoring him","Potential peer connection","A generation gap","A parental role"],a:1},
+    {q:"Which phrase best encapsulates the narrator’s journey?",c:["From certainty to doubt","From isolation to tentative belonging","From joy to despair","From anger to apathy"],a:1},
+    {q:"The father’s “purposeful navigation” is juxtaposed with the narrator’s:",c:["Confidence","Hesitation","Humor","Silence"],a:1},
+    {q:"“Corporeality as index of dislocation” means the text uses the body to:",c:["Solve a mystery","Signal emotional and cultural upheaval","Provide comic effect","Indicate perfect adaptation"],a:1},
+    {q:"The overall narrative stance toward India is:",c:["Unambiguously negative","Sentimentally nostalgic","Complex: intimate yet unfamiliar","Purely touristic"],a:2},
+    {q:"Which best characterizes the passage’s resolution?",c:["Catastrophe","Partial easing through kinship","Return to Britain","Legal dispute"],a:1},
+    {q:"What does the episode ultimately dramatize?",c:["The dangers of air travel","The layered negotiation of identity","The failures of parenting","A language lesson"],a:1}
+  ],
+  2:[
+    {q:"At the outset the grass is described as:",c:["Waist-high","Taller than the child","Newly mown","Bare earth"],a:1},
+    {q:"The dominant mood of the first paragraph is:",c:["Triumph","Bewildered terror","Boredom","Nostalgic warmth"],a:1},
+    {q:"The simile “as though the sky were tearing” contributes to a sense of:",c:["Bureaucracy","Apocalyptic intensity","Silence","Celebration"],a:1},
+    {q:"The child’s personification of nature indicates:",c:["Scientific training","A cognitive style common in children","Supernatural belief","Mockery of adults"],a:1},
+    {q:"What most immediately provokes the child’s panic?",c:["Hunger","Isolation in an unfamiliar environment","Darkness","Rainstorm"],a:1},
+    {q:"The sisters’ arrival is framed as:",c:["A bureaucratic intervention","A quasi-magical appearance","A military rescue","A punishment"],a:1},
+    {q:"The red-currant imagery primarily suggests:",c:["Violence","Domestic abundance and play","Scarcity","Legal trouble"],a:1},
+    {q:"Which best describes the narrative point of view?",c:["First person retrospective","Second person","Third person omniscient","Objective reportage"],a:0},
+    {q:"Thematically, the passage juxtaposes:",c:["City and countryside","War and peace","Work and leisure","Science and superstition"],a:0},
+    {q:"The word “sublime” as used here denotes:",c:["Pure prettiness","Awe mingled with fear","Moral virtue","Religious ritual"],a:1},
+    {q:"“Emplacement is achieved through kinship” means that the child:",c:["Buys a house","Feels at home because of family","Learns botany","Leaves the village"],a:1},
+    {q:"Which sound image is most prominent?",c:["Car horns","Larks screaming","Church bells","Ocean waves"],a:1},
+    {q:"The cottage is described as:",c:["A prison","A destination not yet recognized as home","A school","A shop"],a:1},
+    {q:"The phrase “rite of entrance” casts the episode as:",c:["A legal contract","A symbolic initiation","A sports match","A dream"],a:1},
+    {q:"The elder-blossom “snow” is an example of:",c:["Paradox","Metaphor","Synecdoche","Irony"],a:1},
+    {q:"“Animistic perception” most nearly means:",c:["Seeing animals everywhere","Attributing life or agency to nature","Worshiping idols","Studying animation"],a:1},
+    {q:"The child’s howl signals:",c:["Anger at his sisters","Panic and abandonment","Victory","Hunger"],a:1},
+    {q:"Which contrast structures the final paragraph?",c:["House vs. garden","Nature’s menace vs. familial rescue","Winter vs. summer","Morning vs. night"],a:1},
+    {q:"The garden is portrayed as:",c:["Industrial","Steep and rose-filled","Desert-like","Neglected"],a:1},
+    {q:"The overarching narrative function of the episode is to:",c:["Introduce a murder mystery","Establish setting and themes of belonging","Demonstrate farming techniques","Criticize education"],a:1},
+    {q:"“Deposited from a carrier’s cart” emphasizes:",c:["Wealth","Ordinary rural transport","Sea voyage","Urban grandeur"],a:1},
+    {q:"The child’s inability to “recognize” the cottage as home reflects:",c:["Memory loss","The lag between feeling and cognition","Hostility toward family","Nighttime darkness"],a:1},
+    {q:"The overall tone at the end becomes:",c:["Sardonic","Reassured and affectionate","Bitter","Suspenseful"],a:1},
+    {q:"The episode can be read as a meditation on:",c:["Colonial history","Early childhood perception","Mathematics","Naval warfare"],a:1},
+    {q:"Which sense is least engaged in the description?",c:["Smell","Taste","Touch","Hearing"],a:1},
+    {q:"The phrase “rank with sharp odours” appeals primarily to:",c:["Sight","Smell","Taste","Hearing"],a:1},
+    {q:"The passage ultimately argues that home is:",c:["A contract","A feeling anchored by relationships","A map coordinate","A uniform"],a:1},
+    {q:"Which best captures the structure of the narrative?",c:["Crisis → rescue → arrival","Exposition → denouement only","Circular flashback","Dialogue only"],a:0},
+    {q:"The humor in the sisters’ scolding primarily functions to:",c:["Humiliate the child","Diffuse panic with affection","Mock rural life","Create suspense"],a:1},
+    {q:"Overall, the passage constructs the countryside as:",c:["Static background","Dynamic, agentic environment","Purely benevolent","Artificial"],a:1}
+  ],
+  3:[
+    {q:"Which image most clearly establishes the setting’s opulence?",c:["Mud huts","Jewel trees and crystal lamps","Empty fields","Desert tents"],a:1},
+    {q:"Mati’s measuring string symbolizes:",c:["Childish play","A keepsake of romantic love","Order and intellectual identity","Weaponry"],a:2},
+    {q:"Which best describes the pace of the evacuation?",c:["Leisurely","Compressed and urgent","Static","Comic"],a:1},
+    {q:"Devi’s inability to speak primarily signals:",c:["Indifference","Overwhelming emotion","Physical illness","Disrespect"],a:1},
+    {q:"The bowing of the vehicle to Mati is an example of:",c:["Magical realism","Personification of protocol","Mechanical malfunction","Natural disaster"],a:1},
+    {q:"The parallel chariots carrying Mati and Satya emphasize:",c:["Rivalry for the throne","Sibling estrangement","Coordinated escape","Celebration"],a:2},
+    {q:"Mati’s repeated self-reminder “I am a princess” functions to:",c:["Flaunt wealth","Reassert role-based courage","Threaten the guards","Initiate a coronation"],a:1},
+    {q:"Which best characterizes the narrative space of the palace?",c:["Stable and quiet","Liminal, between ceremony and crisis","Ruined and deserted","Marketplace"],a:1},
+    {q:"The bodyguard’s physicality underscores:",c:["Disrespect for royalty","The urgency that overrides decorum","Playfulness","Celebration"],a:1},
+    {q:"Satya’s demeanor reveals:",c:["Arrogance","Fear masked as courage","Joy","Indifference"],a:1},
+    {q:"The horses’ behavior is most associated with:",c:["Chaos","Expert control","Sleepiness","Wild panic"],a:1},
+    {q:"The “northern gate” motif suggests:",c:["Random wandering","A planned route of escape","Return to the palace","A myth about seasons"],a:1},
+    {q:"The driver’s statement about the king and queen frames duty as:",c:["Optional","A shared, hierarchical obligation","Romantic love","Punishment"],a:1},
+    {q:"Mati’s final line marks a transition to:",c:["Carefree childhood","Active agency and responsibility","Exile","Betrayal"],a:1},
+    {q:"Which literary device is most evident in the palace description?",c:["Minimalism","Sensory imagery","Allegory","Satire"],a:1},
+    {q:"The evacuation is precipitated by:",c:["A festival","An attack on the city","A drought","A royal wedding"],a:1},
+    {q:"The measuring string around the wrist is also a gesture of:",c:["Vanity","Self-soothing ritual","Weapon concealment","Gift exchange"],a:1},
+    {q:"The palace servants’ distraction indicates:",c:["Conspiracy","Pervasive fear and chaos","Celebration","Indifference"],a:1},
+    {q:"The narrative most strongly explores the theme of:",c:["Romantic comedy","Duty under pressure","Economic trade","Travel writing"],a:1},
+    {q:"Which best describes the relationship between ritual and urgency?",c:["Ritual disappears entirely","Ritual persists but is subordinated to survival","Urgency is mocked by ritual","They are unrelated"],a:1},
+    {q:"The phrase “threshold narrative” highlights:",c:["Geographic borders only","Transitions in space and identity","Mythic monsters","Architectural history"],a:1},
+    {q:"Which character most clearly embodies steadiness?",c:["The weeping nurse","The expert charioteer","The frightened maid","Satya"],a:1},
+    {q:"Mati’s concern for her parents primarily indicates:",c:["Political ambition","Familial loyalty and shared duty","Indifference","Desire to surrender"],a:1},
+    {q:"The narrative voice treats royalty with:",c:["Mockery","Respectful realism","Satire","Indifference"],a:1},
+    {q:"The phrase “architectural thresholds” underscores the importance of:",c:["Carpentry","Crossing from safety to exposure","Gardening","Mining"],a:1},
+    {q:"The presence of forty war chariots primarily conveys:",c:["Leisure travel","Military preparedness","Poverty","Diplomacy"],a:1},
+    {q:"Which emotion does Mati most successfully regulate?",c:["Joy","Fear","Boredom","Anger"],a:1},
+    {q:"The story element most indicative of foreshadowing is:",c:["The jewel trees","The measuring string as talisman","The number of guards","The time of day"],a:1},
+    {q:"The main conflict can be summarized as:",c:["Individual vs. nature","Duty vs. fear during war","Science vs. art","Merchant vs. thief"],a:1},
+    {q:"Overall, the passage frames Mati as:",c:["Passive victim","Emerging leader","Comic relief","Antagonist"],a:1}
+  ]
+};
+
+const totalPerArticle = 30;
+
+let state = { article: 1, index: 0 };
+
+function render(){
+  const container = document.getElementById("q"+state.article);
+  container.innerHTML = "";
+
+  // Progress
+  const prog = document.createElement("div");
+  prog.className = "controls";
+  const badge = document.createElement("span");
+  badge.className = "progress";
+  badge.textContent = "Question " + (state.index+1) + " of " + totalPerArticle;
+  prog.appendChild(badge);
+  container.appendChild(prog);
+
+  const q = data[state.article][state.index];
+  const p = document.createElement("p");
+  p.innerHTML = "<strong>Question:</strong> " + q.q;
+  container.appendChild(p);
+
+  const choicesWrap = document.createElement("div");
+  choicesWrap.className = "choices";
+  const groupName = "g_"+state.article+"_"+state.index;
+
+  q.c.forEach((txt)=>{
+    const lab = document.createElement("label");
+    lab.className = "choice";
+    lab.innerHTML = `<input type="radio" name="${groupName}"><span>${txt}</span>`;
+    choicesWrap.appendChild(lab);
+  });
+  container.appendChild(choicesWrap);
+
+  const controls = document.createElement("div");
+  controls.className = "controls";
+  const prev = document.createElement("button");
+  prev.className = "secondary";
+  prev.textContent = "Back";
+  prev.disabled = state.index===0;
+  prev.onclick = ()=>{ state.index--; render(); };
+
+  const next = document.createElement("button");
+  next.textContent = (state.index===totalPerArticle-1 ? (state.article<3?"Reveal Next Passage":"Finish") : "Next");
+  next.disabled = true;
+
+  // enable Next once any option chosen
+  choicesWrap.querySelectorAll("input").forEach(inp=>{
+    inp.addEventListener("change",()=>{ next.disabled=false; });
+  });
+
+  next.onclick = ()=>{
+    if(state.index < totalPerArticle-1){
+      state.index++;
+      render();
+    } else {
+      // finished this article
+      if(state.article < 3){
+        document.getElementById("article"+(state.article+1)).classList.remove("hidden");
+        document.getElementById("article"+(state.article+1)).scrollIntoView({behavior:"smooth"});
+        state.article++;
+        state.index = 0;
+        render();
+      } else {
+        next.textContent = "Completed";
+        next.disabled = true;
+      }
+    }
+  };
+
+  controls.appendChild(prev);
+  controls.appendChild(next);
+  container.appendChild(controls);
+}
+
+render();
+</script>
+</body>
+</html>
