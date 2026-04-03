@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comprehension Test v2</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: linear-gradient(135deg, #dbeafe, #eff6ff);
+    color: #0f172a;
+  }
+  .container {
+    max-width: 980px;
+    margin: 28px auto;
+    background: #ffffff;
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+  }
+  h1 {
+    margin-top: 0;
+    color: #1d4ed8;
+  }
+  #timer {
+    font-size: 1.05rem;
+    font-weight: bold;
+    margin-bottom: 12px;
+  }
+  .progress {
+    width: 100%;
+    height: 12px;
+    background: #e5e7eb;
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 18px;
+  }
+  .progress-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #2563eb, #38bdf8);
+    transition: width 0.25s ease;
+  }
+  .status-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+    color: #334155;
+    font-size: 0.95rem;
+  }
+  .passage {
+    background: #f8fbff;
+    padding: 18px;
+    border-left: 6px solid #2563eb;
+    border-radius: 10px;
+    line-height: 1.65;
+    white-space: pre-line;
+    margin-bottom: 18px;
+  }
+  #q {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 16px;
+  }
+  label {
+    display: block;
+    margin: 10px 0;
+    padding: 10px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    background: #ffffff;
+    border: 1px solid #dbeafe;
+  }
+  label:hover {
+    background: #eff6ff;
+  }
+  input[type="radio"] {
+    margin-right: 8px;
+  }
+  .buttons {
+    margin-top: 16px;
+  }
+  button {
+    background: #2563eb;
+    color: white;
+    padding: 10px 16px;
+    margin: 4px 8px 4px 0;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+  }
+  button:hover {
+    background: #1d4ed8;
+  }
+  button.secondary {
+    background: #475569;
+  }
+  button.secondary:hover {
+    background: #334155;
+  }
+  .correct { color: #15803d; font-weight: bold; }
+  .wrong { color: #dc2626; font-weight: bold; }
+  .review-item {
+    padding: 12px;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .score-box {
+    margin-top: 20px;
+    padding: 14px 16px;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 10px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Comprehension Test (Version 2)</h1>
+  <div id="timer"></div>
+  <div class="progress"><div id="bar" class="progress-bar"></div></div>
+  <div class="status-row">
+    <div id="questionCount"></div>
+    <div id="passageCount"></div>
+  </div>
+  <div id="passage" class="passage"></div>
+  <div id="q"></div>
+  <div class="buttons">
+    <button class="secondary" onclick="prev()">Previous</button>
+    <button onclick="next()">Next</button>
+    <button onclick="submitTest()">Submit</button>
+  </div>
+  <div id="score"></div>
+  <div id="review"></div>
+</div>
+
+<script>
+const data = [
+  {
+    title: "Passage 1: The Desert Research Station",
+    text: `Far beyond the last paved road, a desert research station stood among orange dunes and jagged black rocks. During the day, the air shimmered with heat, and at night the temperature dropped so sharply that frost sometimes formed on metal rails. The station had been built to study how living things survive in harsh climates. A mixed team of scientists, engineers, and students worked there for three months each year, collecting information about water loss, wind movement, and animal behavior.
+
+Most visitors imagined the desert as empty, but the team quickly learned that it was full of life. Small foxes left delicate tracks before sunrise. Beetles emerged after dark and disappeared before the ground became too hot. Thin desert flowers opened for only a few hours after rare rainstorms. Because everything changed so quickly, the researchers had to stay alert. Missing a single morning could mean losing valuable data.
+
+One week, a violent sandstorm hit the station. Dust slipped through window frames, coated equipment, and blocked the solar panels that powered the laboratory. Work almost stopped. Instead of giving up, the team divided responsibilities. Some people cleaned instruments, others reinforced doors, and a few climbed onto the roof to clear the panels. By the following evening, power had returned and the experiments continued.
+
+When the season ended, the students realized the desert had taught them more than science. It had shown them that success depends not only on knowledge, but also on patience, observation, and cooperation in difficult conditions.`,
+    questions: [
+      {q:"What is the main idea of the passage?", options:["The desert is empty and lifeless","A team learns scientific and personal lessons while working in a harsh desert","Students dislike research stations","Sandstorms always destroy laboratories"], answer:1},
+      {q:"Where was the research station located?", options:["In a rainforest","On a snowy mountain","In a desert beyond the last paved road","Beside a large city"], answer:2},
+      {q:"What did the station study?", options:["Ocean currents","How living things survive in harsh climates","Ancient buildings","Airplane design"], answer:1},
+      {q:"Who worked at the station?", options:["Only engineers","Only students","Scientists, engineers, and students","Tourists and pilots"], answer:2},
+      {q:"What surprised many visitors about the desert?", options:["It had too many roads","It was full of life","It was always cold","It had no rocks"], answer:1},
+      {q:"When did small foxes leave tracks?", options:["At noon","Before sunrise","During rainstorms","At sunset only"], answer:1},
+      {q:"Why did the researchers have to stay alert?", options:["Because everything changed quickly","Because they were afraid of visitors","Because the station was noisy","Because they wanted to leave early"], answer:0},
+      {q:"What happened during the sandstorm?", options:["The station was buried forever","Dust damaged equipment and blocked solar panels","The team went home immediately","Rain flooded the lab"], answer:1},
+      {q:"How did the team respond to the storm?", options:["They argued and stopped working","They waited for outside help","They shared responsibilities and fixed problems together","They abandoned the station"], answer:2},
+      {q:"What powered the laboratory?", options:["Gas engines","Solar panels","A nearby river","Windmills only"], answer:1},
+      {q:"What lesson did the students learn at the end?", options:["Science is easy","Success needs patience, observation, and cooperation","Deserts should be avoided","Storms make research impossible"], answer:1},
+      {q:"What does the passage suggest about the desert?", options:["It is simple to understand","It rewards careful observation","It never changes","It is safer than cities"], answer:1},
+      {q:"Why were desert flowers difficult to study?", options:["They grew underground","They opened only briefly after rare rainstorms","They bloomed only in winter","They had no color"], answer:1},
+      {q:"Which word best describes the team?", options:["Lazy","Cooperative","Careless","Unprepared"], answer:1},
+      {q:"Why was missing one morning a problem?", options:["Breakfast would be late","They could lose valuable data","The station would close","The foxes would enter the lab"], answer:1},
+      {q:"What effect did the desert have on the students?", options:["It bored them","It taught them life lessons as well as science","It made them quit school","It convinced them to become tourists"], answer:1},
+      {q:"What can be inferred about conditions at the station?", options:["They were comfortable and predictable","They were demanding and often extreme","They were luxurious","They were wet all year"], answer:1},
+      {q:"Why did some people climb onto the roof?", options:["To watch the sunset","To repair an antenna","To clear the solar panels","To collect flowers"], answer:2},
+      {q:"What is the tone of the final paragraph?", options:["Reflective and positive","Angry and critical","Humorous and silly","Confused and uncertain"], answer:0},
+      {q:"Which title would best fit this passage?", options:["Lost in the City","Learning from the Desert","The Dangerous Fox","A Vacation in the Rain"], answer:1}
+    ]
+  },
+  {
+    title: "Passage 2: The Town Without Screens",
+    text: `Mapleton was known as a modern town. Nearly every home had smart devices, and many people spent more time looking at screens than at one another. Children carried tablets, parents answered work messages during dinner, and even short conversations were often interrupted by ringing phones. Then, after a powerful lightning storm, the town’s communication network failed. Internet service vanished, phone signals disappeared, and many digital systems stopped responding.
+
+At first, the town reacted with frustration. Shop owners could not process online payments. Office workers worried about deadlines. Teenagers complained that they could not contact friends. The local library was suddenly crowded with people searching for paper maps, printed schedules, and old manuals. Some residents waited impatiently for repairs, convinced that normal life could not continue without constant technology.
+
+However, as the days passed, new habits began to form. Neighbors who had barely spoken for months started talking in front gardens and at bus stops. Children organized outdoor games that lasted for hours. Families spent evenings telling stories, cooking together, and playing board games found in dusty cupboards. Teachers asked students to observe birds, plants, and weather instead of searching for instant answers online. Many discovered they could solve problems by sharing knowledge directly.
+
+When service finally returned a week later, most residents were relieved. Yet something had changed. People still appreciated technology, but they no longer treated it as the center of every moment. The blackout had reminded them that convenience is useful, but attention, friendship, and curiosity are what truly make a community strong.`,
+    questions: [
+      {q:"What is the main idea of the passage?", options:["Technology should be banned forever","A blackout helps a town rediscover real-world connection and community","Libraries are better than schools","Lightning storms are always harmful"], answer:1},
+      {q:"What was Mapleton known for?", options:["Ancient buildings","Its modern, screen-focused lifestyle","Farming only","Being without electricity"], answer:1},
+      {q:"What caused the network failure?", options:["A flood","A workers' strike","A lightning storm","A festival"], answer:2},
+      {q:"What stopped working after the storm?", options:["Only televisions","Internet, phone signals, and many digital systems","Roads and bridges","Water pipes"], answer:1},
+      {q:"How did people react at first?", options:["With excitement","With frustration","With laughter","With relief"], answer:1},
+      {q:"Why was the library crowded?", options:["A concert was happening there","People needed printed information and resources","It offered free meals","Students were hiding from the rain"], answer:1},
+      {q:"What did some residents believe at first?", options:["Life would improve immediately","Normal life could not continue without technology","The storm would last a month","Books were useless"], answer:1},
+      {q:"What changed after a few days?", options:["Everyone left town","People developed new habits and talked more","The storm returned","The library closed"], answer:1},
+      {q:"What did children do during the outage?", options:["They slept all day","They organized outdoor games","They repaired the network","They moved away"], answer:1},
+      {q:"How did families spend evenings?", options:["Driving to other towns","Telling stories, cooking, and playing games","Watching more television","Waiting in silence"], answer:1},
+      {q:"What did teachers ask students to do?", options:["Memorize passwords","Observe birds, plants, and weather","Write about computers only","Avoid going outside"], answer:1},
+      {q:"What did many residents discover?", options:["They needed more apps","They could solve problems by sharing knowledge directly","Technology was evil","Paper maps are always accurate"], answer:1},
+      {q:"How long did the outage last?", options:["One day","A week","A month","An entire year"], answer:1},
+      {q:"How did most residents feel when service returned?", options:["Angry","Relieved","Disappointed","Uninterested"], answer:1},
+      {q:"What had changed by the end?", options:["People no longer appreciated technology at all","People saw technology as useful, but not central to everything","The town became less modern than ever","Children refused to play outside"], answer:1},
+      {q:"What does the passage suggest makes a community strong?", options:["Fast internet alone","Attention, friendship, and curiosity","Expensive devices","Long work hours"], answer:1},
+      {q:"Which best describes the structure of the passage?", options:["Problem, adjustment, reflection","Question, answer, joke","Instructions only","A mystery with no ending"], answer:0},
+      {q:"Why is the title 'The Town Without Screens' appropriate?", options:["The town never had screens","The loss of screens changed how people lived together","Only children used screens","The story is about a movie theater"], answer:1},
+      {q:"What can be inferred about life before the outage?", options:["People gave each other full attention often","Digital devices interrupted many interactions","No one used technology","Families always played games together"], answer:1},
+      {q:"Which statement best matches the author’s message?", options:["Technology has no value","Convenience matters, but human connection matters more","Storms improve towns","Libraries should replace phones"], answer:1}
+    ]
+  },
+  {
+    title: "Passage 3: The Island of Echo Cliffs",
+    text: `Several hours from the mainland, beyond shipping routes and fishing grounds, stood a rocky island called Echo Cliffs. Sailors had spoken about it for generations. Some claimed that strange lights moved across the cliffs after dark. Others reported hearing sounds like distant voices, even when no people were nearby. Because the waters around the island were difficult to cross and the shore was lined with sharp stone, few visitors stayed long enough to investigate.
+
+A small team of explorers finally organized an expedition to study the island carefully. They landed on a narrow strip of beach and climbed toward a plateau where the remains of old buildings stood in silence. The buildings were empty, but not completely destroyed. Broken walls, carved stones, and faded symbols suggested that a community had once lived there. Yet there were no clear records explaining who those people were or why they had disappeared.
+
+As evening approached, the team set up instruments to record sound, temperature, and movement. For several hours, nothing unusual happened. Then, just after midnight, pale blue lights flickered along the upper cliffs. At the same time, the recording devices captured low tones that rose and fell like distant singing. The explorers searched for obvious causes such as animals, hidden machinery, or weather effects, but none of their explanations fully matched what they observed.
+
+The next morning, the team left with samples, notes, and more questions than answers. Their report did not claim that the island was magical. Instead, it concluded that Echo Cliffs remained unexplained. The mystery endured not because people imagined too much, but because careful observation had still failed to reveal a complete answer.`,
+    questions: [
+      {q:"What is the main idea of the passage?", options:["A team solves a mystery completely","An island remains mysterious even after careful investigation","Sailors invent stories for fun","The sea is dangerous"], answer:1},
+      {q:"Where is Echo Cliffs located?", options:["In a desert","Several hours from the mainland","Inside a forest","Next to a city harbor"], answer:1},
+      {q:"Why had few visitors stayed long on the island?", options:["It was too crowded","The waters and rocky shore were dangerous","There was nothing to see","The weather was always perfect"], answer:1},
+      {q:"What did sailors report seeing after dark?", options:["Large fires","Strange lights moving across the cliffs","City buildings","Airplanes landing"], answer:1},
+      {q:"What did the explorers find on the plateau?", options:["A modern laboratory","The remains of old buildings","A forest of tall trees","A busy village"], answer:1},
+      {q:"What suggested a community once lived there?", options:["Fresh food","Broken walls, carved stones, and faded symbols","New roads","Anchored ships"], answer:1},
+      {q:"What was unknown about the former inhabitants?", options:["What language they spoke only","Who they were and why they disappeared","How tall they were","Whether they liked music"], answer:1},
+      {q:"Why did the team set up instruments?", options:["To build a radio tower","To record sound, temperature, and movement","To cook meals","To scare animals away"], answer:1},
+      {q:"When did the unusual lights appear?", options:["At sunrise","At noon","Just after midnight","During the afternoon"], answer:2},
+      {q:"What else did the devices record?", options:["Laughter from tourists","Low tones like distant singing","Nothing at all","Thunder only"], answer:1},
+      {q:"What did the explorers do after observing the lights?", options:["They celebrated the answer","They searched for natural or human causes","They destroyed the devices","They decided it was magic"], answer:1},
+      {q:"Why was the mystery still unsolved?", options:["The explorers refused to work","No explanation fully matched the evidence","The team lost all notes","The island disappeared"], answer:1},
+      {q:"What did the report avoid claiming?", options:["That the island existed","That the island was magical","That the sea was rough","That the buildings were old"], answer:1},
+      {q:"What is the tone of the final paragraph?", options:["Careful and thoughtful","Angry and emotional","Comic and playful","Bored and tired"], answer:0},
+      {q:"What does the passage suggest about mystery?", options:["Mysteries only exist in legends","A mystery can remain even after serious study","Science always answers everything immediately","People should not investigate unusual things"], answer:1},
+      {q:"Which title best matches the passage?", options:["A Day at the Harbor","The Unexplained Island","How to Build Instruments","The Happy Sailors"], answer:1},
+      {q:"Why is the island called Echo Cliffs?", options:["Because it had many trees","Because people reported sounds near the cliffs","Because of a famous shop","Because it was silent"], answer:1},
+      {q:"What can be inferred about the explorers?", options:["They were careless and untrained","They tried to investigate in a systematic way","They came only for treasure","They disliked evidence"], answer:1},
+      {q:"What did the team take with them when they left?", options:["Only photographs","Samples, notes, and unanswered questions","Ancient statues","The entire recording system"], answer:1},
+      {q:"What is the author’s likely purpose?", options:["To describe a mystery investigated with reason and evidence","To prove ghosts are real","To advertise island tourism","To teach sailing techniques"], answer:0}
+    ]
+  }
+];
+
+const QUESTIONS_PER_PASSAGE = 20;
+const TOTAL_QUESTIONS = data.length * QUESTIONS_PER_PASSAGE;
+let p = 0;
+let q = 0;
+let answers = new Array(TOTAL_QUESTIONS).fill(null);
+let submitted = false;
+let time = 1800;
+
+function getIndex() {
+  return p * QUESTIONS_PER_PASSAGE + q;
+}
+
+function timer() {
+  const m = Math.floor(time / 60);
+  const s = time % 60;
+  document.getElementById("timer").innerHTML = "Time: " + m + ":" + String(s).padStart(2, '0');
+  if (time > 0 && !submitted) {
+    time--;
+    setTimeout(timer, 1000);
+  } else if (!submitted) {
+    submitTest();
+  }
+}
+
+function load() {
+  const currentPassage = data[p];
+  document.getElementById("passage").innerHTML = "<h2>" + currentPassage.title + "</h2>" + currentPassage.text;
+  document.getElementById("passageCount").textContent = "Passage " + (p + 1) + " of " + data.length;
+  show();
+}
+
+function show() {
+  const item = data[p].questions[q];
+  const idx = getIndex();
+  let html = "<p><strong>" + item.q + "</strong></p>";
+
+  item.options.forEach((opt, i) => {
+    const checked = answers[idx] === i ? "checked" : "";
+    html += "<label><input type='radio' name='q' onclick='save(" + i + ")' " + checked + "> " + opt + "</label>";
+  });
+
+  html += "<p>Question " + (idx + 1) + " of " + TOTAL_QUESTIONS + "</p>";
+  document.getElementById("q").innerHTML = html;
+  document.getElementById("questionCount").textContent = "Answered: " + answers.filter(a => a !== null).length + " / " + TOTAL_QUESTIONS;
+  document.getElementById("bar").style.width = (((idx + 1) / TOTAL_QUESTIONS) * 100) + "%";
+}
+
+function save(choice) {
+  answers[getIndex()] = choice;
+  document.getElementById("questionCount").textContent = "Answered: " + answers.filter(a => a !== null).length + " / " + TOTAL_QUESTIONS;
+}
+
+function next() {
+  if (submitted) return;
+  if (q < QUESTIONS_PER_PASSAGE - 1) {
+    q++;
+  } else if (p < data.length - 1) {
+    p++;
+    q = 0;
+    load();
+    return;
+  }
+  show();
+}
+
+function prev() {
+  if (submitted) return;
+  if (q > 0) {
+    q--;
+  } else if (p > 0) {
+    p--;
+    q = QUESTIONS_PER_PASSAGE - 1;
+    load();
+    return;
+  }
+  show();
+}
+
+function submitTest() {
+  if (submitted) return;
+  submitted = true;
+
+  let score = 0;
+  let review = "<h2>Review</h2>";
+
+  data.forEach((passage, pi) => {
+    review += "<h3>" + passage.title + "</h3>";
+    passage.questions.forEach((question, qi) => {
+      const idx = pi * QUESTIONS_PER_PASSAGE + qi;
+      const user = answers[idx];
+      if (user === question.answer) score++;
+      review += "<div class='review-item'>";
+      review += "<strong>" + (idx + 1) + ". " + question.q + "</strong><br>";
+      review += "Your answer: <span class='" + (user === question.answer ? "correct" : "wrong") + "'>" + (user !== null ? question.options[user] : "None") + "</span><br>";
+      review += "Correct answer: <span class='correct'>" + question.options[question.answer] + "</span>";
+      review += "</div>";
+    });
+  });
+
+  document.getElementById("score").innerHTML = "<div class='score-box'><h2>Score: " + score + " / " + TOTAL_QUESTIONS + "</h2><p>Percentage: " + Math.round((score / TOTAL_QUESTIONS) * 100) + "%</p></div>";
+  document.getElementById("review").innerHTML = review;
+  document.getElementById("questionCount").textContent = "Completed";
+}
+
+timer();
+load();
+</script>
+</body>
+</html>
