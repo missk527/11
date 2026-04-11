@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title> Reading Test - 11+</title>
+<style>
+body { font-family: Arial; background:#eef2f7; }
+.container { max-width:900px; margin:auto; background:white; padding:20px; border-radius:10px; }
+.passage { background:#f4f7fb; padding:15px; border-left:5px solid #1a3c6e; white-space:pre-line; }
+button { background:#1a3c6e; color:white; padding:10px; margin:5px; border:none; cursor:pointer; }
+button:hover { opacity:0.9; }
+.correct {color:green;}
+.wrong {color:red;}
+label { display:block; margin:6px 0; }
+</style>
+</head>
+<body>
+
+<div class="container">
+<h1> Reading Test (11+)</h1>
+<div id="timer"></div>
+<div id="passage" class="passage"></div>
+<div id="q"></div>
+<button onclick="prev()">Previous</button>
+<button onclick="next()">Next</button>
+<button onclick="submitTest()">Submit</button>
+<div id="score"></div>
+<div id="review"></div>
+</div>
+
+<script>
+const data = [
+{
+title: "Passage 1",
+text: `In recent decades, urban expansion has significantly altered natural ecosystems. As cities grow, green spaces are often replaced by infrastructure, reducing biodiversity and disrupting ecological balance.
+
+However, some urban planners advocate for sustainable development, integrating parks, green roofs, and conservation zones into city design. These measures aim to mitigate environmental damage while maintaining economic growth.
+
+Despite these efforts, challenges remain. Rapid population growth and economic pressures often outweigh environmental concerns, leading to long-term consequences that are difficult to reverse.`,
+questions: [
+{q:"What is the main focus of the passage?",options:["Economic growth","Urbanisation and environment","Technology","Transportation"],answer:1},
+{q:"What has urban expansion caused?",options:["More forests","Loss of ecosystems","Better air","Less people"],answer:1},
+{q:"What do planners suggest?",options:["More roads","Sustainable development","Stopping cities","Ignoring nature"],answer:1},
+{q:"Green roofs help to:",options:["Increase pollution","Reduce impact","Build houses","Grow food only"],answer:1},
+{q:"What is a major challenge?",options:["Too many parks","Population growth","Too much space","Low demand"],answer:1},
+{q:"What does 'mitigate' mean?",options:["Increase","Ignore","Reduce","Hide"],answer:2},
+{q:"What replaces green spaces?",options:["Rivers","Infrastructure","Animals","Clouds"],answer:1},
+{q:"What is disrupted?",options:["Economy","Balance","Transport","Culture"],answer:1},
+{q:"What do cities aim to maintain?",options:["Silence","Growth","Nature","Water"],answer:1},
+{q:"What type of consequences?",options:["Short-term","Reversible","Long-term","Minor"],answer:2}
+]
+},
+{
+title: "Passage 2",
+text: `Artificial intelligence has transformed industries by automating complex processes and improving efficiency. From healthcare diagnostics to financial forecasting, AI systems can analyse vast amounts of data with remarkable speed.
+
+Nevertheless, concerns about ethical implications persist. Issues such as data privacy, algorithmic bias, and job displacement have sparked global debate.
+
+Experts argue that while AI offers significant benefits, careful regulation and responsible implementation are essential to ensure it serves society positively.`,
+questions: [
+{q:"What is the main idea?",options:["AI dangers","AI benefits and concerns","Healthcare","Finance"],answer:1},
+{q:"AI improves:",options:["Weather","Efficiency","Transport","Education"],answer:1},
+{q:"What concern is mentioned?",options:["Noise","Bias","Speed","Cost"],answer:1},
+{q:"What does AI analyse?",options:["People","Data","Buildings","Air"],answer:1},
+{q:"What is debated globally?",options:["Weather","Ethics","Transport","Education"],answer:1},
+{q:"What must be ensured?",options:["Profit","Speed","Positive impact","Control"],answer:2},
+{q:"What industry uses AI?",options:["Only tech","Many industries","None","Farming only"],answer:1},
+{q:"What does 'automating' mean?",options:["Replacing humans","Stopping work","Slowing tasks","Ignoring work"],answer:0},
+{q:"What risk affects jobs?",options:["Growth","Loss","Training","Travel"],answer:1},
+{q:"What is needed?",options:["Less AI","Regulation","More data","Faster systems"],answer:1}
+]
+},
+{
+title: "Passage 3",
+text: `Climate change continues to pose a significant threat to global stability. Rising temperatures contribute to extreme weather events, melting ice caps, and rising sea levels.
+
+Scientists emphasise the urgency of reducing greenhouse gas emissions to limit further damage. International cooperation is considered vital, as environmental issues transcend national borders.
+
+Although progress has been made through agreements and policies, critics argue that actions remain insufficient compared to the scale of the problem.`,
+questions: [
+{q:"What is the passage about?",options:["Weather","Climate change","Oceans","Politics"],answer:1},
+{q:"What do rising temperatures cause?",options:["Peace","Extreme weather","More forests","Less water"],answer:1},
+{q:"What must be reduced?",options:["Water","Energy","Emissions","Population"],answer:2},
+{q:"Why is cooperation needed?",options:["Competition","Shared problems","Trade","Travel"],answer:1},
+{q:"What do critics say?",options:["Too much action","Enough progress","Not enough action","No problem"],answer:2},
+{q:"What is melting?",options:["Cities","Ice caps","Roads","Mountains"],answer:1},
+{q:"What rises?",options:["Air","Sea levels","Land","Clouds"],answer:1},
+{q:"What type of issue is climate change?",options:["Local","Global","Temporary","Minor"],answer:1},
+{q:"What do agreements aim to do?",options:["Stop science","Help environment","Increase trade","Reduce jobs"],answer:1},
+{q:"What is the tone?",options:["Humorous","Serious","Neutral","Angry"],answer:1}
+]
+}
+];
+
+let p = 0, q = 0, answers = [];
+let time = 1800;
+
+function timer(){
+  let m = Math.floor(time / 60);
+  let s = time % 60;
+  document.getElementById("timer").innerHTML = "<h3>Time: " + m + ":" + String(s).padStart(2,'0') + "</h3>";
+  if(time > 0){
+    time--;
+    setTimeout(timer, 1000);
+  } else {
+    submitTest();
+  }
+}
+
+function load(){
+  document.getElementById("passage").innerHTML = "<h2>" + data[p].title + "</h2>" + data[p].text;
+  show();
+}
+
+function show(){
+  let item = data[p].questions[q];
+  let html = "<p><strong>" + item.q + "</strong></p>";
+  item.options.forEach((opt, i) => {
+    const checked = answers[p*10+q] === i ? "checked" : "";
+    html += "<label><input type='radio' name='q' onclick='save(" + i + ")' " + checked + "> " + opt + "</label>";
+  });
+  html += "<p>Question " + (p*10 + q + 1) + " of 30</p>";
+  document.getElementById("q").innerHTML = html;
+}
+
+function save(c){
+  answers[p*10 + q] = c;
+}
+
+function next(){
+  if(q < 9) q++;
+  else if(p < 2){ p++; q = 0; load(); return; }
+  show();
+}
+
+function prev(){
+  if(q > 0) q--;
+  else if(p > 0){ p--; q = 9; load(); return; }
+  show();
+}
+
+function submitTest(){
+  let score = 0, review = "";
+  data.forEach((pass, pi) => {
+    pass.questions.forEach((qq, qi) => {
+      let idx = pi*10 + qi;
+      let user = answers[idx];
+      if(user === qq.answer) score++;
+      review += "<p>" + qq.q + "<br>";
+      review += "Your: <span class='" + (user===qq.answer ? "correct" : "wrong") + "'>" + (qq.options[user] || "None") + "</span><br>";
+      review += "Correct: <span class='correct'>" + qq.options[qq.answer] + "</span></p>";
+    });
+  });
+  document.getElementById("score").innerHTML = "<h2>Score: " + score + "/30</h2>";
+  document.getElementById("review").innerHTML = review;
+}
+
+timer();
+load();
+</script>
+</body>
+</html>
