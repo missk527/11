@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Reading Test - 11+</title>
+<style>
+body { font-family: Arial, sans-serif; background:#f3f4f6; margin:0; padding:20px; }
+.container { max-width:1000px; margin:auto; background:white; padding:26px; border-radius:16px; box-shadow:0 4px 12px rgba(0,0,0,0.08); }
+.passage { background:#fafafa; padding:20px; border-left:6px solid #0f172a; white-space:pre-line; line-height:1.85; margin-bottom:20px; }
+button { background:#0f172a; color:white; padding:10px 14px; margin:5px; border:none; cursor:pointer; border-radius:8px; }
+button:hover { opacity:0.92; }
+.correct { color:green; }
+.wrong { color:#b91c1c; }
+label { display:block; margin:8px 0; }
+.meta { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px; }
+.small { color:#475569; font-size:14px; }
+.note { color:#334155; font-size:13px; margin-top:4px; margin-bottom:14px; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1> Reading Test (11+)</h1>
+  <div class="meta">
+    <div id="timer"></div>
+    <div class="small">3 passages • 20 questions each • 60 questions total</div>
+  </div>
+  <div class="note">Advanced 60-question version in the same style as your earlier tests.</div>
+  <div id="passage" class="passage"></div>
+  <div id="q"></div>
+  <button onclick="prev()">Previous</button>
+  <button onclick="next()">Next</button>
+  <button onclick="submitTest()">Submit</button>
+  <div id="score"></div>
+  <div id="review"></div>
+</div>
+
+<script>
+const data = [
+{
+title: "Passage 1",
+text: `The modern preference for quantification has produced a powerful illusion: that whatever can be measured can therefore be understood. In education, healthcare, and public administration, numerical indicators are frequently treated not merely as tools of assessment but as proxies for reality itself. League tables stand in for institutional quality, productivity metrics for meaningful work, and performance targets for genuine competence.
+
+The attraction of such systems is not difficult to explain. Numbers appear impersonal, comparable, and resistant to bias. They promise a language through which complex institutions can be rendered legible to administrators and the public alike. Yet critics argue that this apparent clarity often depends upon radical simplification. Indicators do not simply describe performance; they reshape it. Once a measure becomes a target, individuals and institutions begin adapting their behaviour to satisfy the metric, sometimes at the expense of the broader purpose the metric was originally supposed to serve.
+
+This dynamic creates a paradox. Measurement is introduced in order to improve accountability, but excessive reliance on measurable outputs can distort professional judgement, reward superficial compliance, and marginalise valuable forms of work that resist quantification. The problem, then, is not measurement as such, but the tendency to confuse what is countable with what is important.`,
+questions: [
+{q:"What is the central claim of the passage?",options:["Measurement should be abolished","What can be measured is always best understood numerically","Quantification can distort priorities when measures are mistaken for reality","Administrators should ignore all data"],answer:2},
+{q:"Why are numerical indicators attractive according to the author?",options:["They eliminate all bias","They seem objective and comparable","They are easier to manipulate","They always reflect institutional quality"],answer:1},
+{q:"What does the passage suggest league tables often become?",options:["Neutral background information","Substitutes for deeper understanding of quality","Irrelevant historical records","Causes of professional autonomy"],answer:1},
+{q:"What happens when a measure becomes a target?",options:["Institutions stop collecting data","Behaviour adapts to satisfy the metric","All performance improves equally","Professional judgement becomes more central"],answer:1},
+{q:"What paradox does the author identify?",options:["Measurement increases privacy","Accountability tools can undermine the purposes they were meant to support","Targets make institutions too democratic","Quantification always reduces compliance"],answer:1},
+{q:"What is meant by 'rendered legible' in this context?",options:["Made simple enough to be understood and managed","Translated into legal language","Hidden from the public","Turned into literature"],answer:0},
+{q:"Which of the following would the author most likely criticise?",options:["Using data cautiously alongside judgement","Treating metrics as the whole of reality","Revising indicators over time","Recognising limits of quantification"],answer:1},
+{q:"What is implied about work that resists quantification?",options:["It is usually unimportant","It may be undervalued by metric-driven systems","It cannot be performed professionally","It is always more efficient"],answer:1},
+{q:"The tone of the passage is best described as:",options:["Analytical and cautionary","Humorous and light","Outraged and personal","Detached and celebratory"],answer:0},
+{q:"Which title best matches the passage?",options:["Why Numbers Never Lie","The Limits of Measuring What Matters","How Targets Improve Every Institution","The End of Professional Judgement"],answer:1},
+{q:"What role do indicators play beyond description?",options:["They only record outcomes","They reshape behaviour","They prevent accountability","They remove simplification"],answer:1},
+{q:"Why does the author mention healthcare and education?",options:["To limit the argument to public sectors","To show the reach of quantification across institutions","To praise administrative efficiency","To compare them with private industry only"],answer:1},
+{q:"What does 'apparent clarity' imply?",options:["The clarity may be misleading","The clarity is scientifically proven","The data are incomplete by law","The numbers are too difficult"],answer:0},
+{q:"According to the passage, excessive measurement can reward:",options:["Deep expertise","Superficial compliance","Professional independence","Creative resistance"],answer:1},
+{q:"What is the author's objection to measurement?",options:["Measurement is inherently wrong","Only countable things matter","Countable outputs may displace important but less measurable values","Data cannot be compared"],answer:2},
+{q:"Which phrase best captures the author's warning?",options:["Measure nothing","Countable is not identical with important","Targets are always useful","Administrators reject evidence"],answer:1},
+{q:"How are numbers portrayed initially?",options:["As emotional and subjective","As impersonal and comparable","As legally binding","As anti-democratic"],answer:1},
+{q:"What does the passage imply about professional judgement?",options:["It may be weakened by overreliance on metrics","It is fully replaced by numbers without loss","It causes bias in every case","It is unnecessary in complex institutions"],answer:0},
+{q:"What is being confused, according to the last sentence?",options:["Objectivity with corruption","Countability with importance","Quantity with privacy","Reform with efficiency"],answer:1},
+{q:"Which summary is best?",options:["Metrics are useless in all settings","Metrics can help, but mistaking them for reality distorts institutional goals","Quantification eliminates bias completely","Performance targets guarantee competence"],answer:1}
+]
+},
+{
+title: "Passage 2",
+text: `Although public discussion often treats attention as a fixed personal trait—something an individual either possesses or lacks—many scholars now describe it as an ecological phenomenon. Attention is shaped not only by internal discipline but also by environments, technologies, incentives, and habits of social expectation. To ask why people struggle to concentrate is therefore not simply to ask about psychology; it is also to ask what sorts of worlds they have built around themselves.
+
+This broader perspective has significant consequences. If attention is environmentally structured, then distraction cannot be understood solely as a moral failure of the individual. Digital platforms engineered around continuous engagement, workplaces organised around interruption, and educational settings saturated with performative urgency may all contribute to fractured concentration. In that sense, the contemporary crisis of attention may reveal less about personal weakness than about the design logic of institutions that compete relentlessly for cognitive time.
+
+Yet the ecological view does not absolve individuals of responsibility. Rather, it relocates responsibility within a more complex framework. People still cultivate habits, but they do so within systems that reward certain patterns of behaviour and make others more difficult to sustain. The question is not whether attention is personal or political, but how the two become inseparable in practice.`,
+questions: [
+{q:"What is the main idea of the passage?",options:["Attention is entirely a matter of willpower","Attention should be understood as shaped by both individuals and environments","Technology has destroyed attention permanently","Distraction is mainly a medical issue"],answer:1},
+{q:"What does the author mean by describing attention as 'ecological'?",options:["It belongs only to nature","It is formed within surrounding systems and conditions","It cannot be studied scientifically","It is unrelated to habit"],answer:1},
+{q:"How does the ecological view change the understanding of distraction?",options:["It treats distraction only as laziness","It suggests distraction is partly structured by environments","It proves individuals have no agency","It makes psychology irrelevant"],answer:1},
+{q:"Why are digital platforms mentioned?",options:["To argue all technology should be banned","To show how systems may be designed to capture cognitive time","To demonstrate that users prefer interruptions","To explain why books are outdated"],answer:1},
+{q:"What is implied about workplaces organised around interruption?",options:["They may undermine sustained concentration","They improve reflection and depth","They make attention a private matter","They are unrelated to productivity"],answer:0},
+{q:"What does the passage say about individual responsibility?",options:["It disappears completely","It remains, but within a wider framework of incentives and constraints","It is the only serious factor","It matters only in education"],answer:1},
+{q:"Which statement would the author most likely agree with?",options:["Attention is either personal or political, never both","Institutional design can shape habits of attention","People cannot improve attention through practice","Distraction is mainly evidence of moral decline"],answer:1},
+{q:"What is the author's view of the 'crisis of attention'?",options:["It reflects only personal weakness","It may reveal institutional and technological design choices","It is exaggerated and unreal","It can be solved only medically"],answer:1},
+{q:"The tone of the passage is best described as:",options:["Nuanced and explanatory","Mocking and dismissive","Overly sentimental","Purely technical"],answer:0},
+{q:"Which title best fits the passage?",options:["The Ecology of Attention","Why Focus Is a Gift","Technology and the End of Thought","Personal Discipline Alone"],answer:0},
+{q:"Why does the author say the issue is not simply psychological?",options:["Because concentration has biological causes only","Because environments also shape attention","Because psychology is outdated","Because habits never matter"],answer:1},
+{q:"What does 'performative urgency' most likely mean here?",options:["A culture of constant visible busyness","A scientific method of focus","A therapeutic model","A quiet learning environment"],answer:0},
+{q:"What do systems reward, according to the final paragraph?",options:["Only silence","Certain patterns of behaviour","Equal concentration for everyone","Purely personal discipline"],answer:1},
+{q:"What is the effect of 'continuous engagement' design?",options:["It supports deep concentration automatically","It competes for users' cognitive time","It removes incentives","It reduces interruption"],answer:1},
+{q:"What does the passage reject?",options:["Any role for self-discipline","The idea that distraction is solely moral failure","Any effect of institutions","The possibility of improving attention"],answer:1},
+{q:"Why is the word 'ecological' effective?",options:["It highlights interdependence","It proves environmentalism is the topic","It limits the discussion to nature","It rejects social influences"],answer:0},
+{q:"What is inseparable in practice?",options:["Technology and law","The personal and the political","Work and education","Psychology and medicine"],answer:1},
+{q:"Which best describes the author's stance on technology?",options:["Uniformly hostile","Entirely supportive","Critical of certain design logics rather than technology itself","Indifferent"],answer:2},
+{q:"What broader claim does the passage make?",options:["Attention problems reveal only individual flaws","Attention is shaped by social and institutional arrangements","Focus can be measured precisely","Responsibility belongs only to platform companies"],answer:1},
+{q:"Which summary is most accurate?",options:["People fail to focus because of laziness alone","Attention emerges from habits formed inside environments and systems","Distraction can be solved by banning devices","Institutions have no role in concentration"],answer:1}
+]
+},
+{
+title: "Passage 3",
+text: `In democratic societies, transparency is commonly invoked as an unquestionable virtue. Public access to information is assumed to enhance trust, expose corruption, and enable accountability. These claims are often justified. Nevertheless, the celebration of transparency can become simplistic when it ignores the conditions under which information is interpreted, circulated, and used.
+
+Information does not arrive in a vacuum. Released documents require context; disclosed data demand interpretation; visibility itself can be strategically managed. Institutions may comply with transparency requirements while overwhelming the public with volume, fragmenting attention across disclosures, or presenting information in forms that are technically available yet practically unintelligible. Under such conditions, transparency may function less as illumination than as administrative theatre: the appearance of openness without the substance of understanding.
+
+This does not amount to an argument against openness. Rather, it suggests that transparency is only one component of accountability, and not necessarily the decisive one. For information to be democratically meaningful, citizens need interpretive support, institutional responsiveness, and mechanisms through which exposure can lead to consequence. Otherwise, disclosure risks becoming a substitute for reform rather than a path toward it.`,
+questions: [
+{q:"What is the central argument of the passage?",options:["Transparency is harmful and should be reduced","Transparency is valuable but insufficient without interpretation and consequence","Citizens should not have access to information","Corruption is caused by too much openness"],answer:1},
+{q:"Why does the author describe some transparency as 'administrative theatre'?",options:["Because officials enjoy public performance","Because openness can be staged without creating real understanding or accountability","Because documents are always misleading","Because disclosure should occur privately"],answer:1},
+{q:"What problem arises when large volumes of information are released?",options:["The public automatically understands more","Information may become difficult to interpret meaningfully","Institutions lose all power","Citizens stop valuing accountability"],answer:1},
+{q:"According to the passage, what else is needed besides disclosure?",options:["Secrecy and efficiency","Interpretive support, responsiveness, and mechanisms for consequence","Fewer citizens and more experts","Only faster media coverage"],answer:1},
+{q:"What does the passage imply about technically available information?",options:["It is always practically useful","It may still be inaccessible in any meaningful sense","It removes the need for reform","It guarantees public trust"],answer:1},
+{q:"What is the author's stance toward transparency itself?",options:["Completely hostile","Qualified support","Total indifference","Pure enthusiasm"],answer:1},
+{q:"Which statement would the author most likely endorse?",options:["Exposure alone guarantees accountability","Disclosure can become a substitute for reform","Interpretation is less important than volume","Opacity is more democratic than openness"],answer:1},
+{q:"What does 'information does not arrive in a vacuum' suggest?",options:["Data must be stored in sealed systems","Meaning depends on context and interpretation","Information is always neutral","Transparency prevents misunderstanding"],answer:1},
+{q:"The tone of the passage is best described as:",options:["Critical but balanced","Comic and playful","Angry and accusatory","Detached and purely descriptive"],answer:0},
+{q:"Which title best captures the passage?",options:["Why Transparency Always Works","Transparency Beyond Disclosure","The Case for Government Secrecy","Documents, Data, and Confusion"],answer:1},
+{q:"What is assumed about transparency in public debate?",options:["It is controversial and weak","It is an unquestionable virtue","It is legally impossible","It is harmful to democracy"],answer:1},
+{q:"Why might disclosed data fail to help citizens?",options:["Data never contain facts","They may lack context and interpretation","Citizens prefer secrecy","Institutions cannot publish anything"],answer:1},
+{q:"What can institutions do while still appearing compliant?",options:["Reject disclosure laws openly","Overwhelm the public with volume","Eliminate all accountability","Guarantee understanding"],answer:1},
+{q:"What does the author mean by 'illumination'?",options:["Electric visibility","Meaningful clarity and understanding","Media attention","Legal authority"],answer:1},
+{q:"What must happen after exposure for accountability to matter?",options:["Nothing further","There must be possible consequence","The public must forget quickly","Documents must remain secret"],answer:1},
+{q:"What is transparency described as in the final paragraph?",options:["The only component of democracy","One component of accountability","A substitute for citizenship","An outdated ideal"],answer:1},
+{q:"Which phrase best summarises the risk identified?",options:["Openness without understanding","Context without documents","Secrecy without law","Reform without exposure"],answer:0},
+{q:"What is the author not arguing?",options:["That openness has value","That transparency alone is enough","That interpretation matters","That institutions can manage visibility strategically"],answer:1},
+{q:"Why are citizens mentioned specifically?",options:["To show they need support to make disclosure meaningful","To suggest they should interpret all data alone","To argue experts are unnecessary","To replace institutions"],answer:0},
+{q:"Which summary is best?",options:["Transparency guarantees trust if enough data are released","Openness matters, but without context, responsiveness, and consequence it can become performative","Citizens should be denied complex information","Administrative theatre improves democracy"],answer:1}
+]
+}
+];
+
+let p = 0, q = 0, answers = [];
+let time = 3600;
+
+function timer(){
+  let m = Math.floor(time / 60);
+  let s = time % 60;
+  document.getElementById("timer").innerHTML = "<h3>Time: " + m + ":" + String(s).padStart(2,'0') + "</h3>";
+  if(time > 0){
+    time--;
+    setTimeout(timer, 1000);
+  } else {
+    submitTest();
+  }
+}
+
+function load(){
+  document.getElementById("passage").innerHTML = "<h2>" + data[p].title + "</h2>" + data[p].text;
+  show();
+}
+
+function show(){
+  const item = data[p].questions[q];
+  let html = "<p><strong>" + item.q + "</strong></p>";
+  item.options.forEach((opt, i) => {
+    const checked = answers[p*20+q] === i ? "checked" : "";
+    html += "<label><input type='radio' name='q' onclick='save(" + i + ")' " + checked + "> " + opt + "</label>";
+  });
+  html += "<p>Question " + (p*20 + q + 1) + " of 60</p>";
+  document.getElementById("q").innerHTML = html;
+}
+
+function save(c){
+  answers[p*20 + q] = c;
+}
+
+function next(){
+  if(q < 19) q++;
+  else if(p < 2){ p++; q = 0; load(); return; }
+  show();
+}
+
+function prev(){
+  if(q > 0) q--;
+  else if(p > 0){ p--; q = 19; load(); return; }
+  show();
+}
+
+function submitTest(){
+  let score = 0, review = "";
+  data.forEach((pass, pi) => {
+    pass.questions.forEach((qq, qi) => {
+      const idx = pi*20 + qi;
+      const user = answers[idx];
+      if(user === qq.answer) score++;
+      review += "<p><strong>Q" + (idx + 1) + ".</strong> " + qq.q + "<br>";
+      review += "Your: <span class='" + (user===qq.answer ? "correct" : "wrong") + "'>" + (qq.options[user] || "None") + "</span><br>";
+      review += "Correct: <span class='correct'>" + qq.options[qq.answer] + "</span></p>";
+    });
+  });
+  document.getElementById("score").innerHTML = "<h2>Score: " + score + "/60</h2>";
+  document.getElementById("review").innerHTML = review;
+  window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+}
+
+timer();
+load();
+</script>
+</body>
+</html>
