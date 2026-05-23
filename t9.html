@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title> Reading Test - 11+</title>
+<style>
+body { font-family: Arial, sans-serif; background:#f2f4f7; margin:0; padding:20px; }
+.container { max-width:1020px; margin:auto; background:white; padding:28px; border-radius:16px; box-shadow:0 4px 14px rgba(0,0,0,0.08); }
+.passage { background:#fbfbfc; padding:20px; border-left:6px solid #111827; white-space:pre-line; line-height:1.9; margin-bottom:20px; }
+button { background:#111827; color:white; padding:10px 14px; margin:5px; border:none; cursor:pointer; border-radius:8px; }
+button:hover { opacity:0.92; }
+.correct { color:green; }
+.wrong { color:#b91c1c; }
+label { display:block; margin:8px 0; }
+.meta { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px; }
+.small { color:#475569; font-size:14px; }
+.note { color:#334155; font-size:13px; margin-top:4px; margin-bottom:14px; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Reading Test (11+)</h1>
+  <div class="meta">
+    <div id="timer"></div>
+    <div class="small">3 passages • 20 questions each • 60 questions total</div>
+  </div>
+  <div class="note">T9 is tougher than T8: longer reasoning chains, subtler distractors, and more abstract argument.</div>
+  <div id="passage" class="passage"></div>
+  <div id="q"></div>
+  <button onclick="prev()">Previous</button>
+  <button onclick="next()">Next</button>
+  <button onclick="submitTest()">Submit</button>
+  <div id="score"></div>
+  <div id="review"></div>
+</div>
+
+<script>
+const data = [
+
+{
+title: "Passage 1",
+text: `Public discussion often assumes that speed is an unquestionable social good. Faster transport, faster communication, faster delivery, faster response: each is typically presented as evidence of improvement. Yet critics of what is sometimes called the culture of acceleration argue that speed does not merely help societies achieve pre-existing goals more efficiently. It also reshapes what those goals become. When velocity is normalised as a value in itself, institutions begin to reward immediacy over reflection, availability over depth, and responsiveness over judgement.
+
+This does not mean that slowness is inherently virtuous. Urgent situations do require prompt action, and many technological advances have relieved forms of delay that were once burdensome or dangerous. The problem arises when the preference for speed ceases to be instrumental and becomes normative. Under those conditions, hesitation is reinterpreted as incompetence, deliberation as inefficiency, and any process that resists compression as a defect rather than a safeguard.
+
+The consequences are difficult to quantify precisely because acceleration often appears empowering in the short term. More can be processed, circulated, and decided within narrower intervals. Yet the long-term effects may include exhaustion, superficial agreement, and the erosion of spaces in which serious disagreement or careful evaluation can occur. A society organised around immediate response may therefore become less capable of distinguishing the urgent from the important, because both are forced into the same temporal logic.`,
+questions: [
+{q:"What is the main argument of the passage?",options:["Speed is always beneficial in modern life","Acceleration can reshape values and decision-making in problematic ways","Slow systems are more productive than fast ones","Technology should be limited by law"],answer:1},
+{q:"According to the author, what happens when speed becomes a value in itself?",options:["Institutions become less efficient","Reflection is often displaced by immediacy","Urgency disappears completely","People stop communicating"],answer:1},
+{q:"Why does the author say slowness is not inherently virtuous?",options:["Because delay is always harmful","Because some situations genuinely require rapid action","Because reflection weakens judgement","Because technology has ended the need for caution"],answer:1},
+{q:"What does the passage identify as the core problem?",options:["Modern transport networks","Treating speed as a norm rather than merely a tool","The absence of communication systems","Too much political disagreement"],answer:1},
+{q:"How may hesitation be interpreted in an accelerated culture?",options:["As wisdom","As incompetence","As neutrality","As creativity"],answer:1},
+{q:"What is implied about processes that resist compression?",options:["They may serve as safeguards","They are outdated by definition","They are always inefficient","They cannot survive economically"],answer:0},
+{q:"Why are the consequences of acceleration hard to quantify?",options:["Because no one studies them","Because short-term empowerment can conceal long-term costs","Because statistics cannot measure time","Because the public dislikes evidence"],answer:1},
+{q:"Which long-term effect is mentioned explicitly?",options:["Universal prosperity","Exhaustion","Improved concentration","Less information"],answer:1},
+{q:"What distinction may an accelerated society struggle to maintain?",options:["The personal and the political","The urgent and the important","The local and the global","The legal and the ethical"],answer:1},
+{q:"The tone of the passage is best described as:",options:["Analytical and cautionary","Humorous and relaxed","Celebratory and technical","Hostile and dismissive"],answer:0},
+{q:"What does the passage imply about responsiveness?",options:["It is always a sign of sound judgement","It can be rewarded at the expense of depth","It replaces communication entirely","It eliminates the need for institutions"],answer:1},
+{q:"Why does the author mention transport and communication at the start?",options:["To show that acceleration appears across many domains","To argue that only infrastructure matters","To criticise engineering specifically","To suggest these are the only areas affected"],answer:0},
+{q:"What is meant by 'temporal logic' in the final sentence?",options:["A legal theory of time","A shared way of organising priorities through time","A technological measurement system","A psychological disorder"],answer:1},
+{q:"Which statement would the author most likely agree with?",options:["Faster decisions are necessarily better decisions","Some delays protect the quality of judgement","Every institution should reduce deliberation","Urgency and importance are identical"],answer:1},
+{q:"What does the passage suggest about short-term efficiency?",options:["It may conceal broader losses","It is impossible to achieve","It is unrelated to acceleration","It automatically improves institutions"],answer:0},
+{q:"How is deliberation treated in the culture criticised by the author?",options:["As a democratic ideal","As a form of inefficiency","As an emergency response","As a technological breakthrough"],answer:1},
+{q:"Which title best fits the passage?",options:["Why Speed Solves Social Problems","The Politics of Acceleration","The Future of Transport Systems","How Technology Ends Delay"],answer:1},
+{q:"What broader warning underlies the passage?",options:["That every fast technology should be banned","That social values can be reorganised by habits of speed","That communication has become impossible","That delay is always safer than action"],answer:1},
+{q:"Why might serious disagreement erode in accelerated systems?",options:["Because everyone agrees more often","Because there is less time for careful evaluation","Because institutions prohibit argument","Because information circulates too slowly"],answer:1},
+{q:"Which summary is most accurate?",options:["The passage rejects all forms of speed","The passage argues that when speed becomes normative, reflection and judgement may be weakened even if short-term efficiency increases","The passage proves technology causes exhaustion","The passage says modern societies cannot change"],answer:1}
+]
+},
+
+{
+title: "Passage 2",
+text: `A common misconception about maps is that they are objective mirrors of geographical reality. In practice, however, maps are acts of selection. They highlight certain features, omit others, impose boundaries, and encode assumptions about relevance, scale, and purpose. Even apparently simple design choices—what to label, where to centre, how to colour—can shape what users perceive as natural, important, or politically settled.
+
+This does not make cartography fraudulent. On the contrary, abstraction is necessary if a map is to be useful at all. No representation can contain every detail of the terrain it depicts. The crucial point is that usefulness depends upon simplification, and simplification always reflects judgement. A transport map designed for commuters differs from a topographical map for hikers not because one is true and the other false, but because each is organised around a distinct practical aim.
+
+The political implications become clearer when maps are used not merely for navigation but for administration, warfare, resource extraction, or nation-building. In such contexts, cartographic decisions can stabilise contested borders, marginalise local naming systems, or render populations legible to distant authorities. Maps, then, do not simply describe space. They participate in the production of social and political order by shaping how space is imagined and governed.`,
+questions: [
+{q:"What is the central claim of the passage?",options:["Maps are mostly inaccurate","Maps are selective representations shaped by purpose and judgement","Only political maps are useful","Cartography should avoid abstraction"],answer:1},
+{q:"Why does the author reject the idea that maps are objective mirrors?",options:["Because maps always contain errors","Because maps necessarily select and omit information","Because geography is unknowable","Because colours distort reality"],answer:1},
+{q:"What does the passage say about design choices such as labels and colours?",options:["They are purely decorative","They can influence perceptions of importance and legitimacy","They matter only to expert cartographers","They should be standardised globally"],answer:1},
+{q:"Why does the author say abstraction is necessary?",options:["Because real terrain is too dangerous to observe","Because a useful map cannot include everything","Because politics must be hidden","Because users prefer fictional representations"],answer:1},
+{q:"How are the commuter map and hiking map related?",options:["One is true, the other false","They reflect different practical aims","They describe different countries","One is only symbolic"],answer:1},
+{q:"What is implied by the phrase 'simplification always reflects judgement'?",options:["All maps are deceptive","Every map embodies choices about relevance","Maps should include more labels","Judgement makes maps objective"],answer:1},
+{q:"When do the political implications become clearer, according to the author?",options:["When maps are used for governance and power","When maps are printed in colour","When users compare old maps","When terrain is mountainous"],answer:0},
+{q:"What can maps help stabilise?",options:["Tourist preferences","Contested borders","Weather systems","Shipping delays"],answer:1},
+{q:"What may happen to local naming systems?",options:["They may be marginalised","They become legally protected","They replace all official names","They become more visible automatically"],answer:0},
+{q:"The passage argues that maps participate in:",options:["Random decoration","The production of social and political order","The rejection of all boundaries","The elimination of abstraction"],answer:1},
+{q:"What does 'render populations legible' most nearly mean here?",options:["Teach people to read","Make groups visible and manageable to authorities","Translate names into other languages","Reduce populations statistically"],answer:1},
+{q:"What is the author's stance toward cartography?",options:["It is fraudulent by nature","It is useful, but never neutral","It is purely scientific and apolitical","It is obsolete in the digital era"],answer:1},
+{q:"Why does the author mention administration and warfare?",options:["To illustrate how maps can serve power","To show mapmaking began in the military","To argue civil maps are unnecessary","To compare paper and digital maps"],answer:0},
+{q:"What broader insight about representation does the passage suggest?",options:["Representation can organise reality, not just reflect it","Representation is always false","Practical use destroys truth","Only governments rely on representation"],answer:0},
+{q:"Which statement would the author most likely endorse?",options:["Maps should aim to show every detail","Different maps can be appropriate for different purposes","All maps should be politically identical","Navigation is the only purpose of mapping"],answer:1},
+{q:"What does the passage imply about borders on maps?",options:["They are always naturally given","They may appear more settled than they really are","They exist only in imagination","They are never contested"],answer:1},
+{q:"Which title best fits the passage?",options:["Why Geography Cannot Be Mapped","Maps, Power, and Selection","The Science of Accurate Colouring","How Hikers Read Terrain"],answer:1},
+{q:"How does the author define the problem with the 'objective mirror' view?",options:["It ignores the selective character of mapping","It underestimates digital technology","It overstates political conflict","It denies the usefulness of navigation"],answer:0},
+{q:"What kind of order do maps help produce?",options:["Only economic order","Only visual order","Social and political order","Natural ecological order"],answer:2},
+{q:"Which summary is most accurate?",options:["Maps are useless because they omit too much","Maps are useful abstractions, but their selections can shape political and social reality","Maps are only political tools","Maps work only for commuters and hikers"],answer:1}
+]
+},
+
+{
+title: "Passage 3",
+text: `Institutions frequently claim to learn from failure. Reports are commissioned, lessons are identified, recommendations are issued, and reforms are announced. Yet organisational theorists note that the rhetoric of learning can itself become ritualised. In some cases, institutions become highly proficient at performing reflection without altering the underlying structures that made failure likely in the first place.
+
+One reason is that genuine learning is costly. It may require redistributing authority, admitting that incentives were misaligned, or acknowledging that the problem was not an isolated error but a predictable outcome of the existing system. By contrast, symbolic learning is comparatively inexpensive. It allows organisations to present themselves as responsive while confining reform to procedures, language, or training modules that leave core arrangements intact.
+
+This does not mean that post-failure review is futile. Under certain conditions, inquiry can generate real change. But that depends on whether the institution is willing to treat failure not only as an event to be explained, but as a signal about the design of the system itself. Where that willingness is absent, the language of accountability may paradoxically shield organisations from accountability, because the performance of lesson-learning substitutes for transformation.`,
+questions: [
+{q:"What is the main argument of the passage?",options:["Institutions never learn from failure","Institutional learning can become performative rather than transformative","Failure should not be investigated","Training modules are the best response to failure"],answer:1},
+{q:"What concern do organisational theorists raise?",options:["Reports are too detailed","Reflection can be performed without changing underlying structures","Failure is impossible to analyse","Authority should always remain unchanged"],answer:1},
+{q:"Why is genuine learning described as costly?",options:["Because reports are expensive to print","Because it may require structural and political change","Because staff dislike reading recommendations","Because organisations must close temporarily"],answer:1},
+{q:"What is symbolic learning?",options:["A complete redesign of the system","An inexpensive display of responsiveness that leaves core arrangements intact","A method of teaching abstract concepts","A legal form of public apology"],answer:1},
+{q:"What might institutions have to admit if learning were genuine?",options:["That failure was random and unavoidable","That incentives were misaligned","That no authority existed","That language caused all problems"],answer:1},
+{q:"What does the author say about post-failure review?",options:["It is always futile","It can matter, but only under certain conditions","It should replace reform","It is mainly a public-relations exercise"],answer:1},
+{q:"What condition is necessary for real change?",options:["The institution must treat failure as a signal about system design","The organisation must publish more reports","The public must ignore incentives","Managers must avoid accountability language"],answer:0},
+{q:"How can the language of accountability become paradoxical?",options:["It can shield institutions from accountability","It can eliminate all failure","It can make reports shorter","It can prevent inquiry"],answer:0},
+{q:"What does the passage imply about isolated errors?",options:["They are always the main cause of failure","They may be used to avoid questioning the broader system","They require no explanation","They prove institutions are effective"],answer:1},
+{q:"The tone of the passage is best described as:",options:["Critical and analytical","Playful and ironic","Optimistic and celebratory","Detached and purely descriptive"],answer:0},
+{q:"What is meant by 'performing reflection'?",options:["Acting as though learning is happening without substantive change","Conducting experiments in public","Training employees in theatre","Avoiding all public statements"],answer:0},
+{q:"Why are procedures and training modules mentioned?",options:["To show that reform often remains superficial","To recommend best practice","To suggest language is unimportant","To praise modern management"],answer:0},
+{q:"What does the author imply about organisational incentives?",options:["They are usually irrelevant to failure","They may contribute predictably to failure","They always support accountability","They cannot be changed"],answer:1},
+{q:"Which statement would the author most likely endorse?",options:["Real learning may require redistributing authority","Failure is mainly caused by individuals","Symbolic reform is usually sufficient","Recommendations guarantee transformation"],answer:0},
+{q:"What broader issue does the passage address?",options:["How institutions can imitate learning","Why all systems fail eventually","Why public inquiry should be abolished","How language prevents reflection"],answer:0},
+{q:"Which title best fits the passage?",options:["Failure as Public Theatre","When Institutions Learn to Perform Learning","Why Reports Improve Systems","The Cost of Training Staff"],answer:1},
+{q:"What does the passage suggest about announced reforms?",options:["They always change incentives","They may leave the core structure intact","They are never communicated publicly","They reduce the need for inquiry"],answer:1},
+{q:"Why might lesson-learning substitute for transformation?",options:["Because institutions prefer symbols to structural change","Because reports are more accurate than reforms","Because accountability is impossible","Because transformation requires no evidence"],answer:0},
+{q:"What is the role of system design in the passage?",options:["It is peripheral to failure","It may be the deeper source of recurring failure","It matters only after reform","It is less important than public trust"],answer:1},
+{q:"Which summary is most accurate?",options:["The passage argues that all inquiry is symbolic","The passage argues that institutions may stage the appearance of learning unless they confront structural causes of failure","The passage says procedures are useless in every case","The passage proves accountability language should be banned"],answer:1}
+]
+}
+
+];
+
+let p = 0, q = 0, answers = [];
+let time = 4200;
+
+function timer(){
+  let m = Math.floor(time / 60);
+  let s = time % 60;
+  document.getElementById("timer").innerHTML = "<h3>Time: " + m + ":" + String(s).padStart(2,'0') + "</h3>";
+  if(time > 0){
+    time--;
+    setTimeout(timer, 1000);
+  } else {
+    submitTest();
+  }
+}
+
+function load(){
+  document.getElementById("passage").innerHTML = "<h2>" + data[p].title + "</h2>" + data[p].text;
+  show();
+}
+
+function show(){
+  const item = data[p].questions[q];
+  let html = "<p><strong>" + item.q + "</strong></p>";
+  item.options.forEach((opt, i) => {
+    const checked = answers[p*20+q] === i ? "checked" : "";
+    html += "<label><input type='radio' name='q' onclick='save(" + i + ")' " + checked + "> " + opt + "</label>";
+  });
+  html += "<p>Question " + (p*20 + q + 1) + " of 60</p>";
+  document.getElementById("q").innerHTML = html;
+}
+
+function save(c){
+  answers[p*20 + q] = c;
+}
+
+function next(){
+  if(q < 19) q++;
+  else if(p < 2){ p++; q = 0; load(); return; }
+  show();
+}
+
+function prev(){
+  if(q > 0) q--;
+  else if(p > 0){ p--; q = 19; load(); return; }
+  show();
+}
+
+function submitTest(){
+  let score = 0, review = "";
+  data.forEach((pass, pi) => {
+    pass.questions.forEach((qq, qi) => {
+      const idx = pi*20 + qi;
+      const user = answers[idx];
+      if(user === qq.answer) score++;
+      review += "<p><strong>Q" + (idx + 1) + ".</strong> " + qq.q + "<br>";
+      review += "Your: <span class='" + (user===qq.answer ? "correct" : "wrong") + "'>" + (qq.options[user] || "None") + "</span><br>";
+      review += "Correct: <span class='correct'>" + qq.options[qq.answer] + "</span></p>";
+    });
+  });
+  document.getElementById("score").innerHTML = "<h2>Score: " + score + "/60</h2>";
+  document.getElementById("review").innerHTML = review;
+  window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+}
+
+timer();
+load();
+</script>
+</body>
+</html>
