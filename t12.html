@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Reading Test - 11+ (T12)</title>
+<style>
+body { font-family: Arial, sans-serif; background:#eef2f7; margin:0; padding:20px; }
+.container { max-width:1050px; margin:auto; background:white; padding:28px; border-radius:18px; box-shadow:0 5px 16px rgba(0,0,0,0.08); }
+.passage { background:#fafafa; padding:22px; border-left:6px solid #0f172a; white-space:pre-line; line-height:1.9; margin-bottom:20px; }
+button { background:#0f172a; color:white; padding:10px 16px; margin:5px; border:none; cursor:pointer; border-radius:8px; }
+button:hover { opacity:0.92; }
+.correct { color:green; }
+.wrong { color:#b91c1c; }
+label { display:block; margin:8px 0; }
+.meta { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px; }
+.small { color:#475569; font-size:14px; }
+.note { color:#334155; font-size:13px; margin-top:4px; margin-bottom:14px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Reading Test (11+) — T12</h1>
+  <div class="meta">
+    <div id="timer"></div>
+    <div class="small">3 passages • 20 questions each • 60 questions total</div>
+  </div>
+  <div class="note">T12 continues the advanced challenge with layered inference, precise vocabulary, and subtle argument analysis.</div>
+  <div id="passage" class="passage"></div>
+  <div id="q"></div>
+  <button onclick="prev()">Previous</button>
+  <button onclick="next()">Next</button>
+  <button onclick="submitTest()">Submit</button>
+  <div id="score"></div>
+  <div id="review"></div>
+</div>
+<script>
+const data = [
+{
+title: "Passage 1",
+text: `Memory is often described as a storehouse, as though the mind simply shelves experiences and retrieves them unchanged. This image is comforting because it suggests that the past remains intact somewhere within us. Yet memory is less like a locked archive than a conversation between what happened, what we noticed, and what later became important to us.
+
+Two people may leave the same event with different memories, not because one is necessarily dishonest, but because attention is selective. A child may remember the colour of a door that adults ignored; an anxious guest may recall every awkward pause and forget the warmth of the welcome. Even when a memory feels vivid, it may contain interpretation as well as fact.
+
+This does not make memory useless. On the contrary, memory helps people form identity, learn from experience, and understand the emotional shape of their lives. But it should be handled with humility. To remember responsibly is not to pretend that memory is flawless; it is to recognise that the past reaches us through a human mind, and therefore arrives partly translated.`,
+questions: [
+{q:"What is the central claim of the passage?",options:["Memory records the past perfectly","Memory is shaped by attention, interpretation, and later meaning","Memory should never be trusted","Only children remember accurately"],answer:1},
+{q:"How is memory commonly described at the start?",options:["As a storehouse","As a battlefield","As a map","As a machine for prediction"],answer:0},
+{q:"Why is the storehouse image described as comforting?",options:["It suggests the past remains intact","It proves memory is useless","It removes all emotion","It makes people forget pain"],answer:0},
+{q:"What is memory compared to instead of a locked archive?",options:["A conversation","A courtroom","A library catalogue","A storm"],answer:0},
+{q:"Why might two people remember the same event differently?",options:["Attention is selective","One must always be lying","Events change after they happen","Memory has no connection to experience"],answer:0},
+{q:"What does the child remembering a door illustrate?",options:["Small details may matter to one person and not another","Children dislike adults","Doors are always symbolic","Adults cannot remember colours"],answer:0},
+{q:"What might an anxious guest remember?",options:["Awkward pauses","Only the food","Nothing at all","The weather forecast"],answer:0},
+{q:"What can vivid memories still contain?",options:["Interpretation as well as fact","Only exact fact","No emotion","Guaranteed error"],answer:0},
+{q:"What does the passage say memory helps form?",options:["Identity","Architecture","Public transport","Legal systems"],answer:0},
+{q:"How should memory be handled according to the passage?",options:["With humility","With total suspicion","With anger","With complete certainty"],answer:0},
+{q:"What does 'remember responsibly' involve?",options:["Recognising memory is not flawless","Rejecting every memory","Changing memories deliberately","Believing only written records"],answer:0},
+{q:"What is meant by 'partly translated'?",options:["The past is filtered through human perception","The past is written in another language","Memory belongs only to translators","Facts become impossible"],answer:0},
+{q:"Which statement would the author most likely support?",options:["Memory can be meaningful without being perfect","Vivid memories are always false","Selective attention proves dishonesty","The past cannot influence identity"],answer:0},
+{q:"The tone of the passage is best described as:",options:["Reflective and cautious","Mocking and bitter","Comic and exaggerated","Technical and emotionless"],answer:0},
+{q:"What broader theme does the passage explore?",options:["The relationship between memory and interpretation","The design of archives","The history of childhood","The science of colour"],answer:0},
+{q:"Which title best fits the passage?",options:["The Mind’s Translation of the Past","Why Memory Always Fails","The Locked Archive","Forgetting Everything"],answer:0},
+{q:"What does the passage imply about honesty and memory?",options:["Different memories do not automatically prove dishonesty","Honest people remember everything alike","Dishonesty is the main cause of memory","Memory removes the need for truth"],answer:0},
+{q:"Why is attention important in the passage?",options:["It influences what becomes memorable","It prevents emotion","It guarantees exact recall","It makes events disappear"],answer:0},
+{q:"What does the final sentence emphasise?",options:["Memory passes through human perception","The past is entirely invented","Translation is more important than history","People should avoid remembering"],answer:0},
+{q:"Which summary is most accurate?",options:["The passage argues memory is a perfect archive","The passage argues memory is useful but shaped by selective attention and interpretation","The passage says memories should be ignored","The passage claims only written evidence matters"],answer:1}
+]
+},
+{
+title: "Passage 2",
+text: `A map appears to be a neutral object: lines, labels, symbols, and scale. It promises order in place of confusion. Yet every map is also an argument about what deserves attention. A railway map may enlarge stations and simplify distance; a political map may make borders seem natural; a tourist map may brighten monuments while leaving ordinary neighbourhoods pale or unnamed.
+
+The usefulness of a map depends on selection. A map that included every tree, drain, brick, and footstep would be too crowded to guide anyone. Omission is not a failure but a condition of clarity. However, omissions can also shape imagination. Places left blank may seem empty even when people live there; routes not shown may be treated as unimportant; names chosen by one group may silence the names used by another.
+
+To read a map well, therefore, is to ask not only where something is, but what the map has made easy to see and what it has made easy to overlook. Maps help us move through the world, but they also teach us how to picture it.`,
+questions: [
+{q:"What is the main argument of the passage?",options:["Maps are completely neutral","Maps guide us by selecting and emphasising certain things","Maps should include every detail","Tourist maps are always false"],answer:1},
+{q:"What does a map appear to promise?",options:["Order in place of confusion","A complete history","Moral judgement","Entertainment only"],answer:0},
+{q:"What is every map also described as?",options:["An argument about attention","A poem about travel","A legal document","A private diary"],answer:0},
+{q:"What might a railway map do?",options:["Enlarge stations and simplify distance","Show every tree","Erase all stations","Avoid symbols"],answer:0},
+{q:"What might a political map make seem natural?",options:["Borders","Weather","Footsteps","Tourist shops"],answer:0},
+{q:"How might a tourist map represent monuments?",options:["By brightening them","By hiding them","By measuring them exactly","By naming every resident"],answer:0},
+{q:"Why can selection make a map useful?",options:["Too much detail would prevent guidance","Selection removes all bias","It makes maps decorative","It proves omissions are impossible"],answer:0},
+{q:"What is omission called in relation to clarity?",options:["A condition of clarity","Always a failure","A form of lying in every case","A mistake in printing"],answer:0},
+{q:"What risk is linked to places left blank?",options:["They may seem empty even when inhabited","They become physically empty","They become easier to measure","They are always dangerous"],answer:0},
+{q:"What can happen to routes not shown?",options:["They may be treated as unimportant","They become faster","They are protected by law","They become tourist attractions"],answer:0},
+{q:"How can names on maps be problematic?",options:["They may silence names used by another group","They always include every language","They prevent travel","They make symbols unnecessary"],answer:0},
+{q:"What should a good map reader ask?",options:["What is easy to see and easy to overlook","How expensive the paper is","Whether maps should be banned","How many colours were used"],answer:0},
+{q:"What does the final sentence suggest about maps?",options:["They influence imagination as well as movement","They only record exact distances","They are useful only to tourists","They cannot teach anything"],answer:0},
+{q:"The tone of the passage is best described as:",options:["Analytical and questioning","Angry and insulting","Comic and casual","Fearful and dramatic"],answer:0},
+{q:"Which statement would the author most likely agree with?",options:["Clarity often depends on leaving some things out","The best map shows absolutely everything","Blank spaces prove nobody lives there","Maps have no effect on how people think"],answer:0},
+{q:"What broader theme does the passage address?",options:["Representation and power","Mountain climbing","The invention of railways","The cost of tourism"],answer:0},
+{q:"Which title best fits the passage?",options:["What Maps Choose to Show","The End of Geography","Why Borders Are Always Natural","The Perfect Map"],answer:0},
+{q:"What does 'neutral object' mean in this context?",options:["Something that seems unbiased","Something without labels","Something made of metal","Something used only in schools"],answer:0},
+{q:"What does the passage imply about blank spaces?",options:["They may reflect choices rather than emptiness","They always mark deserts","They are needed only for decoration","They make maps impossible to read"],answer:0},
+{q:"Which summary is most accurate?",options:["The passage argues maps are useless","The passage argues maps are helpful but selective, and their choices influence how we understand places","The passage says all maps should be identical","The passage claims tourist maps are the only reliable maps"],answer:1}
+]
+},
+{
+title: "Passage 3",
+text: `Patience is sometimes mistaken for passivity. Because a patient person does not always react immediately, observers may imagine that nothing is happening. Yet patience can involve intense discipline: the ability to remain attentive without forcing events to obey one’s preferred timetable.
+
+In gardening, teaching, friendship, and scientific research, progress often depends on waiting that is not idle. Seeds require conditions before they break the surface; a student may need repeated encounters with an idea before understanding arrives; trust may grow slowly through small consistencies rather than grand declarations. To rush these processes can damage the very outcome one hopes to produce.
+
+Of course, patience can become an excuse for avoiding necessary action. Waiting while harm continues may be cowardice disguised as wisdom. The difficulty lies in judging whether time is allowing something valuable to mature or merely protecting a problem from challenge. True patience is therefore neither delay nor surrender. It is active attention joined to careful judgement.`,
+questions: [
+{q:"What is the central argument of the passage?",options:["Patience is always weakness","Patience can be active, disciplined attention, but must not excuse inaction","Waiting is better than acting in every situation","Urgency is always harmful"],answer:1},
+{q:"What is patience sometimes mistaken for?",options:["Passivity","Anger","Speed","Ambition"],answer:0},
+{q:"Why might observers misjudge a patient person?",options:["They may think nothing is happening","They always understand discipline","They dislike gardens","They value science too much"],answer:0},
+{q:"What does patience require according to the first paragraph?",options:["Remaining attentive without forcing events","Ignoring all problems","Reacting instantly","Avoiding judgement"],answer:0},
+{q:"Which examples are used to show non-idle waiting?",options:["Gardening, teaching, friendship, and scientific research","Sport, shopping, cooking, and travel","Law, music, traffic, and weather","Painting, dancing, hunting, and sailing"],answer:0},
+{q:"What do seeds require before they break the surface?",options:["Conditions","Praise","Arguments","Maps"],answer:0},
+{q:"What may a student need before understanding arrives?",options:["Repeated encounters with an idea","A single command","No explanation","Immediate testing only"],answer:0},
+{q:"How may trust grow according to the passage?",options:["Through small consistencies","Through grand declarations only","Through silence alone","Through speed"],answer:0},
+{q:"What can rushing some processes do?",options:["Damage the desired outcome","Guarantee success","Remove all difficulty","Create patience"],answer:0},
+{q:"What warning is given about patience?",options:["It can excuse avoiding necessary action","It is never useful","It always creates harm","It prevents thought"],answer:0},
+{q:"What might waiting while harm continues be?",options:["Cowardice disguised as wisdom","The highest form of courage","A scientific method","A sign of trust"],answer:0},
+{q:"What is the difficulty identified by the author?",options:["Judging whether time helps maturity or protects a problem","Deciding whether gardens need water","Knowing whether students enjoy lessons","Choosing between silence and maps"],answer:0},
+{q:"What is true patience not?",options:["Delay or surrender","Attention or judgement","Discipline or care","Friendship or research"],answer:0},
+{q:"What is true patience described as?",options:["Active attention joined to careful judgement","Refusal to decide","Permanent silence","Weakness with a polite name"],answer:0},
+{q:"The tone of the passage is best described as:",options:["Measured and reflective","Sarcastic and dismissive","Comic and playful","Panicked and urgent"],answer:0},
+{q:"Which statement would the author most likely support?",options:["Waiting can be wise only when paired with judgement","All action is reckless","Patience means doing nothing","Trust can be forced quickly"],answer:0},
+{q:"What broader issue does the passage explore?",options:["The difference between wise waiting and harmful delay","The history of gardens","The best teaching method","The danger of friendship"],answer:0},
+{q:"Which title best fits the passage?",options:["The Discipline of Patience","Why Waiting Always Wins","The Problem with Action","Seeds and Silence"],answer:0},
+{q:"What does 'preferred timetable' suggest?",options:["The schedule someone wants events to follow","A school lesson plan","A train departure list","A scientific chart"],answer:0},
+{q:"Which summary is most accurate?",options:["The passage praises all waiting","The passage argues that patience can be active and valuable, but it must be distinguished from avoidance","The passage says urgent action is always wrong","The passage claims patience is mainly useful in gardening"],answer:1}
+]
+}
+];
+
+let p = 0, q = 0, answers = [];
+let time = 4800;
+
+function timer(){
+  let m = Math.floor(time / 60);
+  let s = time % 60;
+  document.getElementById("timer").innerHTML = "<h3>Time: " + m + ":" + String(s).padStart(2,'0') + "</h3>";
+  if(time > 0){ time--; setTimeout(timer,1000); } else { submitTest(); }
+}
+
+function load(){
+  document.getElementById("passage").innerHTML = "<h2>" + data[p].title + "</h2>" + data[p].text;
+  show();
+}
+
+function show(){
+  const item = data[p].questions[q];
+  let html = "<p><strong>" + item.q + "</strong></p>";
+  item.options.forEach((opt,i)=>{
+    const checked = answers[p*20+q] === i ? "checked" : "";
+    html += "<label><input type='radio' name='q' onclick='save(" + i + ")' " + checked + "> " + opt + "</label>";
+  });
+  html += "<p>Question " + (p*20+q+1) + " of 60</p>";
+  document.getElementById("q").innerHTML = html;
+}
+
+function save(c){ answers[p*20+q] = c; }
+
+function next(){
+  if(q < 19) q++;
+  else if(p < 2){ p++; q = 0; load(); return; }
+  show();
+}
+
+function prev(){
+  if(q > 0) q--;
+  else if(p > 0){ p--; q = 19; load(); return; }
+  show();
+}
+
+function submitTest(){
+  let score = 0, review = "";
+  data.forEach((pass,pi)=>{
+    pass.questions.forEach((qq,qi)=>{
+      const idx = pi*20 + qi;
+      const user = answers[idx];
+      if(user === qq.answer) score++;
+      review += "<p><strong>Q" + (idx+1) + ".</strong> " + qq.q + "<br>";
+      review += "Your: <span class='" + (user===qq.answer ? "correct" : "wrong") + "'>" + (qq.options[user] || "None") + "</span><br>";
+      review += "Correct: <span class='correct'>" + qq.options[qq.answer] + "</span></p>";
+    });
+  });
+  document.getElementById("score").innerHTML = "<h2>Score: " + score + "/60</h2>";
+  document.getElementById("review").innerHTML = review;
+  window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+}
+
+timer();
+load();
+</script>
+</body>
+</html>
