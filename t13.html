@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Reading Test - 11+ (T13)</title>
+<style>
+body { font-family: Arial, sans-serif; background:#eef2f7; margin:0; padding:20px; }
+.container { max-width:1050px; margin:auto; background:white; padding:28px; border-radius:18px; box-shadow:0 5px 16px rgba(0,0,0,0.08); }
+.passage { background:#fafafa; padding:22px; border-left:6px solid #0f172a; white-space:pre-line; line-height:1.9; margin-bottom:20px; }
+button { background:#0f172a; color:white; padding:10px 16px; margin:5px; border:none; cursor:pointer; border-radius:8px; }
+button:hover { opacity:0.92; }
+.correct { color:green; }
+.wrong { color:#b91c1c; }
+label { display:block; margin:8px 0; }
+.meta { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px; }
+.small { color:#475569; font-size:14px; }
+.note { color:#334155; font-size:13px; margin-top:4px; margin-bottom:14px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Reading Test (11+) — T13</h1>
+  <div class="meta">
+    <div id="timer"></div>
+    <div class="small">3 passages • 20 questions each • 60 questions total</div>
+  </div>
+  <div class="note">T13 adds fresh advanced passages with inference, vocabulary precision, tone analysis, and nuanced summary questions.</div>
+  <div id="passage" class="passage"></div>
+  <div id="q"></div>
+  <button onclick="prev()">Previous</button>
+  <button onclick="next()">Next</button>
+  <button onclick="submitTest()">Submit</button>
+  <div id="score"></div>
+  <div id="review"></div>
+</div>
+<script>
+const data = [
+{
+title: "Passage 1",
+text: `Silence is often treated as emptiness, a gap waiting to be filled by speech. In a busy room, the quiet person may be assumed to have no opinion, while a pause in conversation can make people restless, as though meaning has temporarily disappeared. Yet silence can be full of attention. It may hold respect, hesitation, grief, thought, or resistance.
+
+Not all silence is noble. A witness who remains silent in the face of cruelty may be protecting comfort rather than truth. A classroom silence may reveal confusion rather than deep reflection. But to imagine that speech is always braver or more honest is equally mistaken. Some words are spoken merely to avoid discomfort; some questions need time before they can be answered responsibly.
+
+The difficulty lies in learning to distinguish empty silence from meaningful quiet. Silence can conceal, but it can also make room. It can hide fear, but it can also protect what is delicate until it is ready to be spoken. To listen well is therefore not only to hear words, but to notice what kind of silence surrounds them.`,
+questions: [
+{q:"What is the central claim of the passage?",options:["Silence is always empty","Silence can have different meanings and should be interpreted carefully","Speech is always dishonest","Quiet people never have opinions"],answer:1},
+{q:"How is silence often treated at the beginning?",options:["As emptiness","As music","As a command","As a celebration"],answer:0},
+{q:"What may people assume about a quiet person in a busy room?",options:["That they have no opinion","That they are the leader","That they are angry with everyone","That they understand everything"],answer:0},
+{q:"Why can a pause make people restless?",options:["They may feel meaning has disappeared","They dislike all conversations","They are waiting for food","They cannot hear properly"],answer:0},
+{q:"What can silence be full of according to the passage?",options:["Attention","Noise","Certainty only","Instructions"],answer:0},
+{q:"Which of these is listed as something silence may hold?",options:["Grief","Decoration","Speed","Weather"],answer:0},
+{q:"What warning does the passage give about silence?",options:["It is not always noble","It is always superior to speech","It is impossible to understand","It should be banned in classrooms"],answer:0},
+{q:"What might a silent witness be protecting?",options:["Comfort rather than truth","A secret map","A classroom rule","A piece of music"],answer:0},
+{q:"What might classroom silence reveal?",options:["Confusion","Perfect knowledge","Disobedience in every case","A completed lesson"],answer:0},
+{q:"What mistaken belief about speech does the passage challenge?",options:["That speech is always braver or more honest","That speech uses words","That speech can answer questions","That speech happens in conversations"],answer:0},
+{q:"Why are some words spoken, according to the passage?",options:["Merely to avoid discomfort","To protect silence forever","To prove every speaker is wise","To remove all questions"],answer:0},
+{q:"What do some questions need before they can be answered responsibly?",options:["Time","Applause","Silence only","A louder voice"],answer:0},
+{q:"What is the difficulty identified by the author?",options:["Distinguishing empty silence from meaningful quiet","Teaching everyone to speak faster","Removing pauses from conversation","Making rooms busier"],answer:0},
+{q:"What can silence do besides conceal?",options:["Make room","Erase memory","Guarantee truth","End all thought"],answer:0},
+{q:"What might silence protect?",options:["What is delicate until ready to be spoken","Every false statement","A loud argument","An empty room"],answer:0},
+{q:"The tone of the passage is best described as:",options:["Reflective and balanced","Mocking and cruel","Excited and comic","Panicked and urgent"],answer:0},
+{q:"Which statement would the author most likely support?",options:["Silence and speech can both be meaningful or evasive","Silence is always cowardice","Speech always proves honesty","Quiet people should be ignored"],answer:0},
+{q:"What broader theme does the passage explore?",options:["The meaning of silence and communication","The history of classrooms","The dangers of busy rooms","The invention of public speaking"],answer:0},
+{q:"Which title best fits the passage?",options:["The Many Meanings of Silence","Why Quiet Is Empty","The End of Conversation","Speaking Without Pauses"],answer:0},
+{q:"Which summary is most accurate?",options:["The passage argues that silence is meaningless","The passage argues that silence can hide, protect, reveal, or respect, and must be judged carefully","The passage says speech should always be avoided","The passage claims silence only matters in classrooms"],answer:1}
+]
+},
+{
+title: "Passage 2",
+text: `A bridge is usually praised for joining what distance has divided. It allows feet, wheels, goods, and messages to pass from one side to another. Because of this, bridges often become symbols of agreement and connection. Yet a bridge also changes the places it joins. A quiet village may become a route; a riverbank may become a viewpoint; a boundary that once slowed people down may lose some of its power.
+
+This is not necessarily a loss. Movement can bring opportunity, friendship, and relief from isolation. However, connection is rarely neutral. The new road that helps one community may disturb another; the shortcut that saves time may bring noise; the crossing that welcomes visitors may also invite those who see the place only as something to use.
+
+To build a bridge wisely, then, is to ask more than whether it can stand. Strength of stone or steel is only one form of success. A good bridge must carry weight, but it must also carry consequences. It joins two sides while asking both to change.`,
+questions: [
+{q:"What is the main argument of the passage?",options:["Bridges only solve problems","Bridges connect places but also change them","Bridges should never be built","Rivers are more important than roads"],answer:1},
+{q:"What is a bridge usually praised for?",options:["Joining what distance has divided","Preventing all travel","Making villages quieter","Removing rivers"],answer:0},
+{q:"What can pass across a bridge according to the passage?",options:["Feet, wheels, goods, and messages","Only trains","Only animals","Only water"],answer:0},
+{q:"What do bridges often become symbols of?",options:["Agreement and connection","Silence and memory","Fear and secrecy","Weather and patience"],answer:0},
+{q:"What may happen to a quiet village after a bridge is built?",options:["It may become a route","It must disappear","It becomes an island","It loses every resident"],answer:0},
+{q:"What may a riverbank become?",options:["A viewpoint","A classroom","A locked archive","A factory in every case"],answer:0},
+{q:"What may happen to a boundary that once slowed people down?",options:["It may lose some power","It becomes impossible to cross","It becomes stronger in every way","It turns into a map"],answer:0},
+{q:"What benefits can movement bring?",options:["Opportunity, friendship, and relief from isolation","Only noise","Only danger","No change at all"],answer:0},
+{q:"What does the passage say about connection?",options:["It is rarely neutral","It is always harmful","It is always simple","It never affects communities"],answer:0},
+{q:"How might a new road affect different communities?",options:["It may help one and disturb another","It must help everyone equally","It prevents all visitors","It removes all consequences"],answer:0},
+{q:"What may a shortcut bring besides saved time?",options:["Noise","Silence","Better weather","More rivers"],answer:0},
+{q:"What kind of visitors might a crossing invite?",options:["Those who see the place only as something to use","Only old friends","Only careful builders","Only local residents"],answer:0},
+{q:"What should wise bridge building ask beyond?",options:["Whether the bridge can stand","Whether stone exists","Whether rivers are beautiful","Whether people enjoy symbols"],answer:0},
+{q:"What is only one form of success?",options:["Strength of stone or steel","The colour of the bridge","The number of villages nearby","The silence of the road"],answer:0},
+{q:"What must a good bridge carry besides weight?",options:["Consequences","Secrets","Clouds","Classrooms"],answer:0},
+{q:"What does the final sentence suggest?",options:["Connection requires change on both sides","Only one side of a bridge changes","Bridges prevent all change","Bridges are mainly decorative"],answer:0},
+{q:"The tone of the passage is best described as:",options:["Thoughtful and cautionary","Furious and insulting","Playful and silly","Purely technical"],answer:0},
+{q:"Which title best fits the passage?",options:["What Bridges Carry","Why Bridges Always Fail","The Quiet Village","Stone and Steel Only"],answer:0},
+{q:"What broader theme does the passage explore?",options:["The consequences of connection","The science of riverbanks","The history of steel","The beauty of shortcuts"],answer:0},
+{q:"Which summary is most accurate?",options:["The passage says bridges are useless","The passage argues that bridges create connection but also bring changes and responsibilities","The passage claims all movement is dangerous","The passage says only engineers should think about bridges"],answer:1}
+]
+},
+{
+title: "Passage 3",
+text: `Curiosity is sometimes praised as if it were always generous and bright. A curious mind asks questions, notices patterns, and refuses to accept the world as dull. Without curiosity, discoveries would be fewer, books thinner, and conversations poorer. It is the small tug that asks, “Why?” when habit would prefer silence.
+
+Yet curiosity has a shadow. To ask a question is not automatically to deserve an answer. Some curiosity is a form of care, but some is only hunger for possession: the wish to know another person's pain, secret, or private history without considering whether that knowledge has been offered. A question can open a door, but it can also push one open.
+
+The finest curiosity is therefore joined to courtesy. It seeks understanding without treating people as puzzles made for its entertainment. It knows when to follow a clue, and when to step back. Curiosity gives the mind its reach, but courtesy gives that reach its limit.`,
+questions: [
+{q:"What is the central argument of the passage?",options:["Curiosity is always rude","Curiosity is valuable but should be guided by courtesy","Questions should never be asked","Courtesy prevents all learning"],answer:1},
+{q:"How is curiosity sometimes praised?",options:["As always generous and bright","As useless and dull","As dangerous in every situation","As a type of silence"],answer:0},
+{q:"What does a curious mind do?",options:["Asks questions and notices patterns","Avoids all ideas","Accepts the world as dull","Refuses every conversation"],answer:0},
+{q:"What might happen without curiosity?",options:["Discoveries would be fewer","Books would become heavier","Secrets would vanish","Courtesy would be impossible"],answer:0},
+{q:"What question does curiosity ask when habit prefers silence?",options:["Why?","When?","Who owns this?","How loud?"],answer:0},
+{q:"What does the passage say curiosity has?",options:["A shadow","A timetable","A bridge","A locked archive"],answer:0},
+{q:"What is not automatically deserved when asking a question?",options:["An answer","A book","A reward","A map"],answer:0},
+{q:"What can some curiosity be a form of?",options:["Care","Weather","Noise","Delay"],answer:0},
+{q:"What can selfish curiosity become?",options:["Hunger for possession","Careful judgement","Generous silence","A useful map"],answer:0},
+{q:"What kind of knowledge might selfish curiosity seek?",options:["Another person's pain, secret, or private history","Only public dates","Only mathematical answers","Only directions"],answer:0},
+{q:"What does 'offered' imply in the passage?",options:["Shared willingly","Hidden forever","Forgotten quickly","Written badly"],answer:0},
+{q:"What can a question do besides open a door?",options:["Push one open","Build a wall","Erase a book","Stop all thought"],answer:0},
+{q:"What should the finest curiosity be joined to?",options:["Courtesy","Speed","Suspicion","Possession"],answer:0},
+{q:"What should curiosity avoid treating people as?",options:["Puzzles made for entertainment","Teachers in classrooms","Friends with ideas","Readers of books"],answer:0},
+{q:"What does good curiosity know when to do?",options:["Follow a clue and step back","Speak without listening","Demand every secret","Ignore every pattern"],answer:0},
+{q:"What does curiosity give the mind?",options:["Reach","Silence only","A boundary only","A finished answer"],answer:0},
+{q:"What does courtesy give curiosity’s reach?",options:["A limit","More hunger","A louder voice","A secret history"],answer:0},
+{q:"The tone of the passage is best described as:",options:["Wise and measured","Angry and mocking","Comic and exaggerated","Cold and scientific"],answer:0},
+{q:"Which title best fits the passage?",options:["Curiosity with Courtesy","Why Questions Are Wrong","The End of Discovery","Private Doors"],answer:0},
+{q:"Which summary is most accurate?",options:["The passage celebrates curiosity without limits","The passage argues that curiosity enriches life but must respect privacy and boundaries","The passage says courtesy makes discovery impossible","The passage claims questions are always selfish"],answer:1}
+]
+}
+];
+
+let p = 0, q = 0, answers = [];
+let time = 4800;
+let submitted = false;
+
+function timer(){
+  let m = Math.floor(time / 60);
+  let s = time % 60;
+  document.getElementById("timer").innerHTML = "<h3>Time: " + m + ":" + String(s).padStart(2,'0') + "</h3>";
+  if(time > 0 && !submitted){ time--; setTimeout(timer,1000); } else if(!submitted) { submitTest(); }
+}
+
+function load(){
+  document.getElementById("passage").innerHTML = "<h2>" + data[p].title + "</h2>" + data[p].text;
+  show();
+}
+
+function show(){
+  const item = data[p].questions[q];
+  let html = "<p><strong>" + item.q + "</strong></p>";
+  item.options.forEach((opt,i)=>{
+    const checked = answers[p*20+q] === i ? "checked" : "";
+    html += "<label><input type='radio' name='q' onclick='save(" + i + ")' " + checked + "> " + opt + "</label>";
+  });
+  html += "<p>Question " + (p*20+q+1) + " of 60</p>";
+  document.getElementById("q").innerHTML = html;
+}
+
+function save(c){ answers[p*20+q] = c; }
+
+function next(){
+  if(q < 19) q++;
+  else if(p < 2){ p++; q = 0; load(); return; }
+  show();
+}
+
+function prev(){
+  if(q > 0) q--;
+  else if(p > 0){ p--; q = 19; load(); return; }
+  show();
+}
+
+function submitTest(){
+  if(submitted) return;
+  submitted = true;
+  let score = 0, review = "";
+  data.forEach((pass,pi)=>{
+    pass.questions.forEach((qq,qi)=>{
+      const idx = pi*20 + qi;
+      const user = answers[idx];
+      if(user === qq.answer) score++;
+      review += "<p><strong>Q" + (idx+1) + ".</strong> " + qq.q + "<br>";
+      review += "Your: <span class='" + (user===qq.answer ? "correct" : "wrong") + "'>" + (qq.options[user] || "None") + "</span><br>";
+      review += "Correct: <span class='correct'>" + qq.options[qq.answer] + "</span></p>";
+    });
+  });
+  document.getElementById("score").innerHTML = "<h2>Score: " + score + "/60</h2>";
+  document.getElementById("review").innerHTML = review;
+  window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+}
+
+timer();
+load();
+</script>
+</body>
+</html>
