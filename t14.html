@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Reading Test - 11+ (T14)</title>
+<style>
+body { font-family: Arial, sans-serif; background:#eef2f7; margin:0; padding:20px; }
+.container { max-width:1050px; margin:auto; background:white; padding:28px; border-radius:18px; box-shadow:0 5px 16px rgba(0,0,0,0.08); }
+.passage { background:#fafafa; padding:22px; border-left:6px solid #0f172a; white-space:pre-line; line-height:1.9; margin-bottom:20px; }
+button { background:#0f172a; color:white; padding:10px 16px; margin:5px; border:none; cursor:pointer; border-radius:8px; }
+button:hover { opacity:0.92; }
+.correct { color:green; }
+.wrong { color:#b91c1c; }
+label { display:block; margin:8px 0; }
+.meta { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px; }
+.small { color:#475569; font-size:14px; }
+.note { color:#334155; font-size:13px; margin-top:4px; margin-bottom:14px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Reading Test (11+) — T14</h1>
+  <div class="meta">
+    <div id="timer"></div>
+    <div class="small">3 passages • 20 questions each • 60 questions total</div>
+  </div>
+  <div class="note">T14 adds fresh advanced passages with inference, vocabulary precision, tone analysis, and nuanced summary questions.</div>
+  <div id="passage" class="passage"></div>
+  <div id="q"></div>
+  <button onclick="prev()">Previous</button>
+  <button onclick="next()">Next</button>
+  <button onclick="submitTest()">Submit</button>
+  <div id="score"></div>
+  <div id="review"></div>
+</div>
+<script>
+const data = [
+{
+title: "Passage 1",
+text: `A map can make a landscape seem simple. Rivers become blue lines, mountains become shaded bumps, and footpaths become tidy threads crossing empty space. For someone planning a journey, this simplification is useful. A map cannot include every stone, puddle, birdcall, or sudden change of weather; if it tried, it would become as confusing as the world itself.
+
+Yet the neatness of a map can also mislead. A path drawn straight across paper may climb sharply, vanish under brambles, or feel much longer when walked in rain. A village marked by a small black dot may contain quarrels, kindnesses, memories, and worries that no symbol can hold. The map is not false, but it is partial.
+
+To use a map wisely is to accept both its help and its limits. It offers direction, not experience; outline, not texture. The traveller who forgets this may reach the place and still fail to understand where they are.`,
+questions: [
+{q:"What is the central claim of the passage?",options:["Maps are useless for travellers","Maps simplify places helpfully but cannot capture full experience","Landscapes are easier to understand than maps","Every map should include every detail"],answer:1},
+{q:"How do rivers appear on a map according to the passage?",options:["As blue lines","As shaded bumps","As black dots","As tidy threads"],answer:0},
+{q:"What do mountains become on a map?",options:["Shaded bumps","Empty space","Blue lines","Birdcalls"],answer:0},
+{q:"Why is simplification useful for someone planning a journey?",options:["It gives a manageable guide","It removes the need to travel","It guarantees good weather","It replaces the landscape entirely"],answer:0},
+{q:"Which detail is listed as something a map cannot include?",options:["Every stone","Every country name","Every road number","Every compass point"],answer:0},
+{q:"What would happen if a map tried to include everything?",options:["It would become as confusing as the world itself","It would become more beautiful","It would be easier to carry","It would stop people travelling"],answer:0},
+{q:"What warning does the passage give about a map's neatness?",options:["It can mislead","It is always dishonest","It makes rivers vanish","It prevents planning"],answer:0},
+{q:"What might a straight path on paper actually do?",options:["Climb sharply","Become a river","End every journey","Turn into a village"],answer:0},
+{q:"What might make a path feel much longer?",options:["Being walked in rain","Being printed in blue","Being near a dot","Being drawn on paper"],answer:0},
+{q:"What does a small black dot for a village fail to contain?",options:["Quarrels, kindnesses, memories, and worries","Only mountains","Only map symbols","Only puddles"],answer:0},
+{q:"What does the phrase 'partial' mean in context?",options:["Incomplete","Completely wrong","Hostile","Decorative"],answer:0},
+{q:"What does a map offer, according to the final paragraph?",options:["Direction, not experience","Weather, not roads","Memories, not symbols","Texture, not outline"],answer:0},
+{q:"What does the map provide instead of texture?",options:["Outline","Rain","Kindness","Birdsong"],answer:0},
+{q:"What should a wise map user accept?",options:["Both its help and its limits","That maps are always false","That experience is unnecessary","That landscapes are simple"],answer:0},
+{q:"What may happen to a traveller who forgets the map's limits?",options:["They may arrive but fail to understand where they are","They will never arrive anywhere","They will draw a perfect map","They will avoid all paths"],answer:0},
+{q:"The tone of the passage is best described as:",options:["Reflective and cautionary","Angry and dismissive","Comic and exaggerated","Purely instructional"],answer:0},
+{q:"Which statement would the author most likely support?",options:["Maps are valuable tools, but they are not the same as places","Maps should be banned","A symbol can hold every human story","Walking teaches nothing beyond distance"],answer:0},
+{q:"What broader theme does the passage explore?",options:["The difference between representation and reality","The history of mountain drawing","The dangers of villages","The science of weather forecasting"],answer:0},
+{q:"Which title best fits the passage?",options:["The Limits of a Map","Why Rivers Are Blue","A Village Without People","The Perfect Journey"],answer:0},
+{q:"Which summary is most accurate?",options:["The passage argues that maps are entirely false","The passage explains that maps help travellers by simplifying places but cannot capture their full reality","The passage says travellers should ignore all directions","The passage claims every landscape is simple"],answer:1}
+]
+},
+{
+title: "Passage 2",
+text: `A locked door is often understood as a refusal. It says, at least at first glance, that entry is not permitted and that what lies beyond is separate from the passer-by. In stories, locked doors frequently promise secrets: hidden rooms, forgotten letters, or dangers that have waited patiently in darkness.
+
+But a locked door may also be an act of care. It can protect a sleeping child, preserve a fragile painting from damp air, or give a tired person the privacy needed to think clearly. The same barrier that frustrates one person may shelter another. Whether the lock is selfish or sensible depends on what it guards, whom it excludes, and why it was fastened.
+
+The temptation is to praise every opening as freedom and condemn every closure as fear. Life is less tidy than that. Some doors should be opened; others earn their lock. Wisdom lies not in hating barriers, but in asking what kind of boundary they create.`,
+questions: [
+{q:"What is the main argument of the passage?",options:["Every locked door is cruel","Locked doors can refuse, protect, or create necessary boundaries","Doors are only important in stories","All barriers should be destroyed"],answer:1},
+{q:"How is a locked door often understood?",options:["As a refusal","As an invitation","As a joke","As a map"],answer:0},
+{q:"What does a locked door say at first glance?",options:["Entry is not permitted","Everyone is welcome","The room is empty","The key is lost"],answer:0},
+{q:"What do locked doors often promise in stories?",options:["Secrets","Weather","Friendship only","Simple answers"],answer:0},
+{q:"Which of these is mentioned as something behind a story's locked door?",options:["Forgotten letters","A blue river","A crowded market","A public road"],answer:0},
+{q:"What alternative meaning can a locked door have?",options:["An act of care","A form of music","A type of map","A promise of travel"],answer:0},
+{q:"Who might a locked door protect?",options:["A sleeping child","A noisy crowd","A dishonest map","A sharp mountain"],answer:0},
+{q:"What might a locked door preserve from damp air?",options:["A fragile painting","A riverbank","A metal bridge","A classroom"],answer:0},
+{q:"What might privacy help a tired person do?",options:["Think clearly","Run faster","Find treasure","Open every door"],answer:0},
+{q:"What does the same barrier do to different people?",options:["It may frustrate one and shelter another","It always harms everyone","It always welcomes everyone","It removes all choices"],answer:0},
+{q:"What does judging a lock depend on?",options:["What it guards, whom it excludes, and why it was fastened","Its colour only","Its age only","Whether it appears in a story"],answer:0},
+{q:"What temptation does the passage identify?",options:["To praise every opening and condemn every closure","To lock every door forever","To ignore all secrets","To paint every door the same colour"],answer:0},
+{q:"What does 'Life is less tidy than that' suggest?",options:["The issue is more complicated than a simple rule","Doors should never be cleaned","Stories are always false","Openings are always dangerous"],answer:0},
+{q:"According to the passage, what is true of some doors?",options:["They should be opened","They are never useful","They contain maps","They cannot create privacy"],answer:0},
+{q:"What do other doors do, according to the passage?",options:["Earn their lock","Disappear in darkness","Refuse to close","Become paintings"],answer:0},
+{q:"Where does wisdom lie?",options:["In asking what kind of boundary a barrier creates","In hating every barrier","In opening every door immediately","In refusing all privacy"],answer:0},
+{q:"The tone of the passage is best described as:",options:["Balanced and thoughtful","Panicked and dramatic","Silly and playful","Bitter and insulting"],answer:0},
+{q:"Which statement would the author most likely support?",options:["A boundary can be either harmful or protective depending on its purpose","Closure is always cowardice","Freedom means entering every space","Privacy is never valuable"],answer:0},
+{q:"Which title best fits the passage?",options:["What a Lock May Mean","The Door That Never Closed","Secrets in Every Room","Why Keys Are Useless"],answer:0},
+{q:"Which summary is most accurate?",options:["The passage says every locked door hides danger","The passage argues that locked doors can exclude but may also protect, so boundaries should be judged carefully","The passage claims stories should avoid doors","The passage says all openings are mistakes"],answer:1}
+]
+},
+{
+title: "Passage 3",
+text: `A candle is a small rebellion against darkness. Its flame does not conquer the night, nor does it pretend to. It merely gathers a circle of visibility around itself, enough for a hand to find a cup, a reader to follow a sentence, or a frightened child to see familiar walls again.
+
+Because the candle is small, its courage is easily misunderstood. Someone might call it weak beside the sun or foolish beside an electric lamp. Yet its value lies partly in its modesty. It gives what it can without claiming to give everything. It asks for protection from wind, but in return it offers warmth, focus, and a sense that the darkness has not had the final word.
+
+Many forms of help are like this. They do not solve an entire sorrow or illuminate a whole future. They make the next step visible. Sometimes that is enough to begin.`,
+questions: [
+{q:"What is the central idea of the passage?",options:["Small forms of help can matter even when they do not solve everything","Candles are better than the sun","Darkness is always harmless","Only large actions are useful"],answer:0},
+{q:"How is a candle described at the start?",options:["A small rebellion against darkness","A useless decoration","A dangerous storm","A perfect sun"],answer:0},
+{q:"What does the flame not pretend to do?",options:["Conquer the night","Warm a room slightly","Help a reader","Create visibility"],answer:0},
+{q:"What does the candle gather around itself?",options:["A circle of visibility","A map of roads","A locked door","A crowd of strangers"],answer:0},
+{q:"What might a hand find by candlelight?",options:["A cup","A mountain","A bridge","A hidden village"],answer:0},
+{q:"What might a reader follow?",options:["A sentence","A river","A secret passage","A timetable"],answer:0},
+{q:"What might a frightened child see again?",options:["Familiar walls","A distant sun","A new road","A locked garden"],answer:0},
+{q:"Why is the candle's courage easily misunderstood?",options:["Because it is small","Because it is silent","Because it is expensive","Because it is hidden"],answer:0},
+{q:"What might someone call the candle beside the sun?",options:["Weak","Loud","Secretive","Careless"],answer:0},
+{q:"What might someone call it beside an electric lamp?",options:["Foolish","Victorious","Noisy","Cruel"],answer:0},
+{q:"Where does the candle's value partly lie?",options:["In its modesty","In its size alone","In its ability to end night","In its refusal to help"],answer:0},
+{q:"What does the candle give?",options:["What it can","Everything forever","Nothing useful","Only smoke"],answer:0},
+{q:"What does the candle ask for protection from?",options:["Wind","Sunlight","Readers","Children"],answer:0},
+{q:"What does the candle offer in return?",options:["Warmth, focus, and reassurance","Maps, locks, and doors","Noise, speed, and power","Rain, weather, and distance"],answer:0},
+{q:"What does the phrase 'the darkness has not had the final word' suggest?",options:["Hope remains despite difficulty","Darkness can speak literally","The candle has failed","Night is always permanent"],answer:0},
+{q:"What are many forms of help compared to?",options:["A candle","A storm","A locked room","A mountain path"],answer:0},
+{q:"What do small forms of help often make visible?",options:["The next step","The whole future","Every answer","The entire night"],answer:0},
+{q:"The tone of the passage is best described as:",options:["Gentle and encouraging","Mocking and harsh","Technical and detached","Furious and urgent"],answer:0},
+{q:"Which title best fits the passage?",options:["Enough Light for the Next Step","The Weakness of Candles","How to Conquer Night","Why Lamps Are Foolish"],answer:0},
+{q:"Which summary is most accurate?",options:["The passage argues that small acts of help can offer enough light or hope for someone to continue","The passage says candles are useless because they are small","The passage claims sorrow can always be solved at once","The passage explains how electric lamps work"],answer:0}
+]
+}
+];
+
+let p = 0, q = 0, answers = [];
+let time = 4800;
+let submitted = false;
+
+function timer(){
+  let m = Math.floor(time / 60);
+  let s = time % 60;
+  document.getElementById("timer").innerHTML = "<h3>Time: " + m + ":" + String(s).padStart(2,'0') + "</h3>";
+  if(time > 0 && !submitted){ time--; setTimeout(timer,1000); } else if(!submitted) { submitTest(); }
+}
+
+function load(){
+  document.getElementById("passage").innerHTML = "<h2>" + data[p].title + "</h2>" + data[p].text;
+  show();
+}
+
+function show(){
+  const item = data[p].questions[q];
+  let html = "<p><strong>" + item.q + "</strong></p>";
+  item.options.forEach((opt,i)=>{
+    const checked = answers[p*20+q] === i ? "checked" : "";
+    html += "<label><input type='radio' name='q' onclick='save(" + i + ")' " + checked + "> " + opt + "</label>";
+  });
+  html += "<p>Question " + (p*20+q+1) + " of 60</p>";
+  document.getElementById("q").innerHTML = html;
+}
+
+function save(c){ answers[p*20+q] = c; }
+
+function next(){
+  if(q < 19) q++;
+  else if(p < 2){ p++; q = 0; load(); return; }
+  show();
+}
+
+function prev(){
+  if(q > 0) q--;
+  else if(p > 0){ p--; q = 19; load(); return; }
+  show();
+}
+
+function submitTest(){
+  if(submitted) return;
+  submitted = true;
+  let score = 0, review = "";
+  data.forEach((pass,pi)=>{
+    pass.questions.forEach((qq,qi)=>{
+      const idx = pi*20 + qi;
+      const user = answers[idx];
+      if(user === qq.answer) score++;
+      review += "<p><strong>Q" + (idx+1) + ".</strong> " + qq.q + "<br>";
+      review += "Your: <span class='" + (user===qq.answer ? "correct" : "wrong") + "'>" + (qq.options[user] || "None") + "</span><br>";
+      review += "Correct: <span class='correct'>" + qq.options[qq.answer] + "</span></p>";
+    });
+  });
+  document.getElementById("score").innerHTML = "<h2>Score: " + score + "/60</h2>";
+  document.getElementById("review").innerHTML = review;
+  window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+}
+
+timer();
+load();
+</script>
+</body>
+</html>
