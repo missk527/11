@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reading Test - 11+ (T21)</title>
+<style>
+:root{--ink:#172033;--blue:#2563eb;--pale:#eff6ff;--line:#dbe3ef;--good:#15803d;--bad:#b91c1c;--gold:#f59e0b}*{box-sizing:border-box}body{font-family:Arial,sans-serif;background:linear-gradient(135deg,#eaf2ff,#f8fafc);margin:0;padding:20px;color:var(--ink)}main{max-width:1080px;margin:auto;background:#fff;padding:28px;border-radius:20px;box-shadow:0 12px 35px #1e3a5f18}.top,.meta,.nav{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}h1{margin:.2em 0}.badge{background:var(--pale);padding:7px 11px;border-radius:99px;font-weight:700}.passage{background:#fbfdff;padding:22px;border-left:6px solid var(--blue);white-space:pre-line;line-height:1.85;margin:18px 0;border-radius:8px}.question{padding:18px;border:1px solid var(--line);border-radius:12px}.option{display:block;padding:10px;margin:8px 0;border:1px solid var(--line);border-radius:9px;cursor:pointer}.option:hover{background:var(--pale)}button{background:var(--ink);color:#fff;padding:11px 17px;border:0;border-radius:9px;cursor:pointer;font-weight:700}button.primary{background:var(--blue)}button:disabled{opacity:.45;cursor:not-allowed}.progress{height:9px;background:#e2e8f0;border-radius:10px;overflow:hidden;margin:14px 0}.progress span{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--gold));transition:width .2s}.small{font-size:14px;color:#526078}.correct{color:var(--good)}.wrong{color:var(--bad)}#score{margin-top:20px;padding:1px 18px;background:var(--pale);border-radius:12px}#review article{padding:12px 0;border-bottom:1px solid var(--line)}
+</style></head>
+<body><main>
+<div class="top"><h1>Reading Test (11+) — T21</h1><span class="badge">80 minutes</span></div>
+<div class="meta"><strong id="timer">Time: 80:00</strong><span class="small">3 passages • 20 questions each • 60 total</span></div>
+<p class="small">Read closely. You may move backwards and forwards before submitting.</p><div class="progress"><span id="bar"></span></div>
+<section id="passage" class="passage"></section><section id="question" class="question"></section>
+<div class="nav" style="margin-top:16px"><div><button id="prev" onclick="move(-1)">Previous</button> <button class="primary" id="next" onclick="move(1)">Next</button></div><button onclick="submitTest(false)">Submit test</button></div>
+<div id="score"></div><div id="review"></div>
+</main><script>
+const data=[
+{title:"Passage 1 — The Map in the Rain",text:`On the first Saturday of the holidays, Arun volunteered at the town museum. His task sounded simple: carry a box of old maps from the storeroom to the reading room. Yet halfway across the courtyard, rain began hammering the glass roof. A gust lifted the lid, and one map slid onto the wet stones.
+
+Arun snatched it up. The paper was damp but not torn. Instead of rubbing it dry, he remembered the curator's warning that old paper could crumble when handled roughly. He laid the map flat between two clean cloths and fetched Ms Vale.
+
+The map showed the river before the railway was built. Near its eastern bend, someone had drawn a tiny blue star. Ms Vale said the mark was not part of the surveyor's original work; its ink was decades newer. Arun wondered whether it marked buried treasure, but Ms Vale smiled. "Museums prefer questions to guesses," she said.
+
+They searched council records and found a photograph from 1928. It showed families skating on a pond beside the river. The pond had later been filled in to build a bus depot. On the back of the photograph, a child called Elsie Ward had written, "Our best winter — marked it on Father's map."
+
+The blue star had not pointed to treasure. It had preserved the place where a happy memory occurred. Ms Vale added the photograph and a note beside the map for an upcoming exhibition. Arun suggested placing a blank town map nearby so visitors could mark places that mattered to them.
+
+By closing time, the rain had stopped. The rescued map lay safely beneath a light weight, and the new display had a title: "Where Memory Lives."`,questions:[
+["Where was Arun volunteering?",["At a railway station","At the town museum","At a bus depot","At the council office"],1],
+["What was Arun carrying?",["A box of old maps","A case of photographs","A pile of cloths","A model railway"],0],
+["What caused the map to fall?",["Arun tripped","The box broke","A gust lifted the lid","Ms Vale opened it"],2],
+["Where did the map land?",["In the river","On wet stones","Under a bus","Inside the storeroom"],1],
+["Why did Arun avoid rubbing the map?",["The ink was poisonous","Old paper might crumble","The cloth was dirty","The map was too large"],1],
+["What did he place around the damp map?",["Two clean cloths","Sheets of glass","Heavy books","Newspaper"],0],
+["What did the map show?",["The town after the railway","The river before the railway","A future bus route","A museum floor plan"],1],
+["What had been added later?",["The river","The eastern bend","A tiny blue star","The surveyor's name"],2],
+["What did Arun first imagine the star marked?",["Buried treasure","A railway tunnel","The museum","A storm drain"],0],
+["What did Ms Vale mean by “Museums prefer questions to guesses”?",["Evidence should be investigated","Visitors must remain silent","Maps are never accurate","Curators dislike stories"],0],
+["Which record helped explain the mark?",["A bus timetable","A photograph from 1928","A weather report","A railway ticket"],1],
+["What activity did the photograph show?",["Families skating","Workers building","Children swimming","People travelling"],0],
+["What happened to the pond?",["It became a reservoir","It dried naturally","It was filled in for a bus depot","It moved with the river"],2],
+["Who had made the blue mark?",["Arun","Ms Vale","The surveyor","Elsie Ward"],3],
+["Why had Elsie marked the place?",["To record a happy memory","To warn of thin ice","To hide treasure","To plan a railway"],0],
+["What did Arun suggest for the exhibition?",["A skating rink","A blank map for visitors","A box of treasure","A new depot model"],1],
+["What does “preserved” mean in paragraph five?",["Kept safe from being forgotten","Covered in salt","Copied incorrectly","Hidden permanently"],0],
+["Arun is best described as:",["Careful and imaginative","Careless and impatient","Secretive and dishonest","Fearful and rude"],0],
+["Which theme is central?",["Ordinary places can hold important memories","Old maps always reveal treasure","Rain ruins every museum object","Modern buildings should be removed"],0],
+["Which is the best summary?",["Arun damages a map and hides the evidence","A mysterious mark on a rescued map is traced to a child's memory and inspires an exhibition","Ms Vale discovers treasure beneath a depot","The museum closes because of rain"],1]]},
+{title:"Passage 2 — The Borrowed Song",text:`Mara had been chosen to play the opening tune at the village festival. She practised it each evening on a wooden flute inherited from her grandfather. The melody was lively, but one phrase always sounded stiff, as if the notes were marching instead of dancing.
+
+Two days before the festival, Mara heard a blackbird singing from the gutter. Its call rose in three quick notes, paused, then tumbled down. Without thinking, she copied the rhythm on her flute. The troublesome phrase suddenly loosened.
+
+At rehearsal, however, the bandleader frowned. "That is not how the tune is written," Mr Pike said, tapping the sheet music. Mara explained about the blackbird. He asked her to play both versions. The first was accurate but heavy; the second seemed to lift the whole band. Even the drummer began smiling.
+
+Mr Pike did not decide at once. He asked the other musicians to listen from the far end of the empty hall, where individual mistakes were less obvious but the shape of the music was clearer. They chose Mara's version, provided she could repeat it exactly each time.
+
+On festival morning, the blackbird was nowhere to be seen. Mara felt oddly nervous, as though she had borrowed something without permission. Then she noticed three feathers painted on the old flute's case. Her grandfather had often said that every musician listened before playing.
+
+The band began. When Mara reached the altered phrase, it sprang upward, paused, and swept down. Several people in the crowd glanced towards the rooftops. Afterward, Mr Pike wrote the new rhythm into the band's copy of the music. Above it he added two words: "Blackbird variation."
+
+Mara walked home beneath the gutters, listening carefully.`,questions:[
+["What instrument did Mara play?",["A violin","A wooden flute","A drum","A trumpet"],1],
+["Where did the flute come from?",["Mr Pike","The festival committee","Her grandfather","A music shop"],2],
+["What was wrong with one phrase?",["It sounded stiff","It was too quiet to hear","It had no written notes","It broke the flute"],0],
+["What did Mara hear two days before the festival?",["A drummer","A blackbird","A bell","A crowd"],1],
+["How did the bird's call begin?",["With one long note","With three quick notes","With a low whistle","With a drumbeat"],1],
+["What happened when Mara copied the rhythm?",["The phrase became freer","The flute cracked","The bird flew inside","The melody stopped"],0],
+["Why did Mr Pike frown?",["Mara arrived late","The rhythm differed from the written music","The flute was too old","The drummer laughed"],1],
+["What did he ask Mara to do?",["Play both versions","Leave the band","Find the bird","Rewrite the whole tune"],0],
+["How did the band react to the second version?",["They found it heavier","It seemed to lift them","They could not hear it","They refused to continue"],1],
+["Why did musicians listen from the far end of the hall?",["To avoid Mara","To hear the overall shape more clearly","To practise marching","To find better seats"],1],
+["What condition did they attach to using Mara's version?",["She must play louder","She must repeat it consistently","She must buy a new flute","She must credit Mr Pike"],1],
+["Why was Mara nervous on festival morning?",["She had lost the music","She felt she had borrowed the bird's idea","The festival was cancelled","Her grandfather was angry"],1],
+["What was painted on the flute case?",["Three feathers","A village roof","A row of notes","A black star"],0],
+["What had Mara's grandfather often said?",["Written music must never change","Every musician listens before playing","Birds dislike festivals","Old flutes sound stiff"],1],
+["What did people in the crowd do during the altered phrase?",["They covered their ears","They looked towards the rooftops","They began marching","They left the village"],1],
+["What did Mr Pike call the new rhythm?",["Festival mistake","Grandfather's tune","Blackbird variation","Rooftop march"],2],
+["What does “variation” mean here?",["A changed form of a melody","A musical instrument","A printing error","A bird's feather"],0],
+["Mr Pike is best described as:",["Strict but willing to reconsider","Jealous and dishonest","Careless and forgetful","Uninterested in music"],0],
+["Which theme is central?",["Creativity can grow from careful listening","Rules should always be ignored","Birds can read music","Performances require expensive instruments"],0],
+["Which is the best summary?",["Mara loses her place during a festival","A bird's song helps Mara improve a tune, and the thoughtful change becomes part of the music","Mr Pike replaces Mara with a blackbird","A grandfather writes a village march"],1]]},
+{title:"Passage 3 — The Last Lantern",text:`Each autumn, the residents of Beacon Row hung paper lanterns outside their houses. The custom began long ago, when the lane had no streetlights and fishermen used the glow to find their way home through fog. Now electric lamps shone at every corner, but the lantern evening continued.
+
+This year, twelve-year-old Tomas was responsible for the final lantern at the steep end of the lane. He built it from thin willow strips and orange paper, following his aunt's instructions. On the afternoon of the celebration, a delivery van reversed into the post and snapped it near the ground.
+
+There was no time to replace the post. Tomas tried hanging the lantern from a tree, but branches hid it from the harbour. He tried the garden wall, but the wind rolled it sideways. Neighbours hurried past carrying food and candles, too busy to notice his problem.
+
+Then Mrs Chen arrived with a long bamboo washing pole. Together they tied the pole to the broken post, using strips cut from an old bicycle inner tube. The rubber stretched tightly without tearing the painted wood. The repair looked untidy, but the lantern stood higher than before.
+
+As dusk settled, fog crept in from the sea. The modern streetlights became pale blurs. One by one, the paper lanterns glowed along the lane. Tomas lit his last. From the harbour came the low horn of a returning boat.
+
+Later, the boat's captain visited the celebration. She explained that the harbour beacon had been visible, but the row of warm lights had shown her exactly where the lane began. Tomas looked at the patched post. What had seemed like a makeshift repair had become part of the old custom's purpose.
+
+The next morning, the council replaced the post. Tomas kept the rubber strips in his toolbox, labelled "Useful when appearances don't matter."`,questions:[
+["When were lanterns hung on Beacon Row?",["Every spring","Each autumn","Only during storms","Every weekend"],1],
+["Why did the custom originally begin?",["To advertise shops","To guide fishermen through fog","To celebrate a new road","To replace candles indoors"],1],
+["What now lit the street corners?",["Electric lamps","Harbour fires","Car headlights","Moonlight"],0],
+["Which lantern was Tomas responsible for?",["The first by the harbour","The final one at the steep end","The largest in the square","Mrs Chen's lantern"],1],
+["What materials did he use?",["Metal and glass","Willow strips and orange paper","Bamboo and blue cloth","Wood and rubber"],1],
+["What broke the post?",["A returning boat","A delivery van","The wind","Tomas's ladder"],1],
+["Why was the tree unsuitable?",["It was too short","Branches hid the lantern from the harbour","It belonged to the council","Its leaves were wet"],1],
+["What happened on the garden wall?",["The lantern caught fire","The wind rolled it sideways","The wall collapsed","The paper tore"],1],
+["Who helped Tomas?",["The boat's captain","His aunt","Mrs Chen","A council worker"],2],
+["What did Mrs Chen bring?",["A bamboo washing pole","A new lantern","A metal post","A toolbox"],0],
+["What was cut into fastening strips?",["Orange paper","A fishing net","An old bicycle inner tube","A willow branch"],2],
+["Why was rubber useful?",["It glowed in fog","It stretched tightly without damaging the wood","It matched the lantern","It made the pole shorter"],1],
+["How did the repair look?",["Perfectly neat","Untidy but effective","Invisible","Dangerously loose"],1],
+["What happened as dusk settled?",["The fog arrived","The wind stopped forever","The council came","The celebration ended"],0],
+["How did the streetlights appear in fog?",["Bright orange circles","Pale blurs","Completely dark","Like lanterns"],1],
+["What sound came from the harbour?",["A van engine","A boat's low horn","A bicycle bell","Music"],1],
+["How did the lanterns help the captain?",["They showed where the lane began","They repaired the beacon","They warned of rocks","They lit the inside of the boat"],0],
+["What does “makeshift” mean?",["Temporary and improvised","Ancient and valuable","Brightly decorated","Officially approved"],0],
+["Which theme is central?",["Practical solutions matter more than perfect appearance","Old customs have no modern use","Streetlights always work in fog","Repairs should be hidden"],0],
+["Which is the best summary?",["Tomas cancels a lantern celebration after an accident","A hurried but resourceful repair allows the last lantern to fulfil the custom's original guiding purpose","Mrs Chen builds a new harbour beacon","The council bans paper lanterns"],1]]}
+];
+let index=0,answers=Array(60),seconds=4800,submitted=false;
+const $=id=>document.getElementById(id);
+function render(){const pi=Math.floor(index/20),qi=index%20,p=data[pi],item=p.questions[qi];$("passage").innerHTML=`<h2>${p.title}</h2>${p.text}`;$("question").innerHTML=`<strong>Question ${index+1} of 60</strong><p>${item[0]}</p>`+item[1].map((x,i)=>`<label class="option"><input type="radio" name="answer" ${answers[index]===i?'checked':''} onchange="answers[${index}]=${i}"> ${x}</label>`).join('');$("bar").style.width=`${(index+1)/60*100}%`;$("prev").disabled=index===0;$("next").disabled=index===59;scrollTo({top:0,behavior:'smooth'})}
+function move(n){index=Math.max(0,Math.min(59,index+n));render()}
+function tick(){const m=Math.floor(seconds/60),s=seconds%60;$("timer").textContent=`Time: ${m}:${String(s).padStart(2,'0')}`;if(seconds>0&&!submitted){seconds--;setTimeout(tick,1000)}else if(!submitted)submitTest(true)}
+function submitTest(auto){if(submitted)return;const blank=answers.filter(x=>x===undefined).length;if(!auto&&blank&&!confirm(`You have ${blank} unanswered question${blank===1?'':'s'}. Submit anyway?`))return;submitted=true;let score=0,out='';data.forEach((p,pi)=>p.questions.forEach((q,qi)=>{const i=pi*20+qi,u=answers[i],ok=u===q[2];if(ok)score++;out+=`<article><strong>Q${i+1}. ${q[0]}</strong><br>Your answer: <span class="${ok?'correct':'wrong'}">${u===undefined?'Not answered':q[1][u]}</span><br>Correct answer: <span class="correct">${q[1][q[2]]}</span></article>`}));$("score").innerHTML=`<h2>Score: ${score}/60</h2><p>${auto?'Time expired — the test was submitted automatically.':`You answered ${60-blank} questions.`}</p>`;$("review").innerHTML=`<h2>Answer review</h2>${out}`;document.querySelectorAll('button,input').forEach(x=>x.disabled=true);$("score").scrollIntoView({behavior:'smooth'})}
+tick();render();
+</script></body></html>
