@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reading Test - 11+ (T24)</title>
+<style>
+:root{--ink:#17312d;--teal:#0f766e;--mint:#ecfdf5;--line:#cfe3dd;--good:#15803d;--bad:#b91c1c;--coral:#f97316}*{box-sizing:border-box}body{font-family:Arial,sans-serif;background:linear-gradient(135deg,#dff7f1,#fff7ed);margin:0;padding:20px;color:var(--ink)}main{max-width:1080px;margin:auto;background:#fff;padding:28px;border-radius:20px;box-shadow:0 12px 35px #134e4a20}.top,.meta,.nav{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}h1{margin:.2em 0}.badge{background:var(--mint);padding:7px 11px;border-radius:99px;font-weight:700}.passage{background:#fbfffd;padding:22px;border-left:6px solid var(--teal);white-space:pre-line;line-height:1.85;margin:18px 0;border-radius:8px}.question{padding:18px;border:1px solid var(--line);border-radius:12px}.option{display:block;padding:10px;margin:8px 0;border:1px solid var(--line);border-radius:9px;cursor:pointer}.option:hover{background:var(--mint)}button{background:var(--ink);color:#fff;padding:11px 17px;border:0;border-radius:9px;cursor:pointer;font-weight:700}button.primary{background:var(--teal)}button:disabled{opacity:.45;cursor:not-allowed}.progress{height:9px;background:#d9e8e4;border-radius:10px;overflow:hidden;margin:14px 0}.progress span{display:block;height:100%;background:linear-gradient(90deg,var(--teal),var(--coral));transition:width .2s}.small{font-size:14px;color:#526b65}.correct{color:var(--good)}.wrong{color:var(--bad)}#score{margin-top:20px;padding:1px 18px;background:var(--mint);border-radius:12px}#review article{padding:12px 0;border-bottom:1px solid var(--line)}
+</style></head>
+<body><main>
+<div class="top"><h1>Reading Test (11+) — T24</h1><span class="badge">80 minutes</span></div>
+<div class="meta"><strong id="timer">Time: 80:00</strong><span class="small">3 new passages • 20 questions each • 60 total</span></div>
+<p class="small">Read each passage carefully. You may move backwards and forwards before submitting.</p><div class="progress"><span id="bar"></span></div>
+<section id="passage" class="passage"></section><section id="question" class="question"></section>
+<div class="nav" style="margin-top:16px"><div><button id="prev" onclick="move(-1)">Previous</button> <button class="primary" id="next" onclick="move(1)">Next</button></div><button onclick="submitTest(false)">Submit test</button></div>
+<div id="score"></div><div id="review"></div>
+</main><script>
+const data=[
+{title:"Passage 1 — The Garden Above Platform Six",text:`When the railway company announced that the flat roof above Platform Six would become a garden, Imani expected a few tubs of flowers. Instead, landscape designer Mr Sato arrived with rolls of silver matting, shallow wooden beds and a notebook full of calculations.
+
+The roof could not safely carry deep soil, so Mr Sato planned to grow tough, light-rooted plants in a thin mixture of crushed brick and compost. Rainwater from the station canopy would be collected in a tank. Most surprising of all, the garden was not intended chiefly for passengers. It would provide a resting place for insects crossing the crowded centre of the city.
+
+Imani joined the Saturday volunteer team. Her first job was to arrange stones around a small dish of water. She made a perfect circle, but Mr Sato gently scattered the stones. Butterflies, he explained, needed sloping edges where they could land without falling in. “Useful can look untidy,” he said.
+
+During the first month, the roof seemed disappointing. The plants remained low, and no butterflies appeared. Several volunteers wanted to add bright greenhouse flowers. Mr Sato refused because those varieties produced little nectar and required more water. He asked the team to wait for the native thyme and marjoram to bloom.
+
+In June, a heatwave turned the pavements below pale with dust. On the roof, the water tank ran low. Imani suggested watering every bed equally, but her notes showed that the shaded beds stayed damp twice as long. The team gave the remaining water only to the sunniest areas.
+
+Three days later, Imani spotted an orange-tip butterfly. By lunchtime there were six, along with bees and a metallic green beetle. A station manager came upstairs carrying a complaint: passengers on a nearby office bridge thought the roof looked wild. Then he noticed the insects and tore up the paper.
+
+By autumn, the garden had become one link in a chain of rooftop habitats across the city. Imani made a new sign for the platform below: “The shortest garden can still be part of a long journey.”`,questions:[
+["Where was the new garden built?",["Beside the ticket office","Above Platform Six","Under a road bridge","Inside a greenhouse"],1],
+["What did Imani initially expect?",["A large forest","A few tubs of flowers","A butterfly museum","A new platform"],1],
+["Why could the roof not hold deep soil?",["It leaked badly","It could not safely carry the weight","Plants disliked it","Passengers objected"],1],
+["What growing mixture was planned?",["Sand and clay","Crushed brick and compost","Gravel and paint","Leaves and water"],1],
+["Where would the garden's water come from?",["A nearby river","Rain collected from the canopy","Bottles carried by passengers","A station fountain"],1],
+["Who was the garden mainly intended to help?",["Train drivers","Insects crossing the city","Office workers","Shop owners"],1],
+["What was Imani's first task?",["Planting thyme","Arranging stones around a water dish","Building wooden beds","Writing a complaint"],1],
+["Why did Mr Sato scatter the neat circle of stones?",["To make landing slopes for butterflies","To hide the dish","To dry the roof","To mark a path"],0],
+["What does “Useful can look untidy” suggest?",["Appearance is less important than function","Gardens should never be planned","Untidy work is always best","Butterflies dislike circles"],0],
+["Why did volunteers feel disappointed at first?",["The station closed","Plants stayed low and butterflies were absent","The tank overflowed","The roof became too heavy"],1],
+["Why did Mr Sato reject greenhouse flowers?",["They were too colourful","They offered little nectar and needed more water","They attracted birds","They grew too slowly"],1],
+["What were the volunteers waiting for?",["The bridge to open","Native thyme and marjoram to bloom","A new water tank","The autumn rain"],1],
+["What problem occurred in June?",["A snowstorm","A heatwave and low water supply","A train strike","A beetle infestation"],1],
+["How did Imani know the shaded beds needed less water?",["Mr Sato guessed","Her notes showed they stayed damp longer","Passengers told her","Their flowers were brighter"],1],
+["Which areas received the remaining water?",["The sunniest beds","Every bed equally","Only the water dish","The shaded beds"],0],
+["Which insect did Imani see first after the shortage?",["A metallic beetle","An orange-tip butterfly","A dragonfly","A moth"],1],
+["Why did the station manager tear up the complaint?",["It had the wrong address","He saw the garden's value to insects","Rain damaged it","Imani asked him to"],1],
+["What had the garden become by autumn?",["A passenger café","One link in a chain of habitats","A greenhouse flower shop","A storage roof"],1],
+["Imani is best described as:",["Observant and practical","Careless and impatient","Secretive and proud","Uninterested and lazy"],0],
+["Which is the best summary?",["A station garden succeeds through careful design, patience and efficient use of resources","Volunteers replace a railway roof with a greenhouse","Passengers build a bridge for butterflies","A designer abandons a garden during a heatwave"],0]
+]},
+{title:"Passage 2 — The Midnight Loaf",text:`At eleven o'clock on Friday night, Theo tied on an apron at his aunt's bakery. The shop was closed, but the ovens still breathed warm air into the kitchen. Aunt Celia was preparing one hundred loaves for the harbour market, and Theo had begged to help.
+
+His task was to weigh lumps of dough. Each should be exactly 500 grams before baking. Theo worked quickly, pleased by the tidy row he produced. Aunt Celia checked his scales and frowned. A smear of dough was stuck beneath the metal tray, adding twelve grams to every reading. Theo's neat portions were all too small.
+
+There was no spare dough, so they could not simply start again. Aunt Celia showed Theo how to take a little from the heaviest pieces and add it to the lightest. “Accuracy isn't never making a mistake,” she said. “It's noticing one while it can still be corrected.”
+
+Shortly after midnight, the electric mixer stopped. The lights remained on, which meant the building had power. Theo crouched beside the machine and heard a faint clicking. He wanted to remove the cover, but Aunt Celia unplugged the mixer first. Wrapped around its rear wheel was the loose end of a flour sack's string.
+
+They freed the wheel, yet the mixer still would not turn. Theo noticed a small red button had popped out. A label beside it said OVERLOAD RESET. After the motor cooled, Aunt Celia pressed the button and the machine hummed again.
+
+At two o'clock, rain began drumming on the skylight. Theo's arms ached, and the loaves waiting to enter the oven looked pale and unimpressive. Then the first batch emerged: rounded, brown and crackling softly as it cooled. The smell seemed to fill even the dark street.
+
+At the market, one customer asked why some loaves were slightly longer than others. Theo waited for his aunt to apologise. Instead, she explained that each had been shaped by hand but contained the same weight of dough. The customer chose the most crooked loaf. “Then this one has the most character,” she said.
+
+Theo finally understood that exactness and sameness were not identical. The scales had to be right; the shapes did not.`,questions:[
+["When did Theo begin work?",["Eleven on Friday night","Midday on Saturday","Two in the afternoon","At sunrise on Friday"],0],
+["How many loaves were being prepared?",["Twelve","Fifty","One hundred","Five hundred"],2],
+["What was Theo asked to weigh?",["Flour sacks","Lumps of dough","Finished loaves","Market coins"],1],
+["What should each portion weigh?",["12 grams","100 grams","500 grams","1 kilogram"],2],
+["What caused the scales to give a false reading?",["A broken spring","Dough stuck beneath the tray","A loose string","A red button"],1],
+["What effect did the extra twelve grams have?",["Theo made every portion too small","Every loaf became too heavy","The oven cooled","The mixer stopped"],0],
+["Why could they not begin again with fresh dough?",["The bakery had closed","There was no spare dough","Theo was tired","The market was cancelled"],1],
+["How did they correct the portions?",["They discarded them","They moved dough from heavier to lighter pieces","They added water","They changed the target weight"],1],
+["What lesson did Aunt Celia give about accuracy?",["Mistakes should be hidden","Mistakes can be corrected if noticed in time","Speed matters most","Scales are unnecessary"],1],
+["What showed that the building still had electricity?",["The ovens were cold","The lights remained on","Rain hit the skylight","The market was open"],1],
+["Why did Aunt Celia unplug the mixer?",["To work on it safely","To save flour","To cool the kitchen","To weigh it"],0],
+["What had become wrapped around the rear wheel?",["An apron string","A flour sack's string","A power cable","A strip of dough"],1],
+["What did the red button indicate?",["The oven was ready","The mixer had overloaded","The shop was open","The dough was too light"],1],
+["When was the reset button pressed?",["Before unplugging the mixer","After the motor cooled","At the market","Before removing the string"],1],
+["What did the first baked batch look like?",["Pale and flat","Rounded and brown","Identical and square","Burnt and broken"],1],
+["What did the customer notice?",["Some loaves were slightly longer","The scales were missing","The bread was cold","Theo had no apron"],0],
+["Why were the loaves different shapes?",["They had different weights","They were shaped by hand","The mixer cut them","Rain changed them"],1],
+["Which loaf did the customer choose?",["The straightest","The lightest","The most crooked","The darkest"],2],
+["What does “exactness and sameness were not identical” mean?",["Important measurements can match even when appearances differ","All handmade objects must look alike","Weight never matters","Crooked loaves are inaccurate"],0],
+["Which theme is central?",["Good work combines correction, safety and judgment about what truly matters","Night work always causes mistakes","Machines are better than people","Customers prefer underweight bread"],0]
+]},
+{title:"Passage 3 — The Museum of Small Sounds",text:`The town museum owned swords, portraits and a skeleton of a whale, but its newest exhibition began with the click of a kitchen light switch. Visitors entered a darkened room, put on headphones and selected sounds from a glowing map.
+
+The idea belonged to fourteen-year-old Safa. While interviewing her grandfather for a history project, she discovered that he remembered his childhood home less through photographs than through noises: the rattle of the letterbox, a neighbour beating a rug, and milk bottles touching on the doorstep.
+
+Safa asked the museum to collect everyday sounds before they vanished. Curator Mrs Wynn liked the proposal but saw a difficulty. Old sounds could not simply be recorded in the present. Few people still used coal chutes, mechanical typewriters or hand-operated water pumps.
+
+They began by inviting residents to describe remembered noises. Then the museum borrowed surviving objects and recorded them in a studio. Safa insisted that each recording include silence before and after the sound. Without that space, she said, the noises felt like specimens pinned too tightly in a display case.
+
+One recording caused an argument. A farmer brought in a brass handbell once used to call workers for lunch. In the studio its ring was sharp and clean. The farmer said it was wrong: outdoors, wind and distance had softened it. The team recorded the bell again in a field, but passing traffic could be heard.
+
+Rather than remove the traffic with editing software, Safa kept both versions. Beside them she added a question: “Is a sound the object itself, or the place where it is heard?” Visitors voted by pressing one of two buttons, though many pressed both.
+
+On opening day, Safa's grandfather listened to the milk bottles. His eyes closed before the sound had finished. “That was the milkman at half past six,” he said. The label gave no time, yet his memory had supplied one.
+
+The most popular recording was not the loudest or oldest. It was the brief squeak of the wooden floor outside the former children's library. Hundreds of visitors recognised it. The exhibition showed Safa that a small sound could unlock a room no museum had space to rebuild.`,questions:[
+["Which sound began the new exhibition?",["A whale song","A kitchen light switch","A brass bell","A typewriter"],1],
+["How did visitors listen?",["Through headphones","From the museum roof","On the radio","Inside the whale skeleton"],0],
+["Who suggested the exhibition?",["Mrs Wynn","Safa","The farmer","Safa's grandfather"],1],
+["What inspired Safa's idea?",["A studio visit","Her grandfather's memories of household sounds","A glowing map","An old photograph"],1],
+["Which sound did her grandfather remember?",["A train whistle","Milk bottles touching","A school drum","Traffic lights"],1],
+["What did Safa want to preserve?",["Everyday sounds that might disappear","Only musical performances","Museum announcements","Animal calls"],0],
+["Why were some old sounds difficult to capture?",["Modern microphones were too quiet","The objects were rarely still used","Residents refused to help","The museum was always noisy"],1],
+["What did the museum do first?",["Built a coal chute","Asked residents to describe remembered noises","Removed all traffic","Opened the exhibition"],1],
+["How were surviving objects recorded?",["In a studio","At Safa's home","Underwater","On a train"],0],
+["Why did Safa include silence around each recording?",["To make the sounds feel less cramped and give them context","To shorten the exhibition","To hide mistakes","To rest the headphones"],0],
+["What object caused disagreement?",["A milk bottle","A brass handbell","A light switch","A floorboard"],1],
+["Why did the farmer reject the studio recording?",["The bell was broken","Outdoors, wind and distance had softened its sound","It included traffic","It was too old"],1],
+["What problem affected the field recording?",["Rain drowned out the bell","Passing traffic could be heard","The farmer forgot the bell","The microphone failed"],1],
+["What did Safa decide to do with the two bell recordings?",["Delete both","Keep both","Edit them into one","Use only the studio version"],1],
+["Why did many visitors press both voting buttons?",["They believed both object and setting shaped the sound","The buttons were stuck","They disliked the bell","They wanted to hear traffic"],0],
+["What did Safa's grandfather add from memory?",["The milkman's name","The time of day","The bottle colour","The street address"],1],
+["Which recording was most popular?",["The handbell","The light switch","A squeaking library floor","The water pump"],2],
+["Why was the floor squeak powerful?",["It was extremely loud","Many visitors recognised it and connected it with a place","It came from the oldest object","It had been edited"],1],
+["What does “unlock a room” mean in the final sentence?",["Open a physical door","Bring a remembered place vividly to mind","Repair the old library","Reveal a secret key"],1],
+["Which is the best summary?",["Safa creates an exhibition showing how ordinary sounds, shaped by place and memory, can preserve the past","A museum replaces all its objects with headphones","A farmer proves studio recordings are always false","Safa rebuilds a children's library"],0]
+]}
+];
+data.splice(0,data.length,
+{title:"Passage 1 — The Lighthouse Ledger",text:`Mila spent the first week of the summer helping her uncle Dev at North Head lighthouse. The lighthouse no longer needed a keeper because its lamp worked automatically, but Dev maintained the building and recorded the weather for visiting scientists.
+
+In a cupboard beneath the spiral stairs, Mila found a leather book filled with neat columns. Each page listed the date, wind direction, sea conditions and the number of seabirds seen from the balcony. One entry from 1964 contained a curious note: “Three flashes at noon. No vessel visible.”
+
+Mila assumed the flashes had been a secret signal. Dev was less certain. Sunlight on glass, he said, could appear and disappear as waves moved an object. He encouraged her to compare the note with other evidence before inventing a dramatic explanation.
+
+They searched old harbour reports. No ship had been missing that day, but a research balloon carrying a mirrored instrument had landed in the bay. The time of its recovery was twelve fifteen. Mila thought the mystery was solved, until she noticed that the ledger described three evenly spaced flashes, while a drifting mirror would probably have produced an irregular pattern.
+
+The next morning, fog covered the headland. Mila climbed to the lamp room and saw three pale beams sweep across the mist, although the lamp itself was off. Dev discovered that a loose pane in the lantern roof was reflecting sunlight from a white building across the bay. Wind made the pane tilt, producing three flashes whenever it rocked back and forth.
+
+They repaired the pane, then recreated the old conditions using the weather entries. A westerly wind matched the direction needed to move it. The balloon had been a coincidence.
+
+Mila added a note to the ledger, carefully labelling her conclusion “probable” rather than “certain”. The original keeper could not be questioned, and the old pane might not have behaved exactly like the new one. Dev nodded. A good explanation, he said, should be strong enough to guide you and modest enough to change.
+
+Before leaving, Mila began a digital copy of the fragile ledger. She included photographs of every page, even the blank ones and crossed-out mistakes. “Evidence,” she wrote in the file notes, “is sometimes hiding in what someone nearly erased.”`,questions:[
+["Why did the lighthouse no longer require a keeper?",["The building was closed","Its lamp worked automatically","Ships no longer used the bay","Dev lived nearby"],1],
+["What work did Dev still do?",["He sailed research boats","He maintained the building and recorded weather","He painted ships","He operated the lamp all night"],1],
+["Where did Mila find the ledger?",["On the balcony","In a cupboard beneath the stairs","Inside the lamp","At the harbour office"],1],
+["What information appeared in its columns?",["Ticket prices","Weather, sea conditions and seabird counts","Family names","Building plans"],1],
+["What was unusual about the 1964 entry?",["It described three flashes at noon","It had no date","It predicted a storm","It mentioned Mila"],0],
+["What did Mila first suspect?",["A broken clock","A secret signal","A seabird count","A fire"],1],
+["Why did Dev advise caution?",["The ledger was false","Reflected sunlight could explain flashes","Signals were illegal","The page was blank"],1],
+["What had landed in the bay that day?",["A helicopter","A research balloon","A fishing net","A lighthouse pane"],1],
+["Why did Mila doubt the balloon explanation?",["It landed at night","A drifting mirror would likely flash irregularly","It had no instrument","The report was undated"],1],
+["What did Mila see in the fog?",["Three pale beams","A missing ship","A red balloon","A flock of birds"],0],
+["What was reflecting the sunlight?",["The sea","A loose roof pane","Dev's glasses","The ledger cover"],1],
+["What made the pane tilt?",["Waves","Wind","The automatic lamp","Birds"],1],
+["Which wind supported their explanation?",["A westerly wind","A southerly breeze","No wind","An easterly gale"],0],
+["What was the balloon eventually judged to be?",["The cause","A coincidence","A secret signal","A weather instrument in the lighthouse"],1],
+["Why did Mila label her conclusion “probable”?",["She disliked Dev's idea","Complete certainty was impossible","The ledger was new","She had not seen the flashes"],1],
+["What did Dev say a good explanation should be able to do?",["Never change","Guide you but remain open to change","Sound dramatic","Ignore old evidence"],1],
+["Why did Mila make a digital copy?",["To preserve the fragile record","To erase errors","To sell the pages","To replace the weather station"],0],
+["Why did she photograph blank pages and mistakes?",["They might also contain useful evidence","She needed exactly one hundred images","Dev ordered her to","They were more attractive"],0],
+["Mila is best described as:",["Curious and careful","Reckless and stubborn","Bored and careless","Secretive and dishonest"],0],
+["Which is the best summary?",["Mila tests competing explanations for old flashes and preserves the evidence","A balloon damages an automatic lighthouse","Dev discovers a missing ship","Mila proves the keeper sent secret signals"],0]
+]},
+{title:"Passage 2 — The Umbrella Orchestra",text:`On rainy days, the covered arcade outside Bramble Market filled with umbrellas dripping into a long metal channel. One afternoon, Jonah noticed that drops falling from different heights made different notes. A large blue umbrella produced a low plink; a child's yellow one answered with a bright ping.
+
+Jonah recorded the sounds on his phone and played them for music teacher Ms Rees. She suggested turning the channel into an instrument for the winter concert. Jonah imagined thirty umbrellas performing together, but the forecast could not promise rain on the concert date.
+
+The school science club helped build a substitute. They hung water bottles above pieces of metal cut to different lengths. Tiny taps released drops at adjustable speeds. At first, the result sounded like cutlery falling down stairs. The drops struck whenever they happened to fall, not when the players intended.
+
+Science club captain Priya marked each tap with four settings. The slowest released one drop every two seconds; the fastest released four. Jonah wrote a score using coloured squares rather than ordinary notes. Each colour showed which tap setting to choose, while the width of a square showed how long to keep it open.
+
+During rehearsal, the warm stage lights caused a new problem. Water flowed faster as the plastic taps expanded. The final section rushed ahead. Instead of rewriting the music, Priya placed the bottles in shallow trays of cool water. Their timing steadied.
+
+On concert night, real rain began just as the audience arrived. Jonah worried that the roof would drown out his delicate instrument. Ms Rees opened the side doors. The arcade's natural plinks entered the hall, irregular but gentle.
+
+Jonah raised his hand to delay the opening. He listened until he heard a repeating gap in the rain, then started the bottle orchestra inside that space. The planned drops and accidental ones did not match exactly, yet they seemed to answer each other.
+
+After the applause, Priya joked that the weather deserved a place in the programme. Jonah added one by hand: “Rain — guest soloist, appearing without rehearsal.”`,questions:[
+["Where did Jonah first hear musical drops?",["In a classroom","At the covered market arcade","Inside a concert hall","Beside a river"],1],
+["Where did umbrella water fall?",["Into a metal channel","Onto a drum","Into glass jars","Across the stage"],0],
+["What affected the notes made by drops?",["The colour of umbrellas","The height from which they fell","The day of the week","The market prices"],1],
+["Who suggested making an instrument?",["Priya","Ms Rees","A market trader","Jonah's parent"],1],
+["Why could they not depend on umbrellas for the concert?",["Umbrellas were banned","Rain was uncertain","The arcade was closed","Metal channels were expensive"],1],
+["What did the science club hang above metal pieces?",["Water bottles","Blue umbrellas","Stage lights","Coloured cards"],0],
+["What controlled the falling water?",["Tiny adjustable taps","Electric motors","The audience","Open windows"],0],
+["Why did the first attempt sound chaotic?",["The metal was silent","Drops fell without intended timing","The bottles were empty","Jonah forgot the score"],1],
+["How many settings did Priya mark on each tap?",["Two","Three","Four","Eight"],2],
+["What did the fastest setting produce?",["One drop every two seconds","Four drops a second","Four drops a minute","A continuous stream"],1],
+["Why did Jonah use coloured squares?",["To show tap settings and duration","To decorate the bottles","To count the audience","To predict rain"],0],
+["What did the width of a square show?",["Drop height","How long a setting should remain open","Metal length","Bottle temperature"],1],
+["How did warm lights affect the taps?",["They froze the water","They expanded the plastic and sped the flow","They changed the colours","They melted the metal"],1],
+["How did Priya steady the timing?",["She dimmed every light","She placed bottles in cool-water trays","She rewrote the score","She used larger umbrellas"],1],
+["What happened as the audience arrived?",["Snow began","Real rain began","The roof leaked","The power failed"],1],
+["Why were the side doors opened?",["To let natural rain sounds enter","To cool the audience","To move the orchestra outside","To display umbrellas"],0],
+["Why did Jonah delay the start?",["He had lost his phone","He waited for a repeating gap in the rain","The bottles were empty","Priya was absent"],1],
+["How did planned and natural drops relate?",["They matched perfectly","They seemed to answer one another","The natural rain stopped","They made no sound"],1],
+["What does the programme joke suggest?",["Unexpected conditions became part of the performance","The weather had rehearsed","The concert was cancelled","Rain played an instrument backstage"],0],
+["Which theme is central?",["Creative planning can make room for chance","Music requires ordinary notation","Weather always ruins concerts","Science and art should remain separate"],0]
+]},
+{title:"Passage 3 — The Borrowed Shadow",text:`Every August, the residents of Juniper Court held an outdoor film night against the blank wall of number eighteen. This year, twelve-year-old Eren was responsible for setting up the projector. He tested it at noon and was alarmed to see only a faint rectangle on the bricks.
+
+Neighbour Mrs Dale assured him that projectors needed darkness, but another difficulty remained. A newly installed streetlamp stood directly opposite the wall. The council could not switch it off because it lit the entrance to a public footpath.
+
+Eren first suggested covering the lamp with a box. Mrs Dale rejected the idea immediately: blocking a safety light could put walkers at risk. Moving the film to the small community hall seemed sensible, but the hall's emergency repairs were not finished.
+
+At three o'clock, Eren noticed the shadow of a tall lime tree stretching towards the wall. By sunset, however, the shadow would point in the opposite direction. He used a compass app and chalk to mark its position each hour. The moving line gave him an idea.
+
+With permission from the caretaker, volunteers attached a dark canvas screen between two washing-line posts. They did not place it over the streetlamp. Instead, they positioned it several metres away so that it cast a shadow across the film wall while leaving the path entrance bright.
+
+The first test produced a sharp shadow but also a dangerous cord at ankle height. Eren replaced the cord with bright fabric straps fixed above head level. He added reflective ribbons to the posts so people could see them from the side.
+
+Just before the film, a breeze made the canvas flap. The shadow trembled across the picture. Mrs Dale threaded garden canes through pockets along the canvas edges, stiffening it without adding much weight.
+
+The audience watched the film clearly, and walkers continued to use the lit path. During the final scene, the moon rose behind the screen and made its edges glow.
+
+The next morning, Eren removed every strap, cane and ribbon. On the wall, only his hourly chalk marks remained. Rain would soon wash them away, but Mrs Dale photographed them first. They looked like the hands of a giant clock—a record of how a problem had been solved by borrowing darkness rather than creating it.`,questions:[
+["Where was the film usually projected?",["Inside the hall","Against the wall of number eighteen","Onto the footpath","Between two trees"],1],
+["Why was the image faint at noon?",["The projector was broken","There was too much daylight","The bricks were wet","The film had ended"],1],
+["What new problem affected the wall?",["A streetlamp faced it","A tree had fallen","The wall was painted","The projector disappeared"],0],
+["Why could the council not turn off the lamp?",["It had no switch","It lit a public footpath entrance","The film needed it","Mrs Dale owned it"],1],
+["Why was Eren's box idea rejected?",["It was too small","Blocking a safety light could endanger walkers","It would brighten the film","The caretaker needed it"],1],
+["Why was the community hall unavailable?",["It was too far away","Emergency repairs were unfinished","Another film was showing","It had no wall"],1],
+["What did Eren observe at three o'clock?",["A tree shadow stretching toward the wall","The moon rising","Rain washing away chalk","A loose cord"],0],
+["Why would the natural tree shadow not work at sunset?",["It would point in the opposite direction","The tree would be cut down","The lamp would move","The wall would collapse"],0],
+["How did Eren track the shadow?",["With a watch only","Using a compass app and hourly chalk marks","By taking down the lamp","With reflective ribbons"],1],
+["Where was the dark canvas placed?",["Directly over the lamp","Away from the lamp to cast shadow on the wall","Across the footpath","On the projector"],1],
+["What remained illuminated?",["The film wall","The path entrance","The canvas","The lime tree"],1],
+["What hazard appeared in the first test?",["A cord at ankle height","A broken lamp","A heavy projector","Wet bricks"],0],
+["What replaced the cord?",["Garden canes","Bright straps above head level","Chalk lines","Metal chains"],1],
+["Why were reflective ribbons added?",["To decorate the film","To make posts visible from the side","To darken the wall","To stop the breeze"],1],
+["What made the projected shadow tremble?",["Passing walkers","Canvas flapping in the breeze","The moving projector","Rain"],1],
+["How did garden canes help?",["They stiffened the canvas edges","They held the projector","They blocked the path","They erased the marks"],0],
+["What happened during the final scene?",["The lamp failed","The moon made the screen edges glow","The hall reopened","Rain ended the film"],1],
+["What did Eren do the next morning?",["Left everything in place","Removed all temporary equipment","Painted the chalk marks","Covered the streetlamp"],1],
+["Why did the marks resemble a giant clock?",["They recorded the shadow's changing hourly position","They showed film times","They were perfectly circular","They were made by watch hands"],0],
+["Which is the best summary?",["Eren designs a safe temporary screen that casts darkness on the film wall without blocking a public light","Residents move their film permanently indoors","A tree provides perfect shade for a daytime film","Eren switches off a streetlamp without permission"],0]
+]});
+let index=0,answers=Array(60),seconds=4800,submitted=false;
+const $=id=>document.getElementById(id);
+function render(){const pi=Math.floor(index/20),qi=index%20,p=data[pi],item=p.questions[qi];$("passage").innerHTML=`<h2>${p.title}</h2>${p.text}`;$("question").innerHTML=`<strong>Question ${index+1} of 60</strong><p>${item[0]}</p>`+item[1].map((x,i)=>`<label class="option"><input type="radio" name="answer" ${answers[index]===i?'checked':''} onchange="answers[${index}]=${i}"> ${x}</label>`).join('');$("bar").style.width=`${(index+1)/60*100}%`;$("prev").disabled=index===0;$("next").disabled=index===59;scrollTo({top:0,behavior:'smooth'})}
+function move(n){index=Math.max(0,Math.min(59,index+n));render()}
+function tick(){const m=Math.floor(seconds/60),s=seconds%60;$("timer").textContent=`Time: ${m}:${String(s).padStart(2,'0')}`;if(seconds>0&&!submitted){seconds--;setTimeout(tick,1000)}else if(!submitted)submitTest(true)}
+function submitTest(auto){if(submitted)return;const blank=answers.filter(x=>x===undefined).length;if(!auto&&blank&&!confirm(`You have ${blank} unanswered question${blank===1?'':'s'}. Submit anyway?`))return;submitted=true;let score=0,out='';data.forEach((p,pi)=>p.questions.forEach((q,qi)=>{const i=pi*20+qi,u=answers[i],ok=u===q[2];if(ok)score++;out+=`<article><strong>Q${i+1}. ${q[0]}</strong><br>Your answer: <span class="${ok?'correct':'wrong'}">${u===undefined?'Not answered':q[1][u]}</span><br>Correct answer: <span class="correct">${q[1][q[2]]}</span></article>`}));$("score").innerHTML=`<h2>Score: ${score}/60</h2><p>${auto?'Time expired — the test was submitted automatically.':`You answered ${60-blank} questions.`}</p>`;$("review").innerHTML=`<h2>Answer review</h2>${out}`;document.querySelectorAll('button,input').forEach(x=>x.disabled=true);$("score").scrollIntoView({behavior:'smooth'})}
+tick();render();
+</script></body></html>
